@@ -1,0 +1,7 @@
+---
+# api_key: <your key>
+# debug: true
+# silent: false
+# dir: .
+# report_type: JSON
+# report_location: .
