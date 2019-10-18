@@ -1,4 +1,4 @@
-[![ochrona](https://raw.githubusercontent.com/ochrona/ochrona-cli/master/resources/ochrona_logo.png)](https://ochrona.dev)
+[![ochrona](https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_logo.png)](https://ochrona.dev)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
