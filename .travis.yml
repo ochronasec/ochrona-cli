@@ -6,6 +6,7 @@ install:
   - python --version
   - pip install -U pip
   - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
+  - "export OCHRONA_API_URL=http://localhost:5000/python/analyze"
   - pip install pipenv
   - pipenv install --dev
 script:
