@@ -5,6 +5,7 @@ python:
 install:
   - python --version
   - pip install -U pip
+  - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
   - pip install pipenv
   - pipenv install --dev
 script:
