@@ -51,9 +51,6 @@ def rfind_all_dependencies_files(logger, directory=None, file=None):
             ):
                 logger.debug(f"Found matching pipfile.lock file at {filename}")
                 files.append(filename)
-        else:
-            # support for pre python 3.5
-            pass
 
     if not files:
         raise OchronaFileException("No dependencies files found")

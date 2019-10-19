@@ -5,6 +5,8 @@ source = ./ochrona
 [report]
 exclude_lines =
     if self.debug:
+    except ImportError:
+    except OSError as ex:
 ignore_errors = True
 omit =
     tests/*

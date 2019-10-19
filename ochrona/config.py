@@ -22,7 +22,6 @@ class OchronaConfig:
     _dir = None
     _file = None
     _python_version = None
-    _window_size = None
     _report_type = None
     _report_location = None
     _api_url = None
@@ -34,6 +33,7 @@ class OchronaConfig:
     def __init__(self, **kwargs):
         self.get_config(**kwargs)
         self._validate()
+        self._detect_runtime_attributes()
 
     def get_config(self, **kwargs):
         """
@@ -140,7 +140,6 @@ class OchronaConfig:
         """
         Detects details about the runtime and updates the config.
         """
-        self._window_size = os.get_terminal_size()
         self._python_version = ".".join([str(i) for i in sys.version_info][0:3])
 
     @property
