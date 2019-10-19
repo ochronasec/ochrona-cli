@@ -1,0 +1,15 @@
+language: python
+python:
+  - 3.6
+  - 3.7
+install:
+  - python --version
+  - pip install -U pip
+  - pip install pipenv
+  - pipenv install --dev
+script:
+  - pytest
+  - bandit ./ochrona -r -n 3 -lll
+  - black --check ./ochrona
+after_success:
+  - codecov
