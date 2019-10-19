@@ -1,0 +1,10 @@
+[run]
+branch = True
+source = ./ochrona
+
+[report]
+exclude_lines =
+    if self.debug:
+ignore_errors = True
+omit =
+    tests/*

@@ -9,6 +9,8 @@ bandit = "*"
 black = "*"
 pytest-vcr = "*"
 v = {editable = true,version = "*"}
+pytest-cov = "*"
+codecov = "*"
 
 [packages]
 click = "*"

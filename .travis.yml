@@ -10,7 +10,7 @@ install:
   - pip install pipenv
   - pipenv install --dev
 script:
-  - pytest
+  - pytest --cov=./
   - bandit ./ochrona -r -n 3 -lll
   - black --check ./ochrona
 after_success:

@@ -1,6 +1,8 @@
 [![ochrona](https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_logo.png)](https://ochrona.dev)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Build Status](https://travis-ci.com/ochronasec/ochrona-cli.svg?token=9JDALtMe5VnkYyLdqiN6&branch=master)](https://travis-ci.com/ochronasec/ochrona-cli)
+
 
 Ochrona is a command line tool for checking python projects for vulnerabilities in their dependencies. 
 Ochrona has a free-tier license which allows 25 scans per month. 
