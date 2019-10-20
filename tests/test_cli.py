@@ -60,7 +60,7 @@ class TestCli:
         assert result.exit_code == 0
 
     @pytest.mark.vcr()
-    def test_cli_pass(self):
+    def test_cli_pass_single_requirements(self):
         runner = CliRunner()
         result = runner.invoke(
             cli.run,
@@ -69,6 +69,20 @@ class TestCli:
                 "1234",
                 "--file",
                 f"{dir_path}/test_data/pass/requirements.txt",
+            ],
+        )
+        assert result.exit_code == 0
+
+    @pytest.mark.vcr()
+    def test_cli_pass_single_pipfile(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "--api_key",
+                "1234",
+                "--file",
+                f"{dir_path}/test_data/pipfile/Pipfile.lock",
             ],
         )
         assert result.exit_code == 0

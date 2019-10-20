@@ -64,7 +64,7 @@ class OchronaAPIClient:
             )
         else:
             raise OchronaAPIException(
-                "Exception Raised from API: {}".format(status_code)
+                "Unexpected response from API: {}".format(status_code)
             )
 
     def _response_handler(self, response):

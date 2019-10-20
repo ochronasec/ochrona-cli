@@ -422,32 +422,31 @@ interactions:
         "mock", "full": "mock"}]}, {"name": "termcolor", "full": "termcolor", "dependencies":
         []}, {"name": "watchdog", "full": "watchdog", "dependencies": []}]}], "flat_list":
         ["requests==2.22.0", "Click==7.0", "Flask==1.1.1", "itsdangerous==1.1.0",
-        "Jinja2==2.10.1", "MarkupSafe==1.1.1", "Werkzeug==0.15.4", "sphinxcontrib-log-cabinet",
-        "Sphinx", "coverage", "packaging>=14", "importlib-metadata>=0.12", "pallets-sphinx-themes",
-        "Babel>=0.8", "sphinxcontrib-htmlhelp", "sphinxcontrib-websupport", "Pygments>=2.0",
-        "flake8==3.6.0", "sphinxcontrib-devhelp", "babel!=2.0", "sphinxcontrib-qthelp",
-        "pytest-cov<3", "imagesize", "flake8-import-order", "docutils>=0.12", "snowballstemmer>=1.1",
-        "colorama>=0.3.5", "setuptools", "alabaster<0.8", "sphinxcontrib-serializinghtml",
-        "sphinxcontrib-jsmath", "docutils-stubs", "sphinxcontrib-applehelp", "pytest<6",
-        "mypy>=0.720", "sphinx<3", "html5lib", "atomicwrites>=1.0", "pluggy<1.0",
-        "pathlib2>=2.2.0", "attrs>=17.4.0", "wcwidth", "xmlschema", "hypothesis>=3.56",
-        "more-itertools>=4.0.0", "py>=1.5.0", "argcomplete", "mock", "nose", "tox",
-        "pre-commit==1.13.0", "flake8-bugbear==18.8.0", "sphinx-issues", "pytest-mock<2",
-        "pytest-xdist<2", "sphinxcontrib-autoprogram>=0.1.5", "virtualenv>=14.0.0",
-        "freezegun<1", "towncrier>=18.5.0", "filelock<4", "pytest-randomly<2", "psutil<6",
-        "pygments-github-lexers>=0.0.5", "six<2", "flaky<4", "toml>=0.9.4", "python-dotenv",
-        "click>=5.1", "watchdog", "termcolor", "typing", "pytz>=2015.7", "idna>=2.0.0",
-        "pyOpenSSL>=0.14", "urllib3!=1.25.0", "cryptography>=1.3.4", "chardet<3.1.0",
-        "win-inet-pton", "certifi>=2017.4.17", "PySocks!=1.5.7", "ipaddress", "brotlipy>=0.6.0",
-        "sphinx-rtd-theme", "pretend"], "potential_vulnerabilities": [], "confirmed_vulnerabilities":
-        []}'
+        "Jinja2==2.10.1", "MarkupSafe==1.1.1", "Werkzeug==0.15.4", "coverage", "packaging>=14",
+        "importlib-metadata>=0.12", "pallets-sphinx-themes", "Sphinx", "tox", "pytest<6",
+        "watchdog", "sphinx<3", "termcolor", "sphinx-issues", "pre-commit==1.13.0",
+        "flake8==3.6.0", "flake8-bugbear==18.8.0", "mock", "atomicwrites>=1.0", "colorama>=0.3.5",
+        "pluggy<1.0", "pathlib2>=2.2.0", "attrs>=17.4.0", "wcwidth", "xmlschema",
+        "hypothesis>=3.56", "more-itertools>=4.0.0", "py>=1.5.0", "argcomplete", "nose",
+        "sphinxcontrib-htmlhelp", "sphinxcontrib-websupport", "Pygments>=2.0", "sphinxcontrib-devhelp",
+        "babel!=2.0", "sphinxcontrib-qthelp", "pytest-cov<3", "imagesize", "flake8-import-order",
+        "docutils>=0.12", "snowballstemmer>=1.1", "setuptools", "alabaster<0.8", "sphinxcontrib-serializinghtml",
+        "sphinxcontrib-jsmath", "docutils-stubs", "sphinxcontrib-applehelp", "mypy>=0.720",
+        "html5lib", "pytest-mock<2", "pytest-xdist<2", "sphinxcontrib-autoprogram>=0.1.5",
+        "virtualenv>=14.0.0", "freezegun<1", "towncrier>=18.5.0", "filelock<4", "pytest-randomly<2",
+        "psutil<6", "pygments-github-lexers>=0.0.5", "six<2", "flaky<4", "toml>=0.9.4",
+        "sphinxcontrib-log-cabinet", "Babel>=0.8", "python-dotenv", "click>=5.1",
+        "typing", "pyOpenSSL>=0.14", "cryptography>=2.3", "sphinx-rtd-theme", "pretend",
+        "idna>=2.0.0", "chardet<3.1.0", "win-inet-pton", "urllib3!=1.25.0", "certifi>=2017.4.17",
+        "PySocks!=1.5.7", "ipaddress", "brotlipy>=0.6.0", "pytz>=2015.7"], "potential_vulnerabilities":
+        [], "confirmed_vulnerabilities": []}'
     headers:
       Content-Length:
-      - '33262'
+      - '33260'
       Content-Type:
       - application/json
       Date:
-      - Fri, 18 Oct 2019 02:36:15 GMT
+      - Sat, 19 Oct 2019 15:53:25 GMT
       Server:
       - Werkzeug/0.15.5 Python/3.6.9
     status:

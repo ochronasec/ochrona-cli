@@ -10,3 +10,5 @@ exclude_lines =
 ignore_errors = True
 omit =
     tests/*
+    setup.py
+    ochrona/__main__.py

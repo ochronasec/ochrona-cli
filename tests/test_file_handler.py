@@ -1,10 +1,16 @@
 import os
 import pytest
 
-from ochrona.file_handler import rfind_all_dependencies_files, parse_to_payload, _parse_pipfile, _parse_requirements_file
+from ochrona.file_handler import (
+    rfind_all_dependencies_files,
+    parse_to_payload,
+    _parse_pipfile,
+    _parse_requirements_file,
+)
 from ochrona.exceptions import OchronaFileException
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
+
 
 class MockLogger:
 
@@ -16,7 +22,7 @@ class MockLogger:
 
 class TestFileHandlerRfindAllDependenciesFiles:
     """
-    Unit tests for file_handler module.
+    Unit tests for file_handler:rfind_all_dependencies_files method.
     """
 
     def test_single_requirements(self):
@@ -39,6 +45,8 @@ class TestFileHandlerRfindAllDependenciesFiles:
         logger = MockLogger()
         files = None
         with pytest.raises(OchronaFileException) as ex:
-            files = rfind_all_dependencies_files(logger, f"{dir_path}/test_data/empty", None)
+            files = rfind_all_dependencies_files(
+                logger, f"{dir_path}/test_data/empty", None
+            )
             assert ex == "No dependencies files found"
         assert not files

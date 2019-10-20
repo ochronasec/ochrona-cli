@@ -25,10 +25,10 @@ class OchronaReporter:
 
     def report_collector(self, sources, results):
         """
-
-        :param sources:
-        :param results:
-        :return:
+        Collects and generates each report and exits the program
+        :param sources: list of file locations
+        :param results: results for each file scan
+        :return: sys.exit -1 if vulns are discovered
         """
         reports = []
         for index, (source, result) in enumerate(zip(sources, results)):
@@ -332,15 +332,16 @@ class XMLReport(BaseReport):
             case = ET.SubElement(suite, "testcase")
             case.set("classname", "ochronaDependencyVulnCheck")
             case.set("name", dep)
-        for vuln in result["confirmed_vulnerabilities"]:
-            case = list(
-                filter(
-                    lambda x: x.get("name") == vuln["found_version"], list(suite.iter())
-                )
-            )[0]
-            failure = ET.SubElement(case, "failure")
-            failure.set("type", "confirmed_vulnerability")
-            failure.text = f"{vuln['description']}"
+        if "confirmed_vulnerabilities" in result:
+            for vuln in result["confirmed_vulnerabilities"]:
+                case = list(
+                    filter(
+                        lambda x: x.get("name") == vuln["found_version"], list(suite.iter())
+                    )
+                )[0]
+                failure = ET.SubElement(case, "failure")
+                failure.set("type", "confirmed_vulnerability")
+                failure.text = f"{vuln['description']}"
         return minidom.parseString(ET.tostring(suites)).toprettyxml(indent="   ")
 
     @staticmethod
