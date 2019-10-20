@@ -336,7 +336,8 @@ class XMLReport(BaseReport):
             for vuln in result["confirmed_vulnerabilities"]:
                 case = list(
                     filter(
-                        lambda x: x.get("name") == vuln["found_version"], list(suite.iter())
+                        lambda x: x.get("name") == vuln["found_version"],
+                        list(suite.iter()),
                     )
                 )[0]
                 failure = ET.SubElement(case, "failure")
