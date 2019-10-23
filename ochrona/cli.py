@@ -41,9 +41,7 @@ from ochrona.rest_client import OchronaAPIClient
     default=False,
     is_flag=True,
 )
-@click.option(
-    "--ignore", help="Ignore vulnerabilities by CVE or package name."
-)
+@click.option("--ignore", help="Ignore vulnerabilities by CVE or package name.")
 def run(api_key, dir, file, debug, silent, report_type, output, exit, ignore):
     config = OchronaConfig(
         api_key=api_key,

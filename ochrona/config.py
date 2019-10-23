@@ -82,7 +82,11 @@ class OchronaConfig:
             else os.environ.get("OCHRONA_DEBUG_LOGGING", False)
         )
         self._api_url = os.environ.get("OCHRONA_API_URL", OchronaConfig.DEFAULT_API_URL)
-        self._ignore = self._ignore if self._ignore else os.environ.get("OCHRONA_IGNORED_VULNS", None)
+        self._ignore = (
+            self._ignore
+            if self._ignore
+            else os.environ.get("OCHRONA_IGNORED_VULNS", None)
+        )
         if self._ignore:
             self._ignore = self._ignore.split(",")
 
