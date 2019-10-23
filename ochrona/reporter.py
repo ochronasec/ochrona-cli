@@ -22,6 +22,7 @@ class OchronaReporter:
         self._report_type = self._config.report_type
         self._report_location = self._config.report_location
         self._exit = self._config.exit
+        self._ignore = self._config.ignore
 
     def report_collector(self, sources, results):
         """
@@ -32,6 +33,10 @@ class OchronaReporter:
         """
         reports = []
         for index, (source, result) in enumerate(zip(sources, results)):
+            result["confirmed_vulnerabilities"] = list(filter(
+                lambda cv: self._filter_ignored_vulns(cv),
+                result["confirmed_vulnerabilities"],
+            ))
             reports.append(self.generate_report(source, result, index, len(sources)))
         for result in results:
             if (
@@ -108,6 +113,19 @@ class OchronaReporter:
                 XMLReport.save_report_to_file(
                     result, self._report_location, source, index
                 )
+
+    def _filter_ignored_vulns(self, c_vulns):
+        """
+
+        :param c_vulns:
+        :return:
+        """
+        if not c_vulns or not self._ignore:
+            return True
+        for cv in self._ignore:
+            if cv == c_vulns["cve_id"] or cv == c_vulns["name"]:
+                return False
+        return True
 
 
 class BaseReport:

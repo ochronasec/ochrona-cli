@@ -9,9 +9,11 @@ dir_path = os.path.dirname(os.path.abspath(__file__))
 
 
 class MockConfig:
-    def __init__(self, report_type, location):
+    def __init__(self, report_type, location, exit_=False, ignore=None):
         self._report_type = report_type
         self._location = location
+        self._exit = exit_
+        self._ignore = ignore
 
     @property
     def report_type(self):
@@ -23,12 +25,16 @@ class MockConfig:
 
     @property
     def exit(self):
-        return False
+        return self._exit
+
+    @property
+    def ignore(self):
+        return self._ignore
 
 
 class TestOchronaReporter:
     def test_generate_empty_json_stdout(self, capsys):
-        conf = MockConfig("JSON", None)
+        conf = MockConfig("JSON", None, )
         reporter = OchronaReporter(None, conf)
         reporter.generate_report("fake", {}, 0, 1)
         captured = capsys.readouterr()

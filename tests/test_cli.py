@@ -86,3 +86,51 @@ class TestCli:
             ],
         )
         assert result.exit_code == 0
+
+    @pytest.mark.vcr()
+    def test_cli_pass_fail_ignore_package(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "--api_key",
+                "1234",
+                "--file",
+                f"{dir_path}/test_data/fail/requirements.txt",
+                "--ignore",
+                "requests"
+            ],
+        )
+        assert result.exit_code == 0
+
+    @pytest.mark.vcr()
+    def test_cli_pass_fail_ignore_cve(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "--api_key",
+                "1234",
+                "--file",
+                f"{dir_path}/test_data/fail/requirements.txt",
+                "--ignore",
+                "CVE-2018-18074"
+            ],
+        )
+        assert result.exit_code == 0
+
+    @pytest.mark.vcr()
+    def test_cli_pass_fail_ignore_no_match(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "--api_key",
+                "1234",
+                "--file",
+                f"{dir_path}/test_data/fail/requirements.txt",
+                "--ignore",
+                "CVE-2001-1"
+            ],
+        )
+        assert result.exit_code == -1

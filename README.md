@@ -12,6 +12,10 @@ You can sign up for an API key at https://ochrona.dev.
 
 We care deeply about Developer Experience (dx), if you have any feedback or run into issues please open an issue [here](https://github.com/ochronasec/ochrona-cli/issues).
 
+### Supported file types
+- `*requirements*.txt`
+- `Pipfile.lock`
+
 # Installation
 
 ### via pip
@@ -55,9 +59,17 @@ Example:
 # report_location: .
 ```
 
-# Usage
+# Usage Examples
+### Full default mode
 ```
 $ ochrona 
+```
+This will search for any supported dependency files recursively from the run location. It will output rules in the `BASIC`
+format to stdout. The program will exit with an error exit code if any confirmed vulnerabilities are found.
+
+### Standard error code with Junit XML reporting saved to file
+```
+$ ochrona --exit --report_type XML --output ./output
 ```
 
 # Reports

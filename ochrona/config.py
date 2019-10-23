@@ -26,6 +26,7 @@ class OchronaConfig:
     _report_location = None
     _api_url = None
     _exit = None
+    _ignore = None
 
     REPORT_OPTIONS = ["BASIC", "FULL", "JSON", "XML"]
     DEFAULT_API_URL = "https://api.ochrona.dev/python/analyze"
@@ -68,6 +69,8 @@ class OchronaConfig:
                 self._report_location = location
         if "exit" in kwargs:
             self._exit = kwargs.get("exit", False)
+        if "ignore" in kwargs:
+            self._ignore = kwargs.get("ignore", None)
 
         # check environment variables
         self._api_key = (
@@ -79,6 +82,9 @@ class OchronaConfig:
             else os.environ.get("OCHRONA_DEBUG_LOGGING", False)
         )
         self._api_url = os.environ.get("OCHRONA_API_URL", OchronaConfig.DEFAULT_API_URL)
+        self._ignore = self._ignore if self._ignore else os.environ.get("OCHRONA_IGNORED_VULNS", None)
+        if self._ignore:
+            self._ignore = self._ignore.split(",")
 
         # check config .ochrona.yml
         try:
@@ -121,6 +127,11 @@ class OchronaConfig:
                     )
                     self._exit = (
                         yaml_loaded["exit"] if "exit" in yaml_loaded else self._exit
+                    )
+                    self._ignore = (
+                        yaml_loaded["ignore"]
+                        if "ignore" in yaml_loaded
+                        else self._ignore
                     )
         except IOError:
             pass
@@ -177,3 +188,7 @@ class OchronaConfig:
     @property
     def exit(self):
         return self._exit
+
+    @property
+    def ignore(self):
+        return self._ignore
