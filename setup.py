@@ -14,7 +14,8 @@ except TypeError:
         readme = readme_file.read()
 
 requirements = [
-    'click>=7.0'
+    'click>=7.0',
+    'pyyaml==5.1.2',
     'requests>=2.22.0'
 ]
 
@@ -25,7 +26,7 @@ test_requirements = [
 
 setup(
     name='ochrona',
-    version='0.0.1',
+    version='0.0.3',
     description="Ochrona checks your open source dependencies for vulnerabilities ",
     long_description=readme,
     long_description_content_type="text/markdown",
