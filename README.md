@@ -41,12 +41,14 @@ pipenv install <--dev> ochrona
 | `--report_type`       | The report type that's desired [BASIC]                             | str  | XML                                  |
 | `--output`            | Location for report output                                         | path | /User/me/my_project/logs             |
 | `--exit`              | Exit with Code 0 regardless of vulnerability findings. [False]     | bool | True                                 |
+| `--ignore`           | Ignore a CVE or package                                             | str  | requests                             |
 
 ### via environment variables
 | Variable Name         | Corresponding Arg |
 |-----------------------|-------------------|
 | OCHRONA_API_KEY       | `--api_key`       |
 | OCHRONA_DEBUG_LOGGING | `--debug`         |
+| OCHRONA_IGNORED_VULNS | `--ignore`        |
 
 ### via .ochrona.yml
 There is an empty `.ochrona.yml` file included in the repo. 
@@ -58,6 +60,7 @@ Example:
 # dir: .
 # report_type: JSON
 # report_location: .
+# ignore: requests
 ```
 
 # Usage Examples

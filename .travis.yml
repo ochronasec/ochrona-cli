@@ -13,5 +13,7 @@ script:
   - pytest --cov=./
   - bandit ./ochrona -r -n 3 -lll
   - black --check ./ochrona
+  - unset OCHRONA_API_URL
+  - ochrona
 after_success:
   - codecov

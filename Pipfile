@@ -11,6 +11,7 @@ pytest-vcr = "*"
 v = {editable = true,version = "*"}
 pytest-cov = "*"
 codecov = "*"
+ochrona = "*"
 
 [packages]
 click = "*"
