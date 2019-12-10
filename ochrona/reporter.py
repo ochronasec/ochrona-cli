@@ -33,11 +33,19 @@ class OchronaReporter:
         """
         reports = []
         for index, (source, result) in enumerate(zip(sources, results)):
-            result["confirmed_vulnerabilities"] = list(
-                filter(
-                    lambda cv: self._filter_ignored_vulns(cv),
-                    result["confirmed_vulnerabilities"],
+            if "confirmed_vulnerabilities" in result:
+                result["confirmed_vulnerabilities"] = list(
+                    filter(
+                        lambda cv: self._filter_ignored_vulns(cv),
+                        result["confirmed_vulnerabilities"],
+                    )
                 )
+            else:
+                result["confirmed_vulnerabilities"] = []
+            result["potential_vulnerabilities"] = (
+                result["potential_vulnerabilities"]
+                if "potential_vulnerabilities" in result
+                else []
             )
             reports.append(self.generate_report(source, result, index, len(sources)))
         for result in results:
