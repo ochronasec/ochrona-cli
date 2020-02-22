@@ -100,9 +100,9 @@ def _parse_pipfile(file):
             if "default" in data:
                 for name, value in data["default"].items():
                     dependencies.append(f"{name}{value['version']}")
-            if "develop" in data:
-                for name, value in data["develop"].items():
-                    dependencies.append(f"{name}{value['version']}")
+            # if "develop" in data:
+            #     for name, value in data["develop"].items():
+            #         dependencies.append(f"{name}{value['version']}")
         return dependencies
     except OSError as ex:
         raise OchronaFileException(ex)
