@@ -18,6 +18,6 @@ script:
   - unset OCHRONA_API_URL
   - export OCHRONA_API_KEY=$TMP_OCHRONA_API_KEY
   - cat ./Pipfile.lock 
-  - ochrona --file ./Pipfile.lock
+  - ochrona --file ./Pipfile.lock --debug
 after_success:
   - codecov
