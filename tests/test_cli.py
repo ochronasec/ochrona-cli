@@ -98,7 +98,7 @@ class TestCli:
                 "--file",
                 f"{dir_path}/test_data/fail/requirements.txt",
                 "--ignore",
-                "requests"
+                "requests",
             ],
         )
         assert result.exit_code == 0
@@ -114,7 +114,7 @@ class TestCli:
                 "--file",
                 f"{dir_path}/test_data/fail/requirements.txt",
                 "--ignore",
-                "CVE-2018-18074"
+                "CVE-2018-18074",
             ],
         )
         assert result.exit_code == 0
@@ -130,7 +130,7 @@ class TestCli:
                 "--file",
                 f"{dir_path}/test_data/fail/requirements.txt",
                 "--ignore",
-                "CVE-2001-1"
+                "CVE-2001-1",
             ],
         )
         assert result.exit_code == -1

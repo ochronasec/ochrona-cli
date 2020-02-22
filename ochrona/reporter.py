@@ -42,8 +42,8 @@ class OchronaReporter:
                 )
             else:
                 result["confirmed_vulnerabilities"] = []
-            result["potential_vulnerabilities"] = (
-                result.get("potential_vulnerabilities", [])
+            result["potential_vulnerabilities"] = result.get(
+                "potential_vulnerabilities", []
             )
             reports.append(self.generate_report(source, result, index, len(sources)))
         for result in results:
@@ -88,14 +88,10 @@ class OchronaReporter:
                     )
             BaseReport.print_new_line()
         elif self._report_type == "JSON":
-            report = (
-                result.get("confirmed_vulnerabilities", None)
-            )
+            report = result.get("confirmed_vulnerabilities", None)
             # TODO potential_vulnerabilities will be removed
             if not report:
-                report = (
-                    result.get("potential_vulnerabilities", None)
-                )
+                report = result.get("potential_vulnerabilities", None)
 
             if report:
                 if not self._report_location:
