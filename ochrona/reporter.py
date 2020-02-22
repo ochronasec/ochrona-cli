@@ -37,15 +37,13 @@ class OchronaReporter:
                 result["confirmed_vulnerabilities"] = list(
                     filter(
                         lambda cv: self._filter_ignored_vulns(cv),
-                        result["confirmed_vulnerabilities"],
+                        result.get("confirmed_vulnerabilities", []),
                     )
                 )
             else:
                 result["confirmed_vulnerabilities"] = []
             result["potential_vulnerabilities"] = (
-                result["potential_vulnerabilities"]
-                if "potential_vulnerabilities" in result
-                else []
+                result.get("potential_vulnerabilities", [])
             )
             reports.append(self.generate_report(source, result, index, len(sources)))
         for result in results:
@@ -76,33 +74,27 @@ class OchronaReporter:
                 BaseReport.print_no_vulns()
             else:
                 # TODO potential_vulnerabilities will be removed
-                if "potential_vulnerabilities" in result:
-                    for finding in result["potential_vulnerabilities"]:
-                        BasicReport.print_vuln_finding(
-                            finding, False
-                        ) if self._config.report_type == "BASIC" else FullReport.print_vuln_finding(
-                            finding, False
-                        )
-                if "confirmed_vulnerabilities" in result:
-                    for finding in result["confirmed_vulnerabilities"]:
-                        BasicReport.print_vuln_finding(
-                            finding, True
-                        ) if self._config.report_type == "BASIC" else FullReport.print_vuln_finding(
-                            finding, True
-                        )
+                for finding in result.get("potential_vulnerabilities", []):
+                    BasicReport.print_vuln_finding(
+                        finding, False
+                    ) if self._config.report_type == "BASIC" else FullReport.print_vuln_finding(
+                        finding, False
+                    )
+                for finding in result.get("confirmed_vulnerabilities", []):
+                    BasicReport.print_vuln_finding(
+                        finding, True
+                    ) if self._config.report_type == "BASIC" else FullReport.print_vuln_finding(
+                        finding, True
+                    )
             BaseReport.print_new_line()
         elif self._report_type == "JSON":
             report = (
-                result["confirmed_vulnerabilities"]
-                if "confirmed_vulnerabilities" in result
-                else None
+                result.get("confirmed_vulnerabilities", None)
             )
             # TODO potential_vulnerabilities will be removed
             if not report:
                 report = (
-                    result["potential_vulnerabilities"]
-                    if "potential_vulnerabilities" in result
-                    else None
+                    result.get("potential_vulnerabilities", None)
                 )
 
             if report:
