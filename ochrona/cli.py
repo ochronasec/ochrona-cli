@@ -64,7 +64,11 @@ def run(api_key, dir, file, debug, silent, report_type, output, exit, ignore):
 
     try:
         reporter.report_collector(
-            files, [client.analyze(parse_to_payload(log, file, config.include_dev)) for file in files]
+            files,
+            [
+                client.analyze(parse_to_payload(log, file, config.include_dev))
+                for file in files
+            ],
         )
     except OchronaAPIException as ex:
         OchronaLogger.error(ex)
