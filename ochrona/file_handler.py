@@ -58,7 +58,7 @@ def rfind_all_dependencies_files(logger, directory=None, file=None):
     return files
 
 
-def parse_to_payload(logger, file):
+def parse_to_payload(logger, file, include_dev=False):
     """
     Parses a requirements.txt type file or Pipefile.lock into a JSON payload.
     :param logger: A configured `OchronaFormatter` instance
@@ -67,7 +67,7 @@ def parse_to_payload(logger, file):
     """
     dependencies = []
     if os.path.basename(file).lower() == PIPFILE_LOCK.lower():
-        dependencies = _parse_pipfile(file)
+        dependencies = _parse_pipfile(file, include_dev)
     else:
         dependencies = _parse_requirements_file(file)
     logger.debug(f"Discovered dependencies: {dependencies}")
@@ -87,7 +87,7 @@ def _parse_requirements_file(file):
         raise OchronaFileException(ex)
 
 
-def _parse_pipfile(file):
+def _parse_pipfile(file, include_dev=False):
     """
 
     :param file:
@@ -99,6 +99,9 @@ def _parse_pipfile(file):
             data = json.load(pipfile)
             if "default" in data:
                 for name, value in data["default"].items():
+                    dependencies.append(f"{name}{value['version']}")
+            if "develop" in data and include_dev:
+                for name, value in data["develop"].items():
                     dependencies.append(f"{name}{value['version']}")
         return dependencies
     except OSError as ex:
