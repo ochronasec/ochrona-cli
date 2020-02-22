@@ -1,4 +1,4 @@
-requests==2.19.0
+requests==2.20.0
 Click==7.0
 Flask==1.1.1
 itsdangerous==1.1.0
