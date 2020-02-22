@@ -1,11 +1,10 @@
 import os
 import pytest
+from json import loads
 
 from ochrona.file_handler import (
     rfind_all_dependencies_files,
     parse_to_payload,
-    _parse_pipfile,
-    _parse_requirements_file,
 )
 from ochrona.exceptions import OchronaFileException
 
@@ -50,3 +49,34 @@ class TestFileHandlerRfindAllDependenciesFiles:
             )
             assert ex == "No dependencies files found"
         assert not files
+
+
+class TestFileHandlerParseToPayload:
+    """
+    Unit tests for file_handler:parse_to_payload method.
+    """
+
+    def test_parse_pipfile_lock(self):
+        test_file = f"{dir_path}/test_data/pipfile/Pipfile.lock"
+        payload = loads(parse_to_payload(MockLogger(), test_file))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            "certifi==2019.9.11",
+            "chardet==3.0.4",
+            "idna==2.8",
+            "requests==2.22.0",
+            "urllib3==1.25.6",
+        ]
+
+    def test_parse_pipfile_lock_dev(self):
+        test_file = f"{dir_path}/test_data/pipfile/Pipfile.lock"
+        payload = loads(parse_to_payload(MockLogger(), test_file, True))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            "certifi==2019.9.11",
+            "chardet==3.0.4",
+            "idna==2.8",
+            "requests==2.22.0",
+            "urllib3==1.25.6",
+            "fake_package==1.13.2",
+        ]
