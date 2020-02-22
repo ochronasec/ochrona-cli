@@ -42,6 +42,7 @@ pipenv install <--dev> ochrona
 | `--output`            | Location for report output                                         | path | /User/me/my_project/logs             |
 | `--exit`              | Exit with Code 0 regardless of vulnerability findings. [False]     | bool | True                                 |
 | `--ignore`           | Ignore a CVE or package                                             | str  | requests                             |
+| `--include_dev`      | Include develop dependencies from Pipfile.lock [False]              | bool | True                                 |
 
 ### via environment variables
 | Variable Name         | Corresponding Arg |
@@ -61,6 +62,7 @@ Example:
 # report_type: JSON
 # report_location: .
 # ignore: requests
+# include_dev: false
 ```
 
 # Usage Examples

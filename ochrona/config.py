@@ -27,6 +27,7 @@ class OchronaConfig:
     _api_url = None
     _exit = None
     _ignore = None
+    _include_dev = None
 
     REPORT_OPTIONS = ["BASIC", "FULL", "JSON", "XML"]
     DEFAULT_API_URL = "https://api.ochrona.dev/python/analyze"
@@ -71,6 +72,8 @@ class OchronaConfig:
             self._exit = kwargs.get("exit", False)
         if "ignore" in kwargs:
             self._ignore = kwargs.get("ignore", None)
+        if "include_dev" in kwargs:
+            self._include_dev = kwargs.get("include_dev", None)
 
         # check environment variables
         self._api_key = (
@@ -137,6 +140,11 @@ class OchronaConfig:
                         if "ignore" in yaml_loaded
                         else self._ignore
                     )
+                    self._include_dev = (
+                        yaml_loaded["include_dev"]
+                        if "include_dev" in yaml_loaded
+                        else self._ignore
+                    )
         except IOError:
             pass
 
@@ -196,3 +204,7 @@ class OchronaConfig:
     @property
     def ignore(self):
         return self._ignore
+
+    @property
+    def include_dev(self):
+        return self._include_dev

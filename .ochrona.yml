@@ -5,3 +5,4 @@
 # dir: .
 # report_type: JSON
 # report_location: .
+# include_dev: false
