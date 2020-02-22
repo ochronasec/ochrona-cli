@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 from setuptools import setup
+from ochrona import __version__ as version
 
 assert sys.version_info >= (3, 6, 0), "ochrona requires Python 3.6+"
 
@@ -19,7 +20,7 @@ test_requirements = ["pytest>=5.2.1", "pytest-vcr>=1.0.2"]
 
 setup(
     name="ochrona",
-    version="0.0.3",
+    version=version,
     description="Ochrona checks your open source dependencies for vulnerabilities ",
     long_description=readme,
     long_description_content_type="text/markdown",

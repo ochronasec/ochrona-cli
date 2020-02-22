@@ -42,7 +42,8 @@ from ochrona.rest_client import OchronaAPIClient
     is_flag=True,
 )
 @click.option("--ignore", help="Ignore vulnerabilities by CVE or package name.")
-def run(api_key, dir, file, debug, silent, report_type, output, exit, ignore):
+@click.option("--include_dev", help="Check dev dependencies in Pipfile.lock", default=False, is_flag=True)
+def run(api_key, dir, file, debug, silent, report_type, output, exit, ignore, include_dev):
     config = OchronaConfig(
         api_key=api_key,
         dir=dir,
@@ -53,6 +54,7 @@ def run(api_key, dir, file, debug, silent, report_type, output, exit, ignore):
         report_location=output,
         exit=exit,
         ignore=ignore,
+        include_dev=include_dev,
     )
     log = OchronaLogger(config)
     client = OchronaAPIClient(log, config)
