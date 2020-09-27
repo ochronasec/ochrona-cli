@@ -18,6 +18,7 @@ class OchronaAPIClient:
         self._api_key = config.api_key
         self.logger = logger
         self._url = config.api_url
+        self._alert_api_url = config.alert_api_url
 
     def analyze(self, payload=None):
         """
@@ -28,6 +29,25 @@ class OchronaAPIClient:
         """
         response = requests.request(
             "POST", self._url, headers=self._generate_headers(), data=payload
+        )
+
+        if response.status_code > 200:
+            self._error_response_handler(response.status_code)
+        else:
+            return self._response_handler(response)
+
+    def update_alert(self, payload=None):
+        """
+        Calls the Alert Registration API to update project alert settings.
+
+        :param payload: json payload
+        :return: dict
+        """
+        response = requests.request(
+            "POST",
+            self._alert_api_url,
+            headers=self._generate_headers(),
+            data=self._alert_payload_handler(payload),
         )
 
         if response.status_code > 200:
@@ -75,3 +95,16 @@ class OchronaAPIClient:
         :return: dict
         """
         return json.loads(response.text)
+
+    def _alert_payload_handler(self, config):
+        """
+        Parses the config object and sends to the Ochrona Alert Registration API.
+
+        :param config: OchronaConfig instance
+        :return: dict
+        """
+        return {
+            "project_name": config.project_name,
+            "alerting_addresses": config.alert_config.get("alerting_addresses"),
+            "alerting_rules": config.alert_config.get("alerting_rules"),
+        }

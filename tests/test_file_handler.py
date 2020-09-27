@@ -70,7 +70,9 @@ class TestFileHandlerParseToPayload:
 
     def test_parse_pipfile_lock_dev(self):
         test_file = f"{dir_path}/test_data/pipfile/Pipfile.lock"
-        payload = loads(parse_to_payload(MockLogger(), test_file, True))
+        payload = loads(
+            parse_to_payload(logger=MockLogger(), file=test_file, include_dev=True)
+        )
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "certifi==2019.9.11",
