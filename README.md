@@ -65,6 +65,7 @@ Example:
 # report_location: .
 # ignore: requests
 # include_dev: false
+# project_name: my_test_project
 # alert_config:
 #   alerting_addresses: test@web.com
 #   alerting_rules: not:boto3
