@@ -89,10 +89,7 @@ def run(
     try:
         reporter.report_collector(
             files,
-            [
-                client.analyze(parse_to_payload(log, file, config.include_dev))
-                for file in files
-            ],
+            [client.analyze(parse_to_payload(log, file, config)) for file in files],
         )
         if config.alert_config is not None and config.project_name is not None:
             client.update_alert(payload=config)

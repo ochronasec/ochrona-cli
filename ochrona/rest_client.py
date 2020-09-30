@@ -31,7 +31,7 @@ class OchronaAPIClient:
             "POST", self._url, headers=self._generate_headers(), data=payload
         )
 
-        if response.status_code > 200:
+        if response.status_code > 300:
             self._error_response_handler(response.status_code)
         else:
             return self._response_handler(response)
@@ -50,7 +50,7 @@ class OchronaAPIClient:
             data=self._alert_payload_handler(payload),
         )
 
-        if response.status_code > 200:
+        if response.status_code > 300:
             self._error_response_handler(response.status_code)
         else:
             return self._response_handler(response)
@@ -103,8 +103,10 @@ class OchronaAPIClient:
         :param config: OchronaConfig instance
         :return: dict
         """
-        return {
-            "project_name": config.project_name,
-            "alerting_addresses": config.alert_config.get("alerting_addresses"),
-            "alerting_rules": config.alert_config.get("alerting_rules"),
-        }
+        return json.dumps(
+            {
+                "project_name": config.project_name,
+                "alerting_addresses": config.alert_config.get("alerting_addresses"),
+                "alerting_rules": config.alert_config.get("alerting_rules"),
+            }
+        )
