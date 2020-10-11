@@ -58,7 +58,7 @@ def rfind_all_dependencies_files(logger, directory=None, file=None):
     return files
 
 
-def parse_to_payload(logger, file, include_dev=False):
+def parse_to_payload(logger, file, config):
     """
     Parses a requirements.txt type file or Pipefile.lock into a JSON payload.
     :param logger: A configured `OchronaFormatter` instance
@@ -67,11 +67,16 @@ def parse_to_payload(logger, file, include_dev=False):
     """
     dependencies = []
     if os.path.basename(file).lower() == PIPFILE_LOCK.lower():
-        dependencies = _parse_pipfile(file, include_dev)
+        dependencies = _parse_pipfile(file, config.include_dev)
     else:
         dependencies = _parse_requirements_file(file)
     logger.debug(f"Discovered dependencies: {dependencies}")
-    return json.dumps({"dependencies": dependencies})
+    if config.project_name is not None:
+        return json.dumps(
+            {"dependencies": dependencies, "project_name": config.project_name}
+        )
+    else:
+        return json.dumps({"dependencies": dependencies})
 
 
 def _parse_requirements_file(file):

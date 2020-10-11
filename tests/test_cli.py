@@ -1,4 +1,5 @@
 import os
+from unittest import mock
 import pytest
 
 from ochrona import cli
@@ -22,12 +23,10 @@ class TestCli:
     def test_cli_config_failure(self):
         runner = CliRunner()
         result = runner.invoke(cli.run)
-        assert result.exit_code == 0
         assert "Missing config value `api_key`" in result.output
         report_result = runner.invoke(
             cli.run, ["--api_key", "1234", "--report_type", "FAKE"]
         )
-        assert report_result.exit_code == 0
         assert "Unknown report type specified in FAKE" in report_result.output
 
     @pytest.mark.vcr()
@@ -134,3 +133,51 @@ class TestCli:
             ],
         )
         assert result.exit_code == -1
+
+    @mock.patch("ochrona.rest_client.OchronaAPIClient.analyze")
+    @mock.patch("ochrona.rest_client.OchronaAPIClient.update_alert")
+    def test_cli_do_alert_registration(self, alert, analyze):
+        analyze.return_value = {
+            "potential_vulnerabilities": [],
+            "confirmed_vulnerabilities": [],
+        }
+
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "--api_key",
+                "1234",
+                "--file",
+                f"{dir_path}/test_data/pass/requirements.txt",
+                "--project_name",
+                "test_project",
+                "--alert_config",
+                '{"alerting_addresses": "test@ohrona.dev", "alerting_rules": "not:boto3"}',
+            ],
+        )
+        analyze.assert_called_once()
+        alert.assert_called_once()
+
+    @mock.patch("ochrona.rest_client.OchronaAPIClient.analyze")
+    @mock.patch("ochrona.rest_client.OchronaAPIClient.update_alert")
+    def test_cli_no_alert_registration(self, alert, analyze):
+        analyze.return_value = {
+            "potential_vulnerabilities": [],
+            "confirmed_vulnerabilities": [],
+        }
+
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "--api_key",
+                "1234",
+                "--file",
+                f"{dir_path}/test_data/pass/requirements.txt",
+                "--project_name",
+                "test_project",
+            ],
+        )
+        analyze.assert_called_once()
+        alert.assert_not_called()

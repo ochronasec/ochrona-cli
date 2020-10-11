@@ -48,8 +48,21 @@ from ochrona.rest_client import OchronaAPIClient
     default=False,
     is_flag=True,
 )
+@click.option("--project_name", help="The name of your project.")
+@click.option("--alert_config", help="The Alert configuration for your project.")
 def run(
-    api_key, dir, file, debug, silent, report_type, output, exit, ignore, include_dev
+    api_key,
+    dir,
+    file,
+    debug,
+    silent,
+    report_type,
+    output,
+    exit,
+    ignore,
+    include_dev,
+    project_name,
+    alert_config,
 ):
     config = OchronaConfig(
         api_key=api_key,
@@ -62,6 +75,8 @@ def run(
         exit=exit,
         ignore=ignore,
         include_dev=include_dev,
+        project_name=project_name,
+        alert_config=alert_config,
     )
     log = OchronaLogger(config)
     client = OchronaAPIClient(log, config)
@@ -74,11 +89,10 @@ def run(
     try:
         reporter.report_collector(
             files,
-            [
-                client.analyze(parse_to_payload(log, file, config.include_dev))
-                for file in files
-            ],
+            [client.analyze(parse_to_payload(log, file, config)) for file in files],
         )
+        if config.alert_config is not None and config.project_name is not None:
+            client.update_alert(payload=config)
     except OchronaAPIException as ex:
         OchronaLogger.error(ex)
         sys.exit(-1)

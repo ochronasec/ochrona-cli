@@ -31,18 +31,20 @@ pipenv install <--dev> ochrona
 
 # Configuration
 ### via command line args
-| Arg                   | Description                                                        | Type | Example                              |
-|-----------------------|--------------------------------------------------------------------|------|--------------------------------------|
-| `--api_key`           | Ochrona API Key                                                    | str  | abc123                               |
-| `--dir`               | Directory to recursively search for dependencies files to scan [.] | path | /User/me/my_project                  |
-| `--file`              | Single dependency file to scan                                     | file | /User/me/my_project/requirements.txt |
-| `--debug`             | Enable debug logging [False]                                       | bool | True                                 |
-| `--silent`            | Silent mode [False]                                                | bool | True                                 |
-| `--report_type`       | The report type that's desired [BASIC]                             | str  | XML                                  |
-| `--output`            | Location for report output                                         | path | /User/me/my_project/logs             |
-| `--exit`              | Exit with Code 0 regardless of vulnerability findings. [False]     | bool | True                                 |
-| `--ignore`           | Ignore a CVE or package                                             | str  | requests                             |
-| `--include_dev`      | Include develop dependencies from Pipfile.lock [False]              | bool | True                                 |
+| Arg              | Description                                                               | Type | Example                                                                    |
+|------------------|---------------------------------------------------------------------------|------|----------------------------------------------------------------------------|
+| `--api_key`      | Ochrona API Key                                                           | str  | abc123                                                                     |
+| `--dir`          | Directory to recursively search for dependencies files to scan [.]        | path | /User/me/my_project                                                        |
+| `--file`         | Single dependency file to scan                                            | file | /User/me/my_project/requirements.txt                                       |
+| `--debug`        | Enable debug logging [False]                                              | bool | True                                                                       |
+| `--silent`       | Silent mode [False]                                                       | bool | True                                                                       |
+| `--report_type`  | The report type that's desired [BASIC]                                    | str  | XML                                                                        |
+| `--output`       | Location for report output                                                | path | /User/me/my_project/logs                                                   |
+| `--exit`         | Exit with Code 0 regardless of vulnerability findings. [False]            | bool | True                                                                       |
+| `--ignore`       | Ignore a CVE or package                                                   | str  | requests                                                                   |
+| `--include_dev`  | Include develop dependencies from Pipfile.lock [False]                    | bool | True                                                                       |
+| `--project_name` | The name of your project                                                  | str  | "My Example Project                                                        |
+| `--alert_config` | Alert configuration for use with DADA. This is expressed as a json string | str  | '{"alerting_addresses": "test@ohrona.dev", "alerting_rules": "not:boto3"}' |
 
 ### via environment variables
 | Variable Name         | Corresponding Arg |
@@ -63,6 +65,10 @@ Example:
 # report_location: .
 # ignore: requests
 # include_dev: false
+# project_name: my_test_project
+# alert_config:
+#   alerting_addresses: test@web.com
+#   alerting_rules: not:boto3
 ```
 
 # Usage Examples

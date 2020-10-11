@@ -19,6 +19,20 @@ class MockLogger:
         self._logged.append(msg)
 
 
+class MockConfig:
+
+    _include_dev = False
+    _project_name = ""
+
+    @property
+    def include_dev(self):
+        return self._include_dev
+
+    @property
+    def project_name(self):
+        return self._project_name
+
+
 class TestFileHandlerRfindAllDependenciesFiles:
     """
     Unit tests for file_handler:rfind_all_dependencies_files method.
@@ -57,8 +71,9 @@ class TestFileHandlerParseToPayload:
     """
 
     def test_parse_pipfile_lock(self):
+        conf = MockConfig()
         test_file = f"{dir_path}/test_data/pipfile/Pipfile.lock"
-        payload = loads(parse_to_payload(MockLogger(), test_file))
+        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "certifi==2019.9.11",
@@ -69,8 +84,12 @@ class TestFileHandlerParseToPayload:
         ]
 
     def test_parse_pipfile_lock_dev(self):
+        conf = MockConfig()
+        conf._include_dev = True
         test_file = f"{dir_path}/test_data/pipfile/Pipfile.lock"
-        payload = loads(parse_to_payload(MockLogger(), test_file, True))
+        payload = loads(
+            parse_to_payload(logger=MockLogger(), file=test_file, config=conf)
+        )
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "certifi==2019.9.11",
