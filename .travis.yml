@@ -19,6 +19,6 @@ script:
   - black --check ./ochrona
   - unset OCHRONA_API_URL
   - export OCHRONA_API_KEY=$TMP_OCHRONA_API_KEY
-  - ochrona --file requirements.txt --debug
+  - ochrona --file ./requirements.txt --debug
 after_success:
   - codecov
