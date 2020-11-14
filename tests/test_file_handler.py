@@ -51,8 +51,8 @@ class TestFileHandlerRfindAllDependenciesFiles:
     def test_recursive_pipfile(self):
         logger = MockLogger()
         files = rfind_all_dependencies_files(logger, f"{dir_path}/test_data", None)
-        assert len(files) == 4, "Expected to find three files"
-        assert len(logger._logged) == 4, "Expected three debug log messages"
+        assert len(files) == 5, "Expected to find three files"
+        assert len(logger._logged) == 5, "Expected three debug log messages"
 
     def test_no_files(self):
         logger = MockLogger()
@@ -120,4 +120,26 @@ class TestFileHandlerParseToPayload:
             "A==1.0",
             "B==1.1",
             "C==1.22.0"
+        ]
+
+    def test_parse_setup_py(self):
+        conf = MockConfig()
+        test_file = f"{dir_path}/test_data/setup/setup.py"
+        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            "A>=1.0.0",
+            "B==0.1.2",
+        ]
+
+    def test_parse_setup_py_dev(self):
+        conf = MockConfig()
+        conf._include_dev = True
+        test_file = f"{dir_path}/test_data/setup/setup.py"
+        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            "A>=1.0.0",
+            "B==0.1.2",
+            "C==2.3.1",
         ]

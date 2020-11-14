@@ -5,6 +5,7 @@
 Ochrona-cli
 :author: ascott
 """
+import ast
 import json
 import os
 
@@ -16,10 +17,12 @@ SUPPORTED_DEPENDENCY_FILE_PATTERNS = {
     "requirements_txt": "**/*requirements*.txt",
     "pipfile_lock": "**/*Pipfile.lock",
     "poetry_lock": "**/*poetry.lock",
+    "setup_py": "**/*setup.py",
 }
 
 PIPFILE_LOCK = "Pipfile.lock"
 POETRY_LOCK = "poetry.lock"
+SETUP_PY = "setup.py"
 
 try:
     from pathlib import Path
@@ -60,6 +63,11 @@ def rfind_all_dependencies_files(logger, directory=None, file=None):
             ):
                 logger.debug(f"Found matching poetry.lock file at {filename}")
                 files.append(filename)
+            for filename in Path(directory).glob(
+                SUPPORTED_DEPENDENCY_FILE_PATTERNS["setup_py"]
+            ):
+                logger.debug(f"Found matching setup.py file at {filename}")
+                files.append(filename)
 
     if not files:
         raise OchronaFileException("No dependencies files found")
@@ -79,6 +87,8 @@ def parse_to_payload(logger, file, config):
         dependencies = _parse_pipfile(file, config.include_dev)
     elif os.path.basename(file).lower() == POETRY_LOCK.lower():
         dependencies = _parse_poetry(file, config.include_dev)
+    elif os.path.basename(file).lower() == SETUP_PY.lower():
+        dependencies = _parse_setup_py(file, config.include_dev)
     else:
         dependencies = _parse_requirements_file(file)
     logger.debug(f"Discovered dependencies: {dependencies}")
@@ -147,3 +157,30 @@ def _parse_poetry(file, include_dev=False):
         raise OchronaFileException(f"OS error when parsing {file}") from ex
     except toml.decoder.TomlDecodeError as ex:
         raise OchronaFileException(f"Could not parse {file} - is TOML valid?") from ex
+
+
+def _parse_setup_py(file, include_dev=False):
+    """
+    Parses a setup.py into a list of requirements.
+
+    :param file: setup.py path
+    :return: list<str> list of dependencies ['dependency==semvar']
+    """
+    setup_func_names = {"setup", "setuptools.setup"}
+    try:
+        dependencies = []
+        with open(file) as setuppy:
+            tree = ast.parse(setuppy.read())
+            for body in tree.body:
+                if isinstance(body, ast.Expr):
+                    if body.value.func.id in setup_func_names:
+                        for kw in body.value.keywords:
+                            if kw.arg == "install_requires":
+                                dependencies += [arg.s for arg in kw.value.elts]
+                            elif kw.arg == "tests_require" and include_dev:
+                                dependencies += [arg.s for arg in kw.value.elts]
+        return dependencies
+    except OSError as ex:
+        raise OchronaFileException(f"OS error when parsing {file}") from ex
+    except AttributeError as ex:
+        raise OchronaFileException(f"AST error when parsing {file}") from ex

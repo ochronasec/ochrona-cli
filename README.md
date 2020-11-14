@@ -17,6 +17,7 @@ We care deeply about Developer Experience (dx), if you have any feedback or run 
 - `*requirements*.txt`
 - `Pipfile.lock`
 - `poetry.lock`
+- `setup.py`
 
 # Installation
 
