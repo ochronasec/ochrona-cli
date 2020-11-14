@@ -11,8 +11,8 @@ install:
   - "export OCHRONA_ALERT_API_URL=http://localhost:5000/alerts/project-alerts"
   - "export TMP_OCHRONA_API_KEY=$OCHRONA_API_KEY"
   - "unset OCHRONA_API_KEY"
-  - pip install pipenv
-  - pipenv install --dev
+  - pip install -r requirements.txt
+  - pip install -r requirements-dev.txt
 script:
   - pytest --cov=./
   - bandit ./ochrona -r -n 3 -lll
