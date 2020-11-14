@@ -99,3 +99,25 @@ class TestFileHandlerParseToPayload:
             "urllib3==1.25.6",
             "fake_package==1.13.2",
         ]
+
+    def test_parse_poetry_lock(self):
+        conf = MockConfig()
+        test_file = f"{dir_path}/test_data/poetry/poetry.lock"
+        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            "A==1.0",
+            "B==1.1",
+        ]
+
+    def test_parse_poetry_lock_dev(self):
+        conf = MockConfig()
+        conf._include_dev = True
+        test_file = f"{dir_path}/test_data/poetry/poetry.lock"
+        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            "A==1.0",
+            "B==1.1",
+            "C==1.22.0"
+        ]

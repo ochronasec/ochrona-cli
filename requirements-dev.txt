@@ -1,0 +1,7 @@
+black
+pytest
+bandit
+pytest-vcr
+pytest-cov
+codecov
+ochrona
