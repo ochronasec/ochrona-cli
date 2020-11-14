@@ -51,8 +51,8 @@ class TestFileHandlerRfindAllDependenciesFiles:
     def test_recursive_pipfile(self):
         logger = MockLogger()
         files = rfind_all_dependencies_files(logger, f"{dir_path}/test_data", None)
-        assert len(files) == 3, "Expected to find three files"
-        assert len(logger._logged) == 3, "Expected three debug log messages"
+        assert len(files) == 4, "Expected to find three files"
+        assert len(logger._logged) == 4, "Expected three debug log messages"
 
     def test_no_files(self):
         logger = MockLogger()
