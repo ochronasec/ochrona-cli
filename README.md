@@ -16,6 +16,8 @@ We care deeply about Developer Experience (dx), if you have any feedback or run 
 ### Supported file types
 - `*requirements*.txt`
 - `Pipfile.lock`
+- `poetry.lock`
+- `setup.py`
 
 # Installation
 
