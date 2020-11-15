@@ -74,7 +74,7 @@ Example:
 ```
 
 # Usage Examples
-### Full default mode
+### Full Default Mode
 ```
 $ ochrona 
 ```
@@ -84,6 +84,12 @@ format to stdout. The program will exit with an error exit code if any confirmed
 ### Standard error code with Junit XML reporting saved to file
 ```
 $ ochrona --exit --report_type XML --output ./output
+```
+
+### Safe Import Mode
+In this mode ochrona acts as a safe wrapper around standard pip installs to ensure that a package and it's dependencies are safe before installing. This action preemptively checks a package againt the Ochrona API and only imports if no vulnerabilities are found. It can be used with a base package (i.e. `requests`), or with a package pinned to an exact version (i.e. `requests==2.21.0`).
+```
+$ ochrona --install <package_name>
 ```
 
 # Reports

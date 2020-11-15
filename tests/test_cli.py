@@ -134,8 +134,8 @@ class TestCli:
         )
         assert result.exit_code == -1
 
-    @mock.patch("ochrona.rest_client.OchronaAPIClient.analyze")
-    @mock.patch("ochrona.rest_client.OchronaAPIClient.update_alert")
+    @mock.patch("ochrona.ochrona_rest_client.OchronaAPIClient.analyze")
+    @mock.patch("ochrona.ochrona_rest_client.OchronaAPIClient.update_alert")
     def test_cli_do_alert_registration(self, alert, analyze):
         analyze.return_value = {
             "potential_vulnerabilities": [],
@@ -159,8 +159,8 @@ class TestCli:
         analyze.assert_called_once()
         alert.assert_called_once()
 
-    @mock.patch("ochrona.rest_client.OchronaAPIClient.analyze")
-    @mock.patch("ochrona.rest_client.OchronaAPIClient.update_alert")
+    @mock.patch("ochrona.ochrona_rest_client.OchronaAPIClient.analyze")
+    @mock.patch("ochrona.ochrona_rest_client.OchronaAPIClient.update_alert")
     def test_cli_no_alert_registration(self, alert, analyze):
         analyze.return_value = {
             "potential_vulnerabilities": [],
@@ -181,3 +181,27 @@ class TestCli:
         )
         analyze.assert_called_once()
         alert.assert_not_called()
+
+    @mock.patch("ochrona.import_wrapper.SafeImport._check_package")
+    @mock.patch("ochrona.import_wrapper.SafeImport._install")
+    def test_cli_install_vuln(self, install, check):
+        check.return_value = False
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            ["--api_key", "1234", "--install", "A==1.2.3"],
+        )
+        check.assert_called_once()
+        install.assert_not_called()
+
+    @mock.patch("ochrona.import_wrapper.SafeImport._check_package")
+    @mock.patch("ochrona.import_wrapper.SafeImport._install")
+    def test_cli_install_safe(self, install, check):
+        check.return_value = True
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            ["--api_key", "1234", "--install", "A==1.2.3"],
+        )
+        check.assert_called_once()
+        install.assert_called_once()

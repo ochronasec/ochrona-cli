@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from ochrona.rest_client import OchronaAPIClient
+from ochrona.ochrona_rest_client import OchronaAPIClient
 from ochrona.exceptions import OchronaAPIException
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
