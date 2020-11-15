@@ -30,7 +30,6 @@ class OchronaAPIClient:
         response = requests.request(
             "POST", self._url, headers=self._generate_headers(), data=payload
         )
-
         if response.status_code > 300:
             self._error_response_handler(response.status_code)
         else:

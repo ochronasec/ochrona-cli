@@ -17,3 +17,7 @@ class OchronaAPIException(OchronaException):
 
 class OchronaFileException(OchronaException):
     pass
+
+
+class OchronaImportException(OchronaException):
+    pass

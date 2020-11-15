@@ -34,7 +34,10 @@ class MockConfig:
 
 class TestOchronaReporter:
     def test_generate_empty_json_stdout(self, capsys):
-        conf = MockConfig("JSON", None,)
+        conf = MockConfig(
+            "JSON",
+            None,
+        )
         reporter = OchronaReporter(None, conf)
         reporter.generate_report("fake", {}, 0, 1)
         captured = capsys.readouterr()

@@ -12,9 +12,10 @@ import click
 from ochrona.config import OchronaConfig
 from ochrona.exceptions import OchronaException, OchronaAPIException
 from ochrona.file_handler import rfind_all_dependencies_files, parse_to_payload
+from ochrona.import_wrapper import SafeImport
 from ochrona.logger import OchronaLogger
 from ochrona.reporter import OchronaReporter
-from ochrona.rest_client import OchronaAPIClient
+from ochrona.ochrona_rest_client import OchronaAPIClient
 
 
 @click.command()
@@ -50,6 +51,7 @@ from ochrona.rest_client import OchronaAPIClient
 )
 @click.option("--project_name", help="The name of your project.")
 @click.option("--alert_config", help="The Alert configuration for your project.")
+@click.option("--install", help="A safe wrapper for pip --install")
 def run(
     api_key,
     dir,
@@ -63,6 +65,7 @@ def run(
     include_dev,
     project_name,
     alert_config,
+    install,
 ):
     config = OchronaConfig(
         api_key=api_key,
@@ -78,24 +81,34 @@ def run(
         project_name=project_name,
         alert_config=alert_config,
     )
-    log = OchronaLogger(config)
-    client = OchronaAPIClient(log, config)
-    reporter = OchronaReporter(log, config)
-    if not config.silent:
-        log.header()
+    log = OchronaLogger(config=config)
+    client = OchronaAPIClient(logger=log, config=config)
+    if install:
+        # Install mode
+        try:
+            importer = SafeImport(logger=log, client=client)
+            importer.install(package=install)
+        except OchronaException as ex:
+            OchronaLogger.error(ex)
+            sys.exit(1)
+    else:
+        # Regular operational check
+        reporter = OchronaReporter(log, config)
+        if not config.silent:
+            log.header()
 
-    files = rfind_all_dependencies_files(log, config.dir, config.file)
+        files = rfind_all_dependencies_files(log, config.dir, config.file)
 
-    try:
-        reporter.report_collector(
-            files,
-            [client.analyze(parse_to_payload(log, file, config)) for file in files],
-        )
-        if config.alert_config is not None and config.project_name is not None:
-            client.update_alert(payload=config)
-    except OchronaAPIException as ex:
-        OchronaLogger.error(ex)
-        sys.exit(-1)
+        try:
+            reporter.report_collector(
+                files,
+                [client.analyze(parse_to_payload(log, file, config)) for file in files],
+            )
+            if config.alert_config is not None and config.project_name is not None:
+                client.update_alert(payload=config)
+        except OchronaAPIException as ex:
+            OchronaLogger.error(ex)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
