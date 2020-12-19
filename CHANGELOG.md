@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.0.9
+- Added support for safe pip -r style installs for requirements.txt style files
+- Prevent using requirements.txt lines that are not direct dependencies
+- Added Package license to FULL output report
+
 ## 0.0.8
 - Added support for safe pip installs by doing a pre-install check.
 
