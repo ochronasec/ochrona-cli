@@ -11,18 +11,15 @@ import os
 
 import toml
 
+from ochrona.const import (
+    PIPFILE_LOCK,
+    POETRY_LOCK,
+    SETUP_PY,
+    SUPPORTED_DEPENDENCY_FILE_PATTERNS,
+    INVALID_REQUIREMENTS_LINES,
+)
 from ochrona.exceptions import OchronaFileException
 
-SUPPORTED_DEPENDENCY_FILE_PATTERNS = {
-    "requirements_txt": "**/*requirements*.txt",
-    "pipfile_lock": "**/*Pipfile.lock",
-    "poetry_lock": "**/*poetry.lock",
-    "setup_py": "**/*setup.py",
-}
-
-PIPFILE_LOCK = "Pipfile.lock"
-POETRY_LOCK = "poetry.lock"
-SETUP_PY = "setup.py"
 
 try:
     from pathlib import Path
@@ -109,7 +106,12 @@ def _parse_requirements_file(file):
     """
     try:
         with open(file) as file:
-            return [line.rstrip("\n") for line in file]
+            deps = [line.rstrip("\n") for line in file]
+            return [
+                dep
+                for dep in deps
+                if not any([dep.startswith(s) for s in INVALID_REQUIREMENTS_LINES])
+            ]
     except OSError as ex:
         raise OchronaFileException(f"OS error when parsing {file}") from ex
 

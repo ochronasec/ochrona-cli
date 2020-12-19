@@ -256,6 +256,8 @@ class FullReport(BaseReport):
             )
         )
         print(BaseReport.REPORT_ROW_BREAK)
+        print(f"{BaseReport.INFO}| License -- {finding['license']} {BaseReport.ENDC}")
+        print(BaseReport.REPORT_ROW_BREAK)
         affected_versions = ", ".join(
             [
                 f"{f['operator']}{f['version_value']}"

@@ -6,14 +6,13 @@ import pytest
 from ochrona.import_wrapper import SafeImport
 from ochrona.exceptions import OchronaImportException
 
-dir_path = os.path.dirname(os.path.abspath(__file__))
-
 
 class MockLogger:
 
-    _info = []
-    _warn = []
-    _error = []
+    def __init__(self):
+        self._info = []
+        self._warn = []
+        self._error = []
 
     def info(self, msg):
         self._info.append(msg)
@@ -132,3 +131,72 @@ class TestImportWrapper:
                 "An invalid specifier was found in A, either specify the package without a version or pin to a single version using `name==version`."
                 in ex
             )
+
+    @mock.patch("ochrona.import_wrapper.SafeImport._install")
+    @mock.patch("ochrona.import_wrapper.SafeImport._install_file")
+    def test_install_file(self, install_file, install):
+        install_file.return_value = True
+        logger = MockLogger()
+        client = MockClient(
+            {
+                "flat_list": [
+                    "requests==2.22.0",
+                    "Click==7.0",
+                    "Flask==1.1.1",
+                    "itsdangerous==1.1.0",
+                    "Jinja2==2.10.1",
+                    "MarkupSafe==1.1.1",
+                    "Werkzeug==0.15.4",
+                ],
+                "confirmed_vulnerabilities": [],
+            }
+        )
+        importer = SafeImport(logger, client)
+        importer.install("./tests/test_data/pass/requirements.txt")
+
+        install_file.assert_called_once()
+        install.assert_not_called()
+        assert len(client._analyzed) == 1
+        assert client._analyzed[0] == '{"dependencies": ["requests==2.22.0", "Click==7.0", "Flask==1.1.1", "itsdangerous==1.1.0", "Jinja2==2.10.1", "MarkupSafe==1.1.1", "Werkzeug==0.15.4"]}'
+        assert (
+            logger._info[0]
+            == "A full list of packages to be installed, included dependencies: requests==2.22.0, Click==7.0, Flask==1.1.1, itsdangerous==1.1.0, Jinja2==2.10.1, MarkupSafe==1.1.1, Werkzeug==0.15.4"
+        )
+
+    @mock.patch("ochrona.import_wrapper.SafeImport._install")
+    @mock.patch("ochrona.import_wrapper.SafeImport._install_file")
+    def test_install_file_fail(self, install_file, install):
+        install_file.return_value = True
+        logger = MockLogger()
+        client = MockClient(
+            {
+                "flat_list": [
+                    "requests==2.19.0",
+                    "Click==7.0",
+                    "Flask==1.1.1",
+                    "itsdangerous==1.1.0",
+                    "Jinja2==2.10.1",
+                    "MarkupSafe==1.1.1",
+                    "Werkzeug==0.15.4",
+                ],
+                "confirmed_vulnerabilities": [
+                    {
+                        "name": "requests",
+                        "cve_id": "FAKE-123",
+                        "description": "A fake vulnerability",
+                        "ochrona_severity_score": 5.0,
+                    }
+                ],
+            }
+        )
+        importer = SafeImport(logger, client)
+        importer.install("./tests/test_data/fail/requirements.txt")
+
+        install_file.assert_not_called()
+        install.assert_not_called()
+        assert len(client._analyzed) == 1
+        assert client._analyzed[0] == '{"dependencies": ["requests==2.19.0", "Click==7.0", "Flask==1.1.1", "itsdangerous==1.1.0", "Jinja2==2.10.1", "MarkupSafe==1.1.1", "Werkzeug==0.15.4"]}'
+        assert (
+            logger._info[0]
+            == "A full list of packages that would be installed, included dependencies: requests==2.19.0, Click==7.0, Flask==1.1.1, itsdangerous==1.1.0, Jinja2==2.10.1, MarkupSafe==1.1.1, Werkzeug==0.15.4"
+        )

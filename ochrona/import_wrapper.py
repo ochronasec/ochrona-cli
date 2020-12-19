@@ -1,12 +1,12 @@
 import json
+import os
 import subprocess
 import sys
 
+from ochrona.const import INVALID_SPECIFIERS, EQUALS_SPECIFIER
 from ochrona.exceptions import OchronaImportException
+from ochrona.file_handler import _parse_requirements_file
 from ochrona.pypi_rest_client import PYPIAPIClient
-
-INVALID_SPECIFIERS = {"<", ">", "!", "~"}
-EQUALS_SPECIFIER = "=="
 
 
 class SafeImport:
@@ -22,12 +22,27 @@ class SafeImport:
         :param package: a package string with an optional version specified
         :return: bool
         """
-        if self._check_package(package):
-            self._install(package=package)
+        if os.path.isfile(package):
+            packages = _parse_requirements_file(package)
+            if self._check_package(packages):
+                self.logger.info(
+                    f"No vulnerabilities found for {', '.join(packages)}, install proceeding."
+                )
+                self._install_file(package)
+            else:
+                self.logger.error(
+                    f"Import of {', '.join(packages)} aborted due to detected vulnerabilities."
+                )
         else:
-            self.logger.error(
-                f"Import of {package} aborted due to detected vulnerabilities."
-            )
+            if self._check_package(package):
+                self.logger.info(
+                    f"No vulnerabilities found for {package}, install proceeding."
+                )
+                self._install(package=package)
+            else:
+                self.logger.error(
+                    f"Import of {package} aborted due to detected vulnerabilities."
+                )
 
     def _check_package(self, package):
         """
@@ -36,16 +51,22 @@ class SafeImport:
         :param package: a package string with an optional version specified
         :return: bool
         """
-        if any(spec in package for spec in INVALID_SPECIFIERS):
-            raise OchronaImportException(
-                f"An invalid specifier was found in {package}, either specify the package without a version or pin to a single version using `name==version`."
+        vuln_results = ()
+        if isinstance(package, str):
+            if any(spec in package for spec in INVALID_SPECIFIERS):
+                raise OchronaImportException(
+                    f"An invalid specifier was found in {package}, either specify the package without a version or pin to a single version using `name==version`."
+                )
+            parts = package.split(EQUALS_SPECIFIER)
+            if len(parts) == 1:
+                package = self._get_most_recent_version(package=package)
+            vuln_results = self._parse_ochrona_results(
+                self.ochrona.analyze(json.dumps({"dependencies": [package]}))
             )
-        parts = package.split(EQUALS_SPECIFIER)
-        if len(parts) == 1:
-            package = self._get_most_recent_version(package=package)
-        vuln_results = self._parse_ochrona_results(
-            self.ochrona.analyze(json.dumps({"dependencies": [package]}))
-        )
+        elif isinstance(package, list):
+            vuln_results = self._parse_ochrona_results(
+                self.ochrona.analyze(json.dumps({"dependencies": package}))
+            )
         if len(vuln_results[1]) > 0:
             self.logger.info(
                 f"A full list of packages that would be installed, included dependencies: {', '.join(vuln_results[0])}"
@@ -80,7 +101,10 @@ class SafeImport:
         :param results: API results
         :return: tuple<list, list> - a list of discovered vulnerabilities, a list of dependencies
         """
-        return (results.get("flat_list"), results.get("confirmed_vulnerabilities"))
+        return (
+            results.get("flat_list"),
+            results.get("confirmed_vulnerabilities") or [],
+        )
 
     def _install(self, package):
         """
@@ -91,6 +115,21 @@ class SafeImport:
         """
         try:
             subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+            return True
+        except subprocess.CalledProcessError as ex:
+            raise OchronaImportException("Error during pip install") from ex
+
+    def _install_file(self, file_path):
+        """
+        Call pip to install a requirements.txt style
+
+        :param file_path: path to requirements file
+        :return: bool
+        """
+        try:
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", "-r", file_path]
+            )
             return True
         except subprocess.CalledProcessError as ex:
             raise OchronaImportException("Error during pip install") from ex

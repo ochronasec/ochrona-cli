@@ -1,4 +1,4 @@
-[![ochrona](https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_logo.png)](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_logo.png" width="500"/></p>](https://ochrona.dev)
 
 [![PyPI](https://img.shields.io/pypi/v/ochrona)](https://pypi.org/project/ochrona/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -87,193 +87,22 @@ $ ochrona --exit --report_type XML --output ./output
 ```
 
 ### Safe Import Mode
-In this mode ochrona acts as a safe wrapper around standard pip installs to ensure that a package and it's dependencies are safe before installing. This action preemptively checks a package againt the Ochrona API and only imports if no vulnerabilities are found. It can be used with a base package (i.e. `requests`), or with a package pinned to an exact version (i.e. `requests==2.21.0`).
+In this mode ochrona acts as a safe wrapper around standard pip installs to ensure that a package and it's dependencies are safe before installing. This action preemptively checks a package against the Ochrona API and only imports if no vulnerabilities are found. It can be used with a base package (i.e. `requests`), or with a package pinned to an exact version (i.e. `requests==2.21.0`). It also supports importing a `requirements.txt` style, the pip equivalent of `pip install -r <file>`. 
 ```
-$ ochrona --install <package_name>
+$ ochrona --install <package_name>|<requirements.txt>
 ```
 
 # Reports
+Ochrona supports several built in output options include a `BASIC` and `FULL` plaintext reports, as well as a Junit style `XML` report or a `JSON` style report for incorporating with other tools.
 
 ### Basic
-```
-Report 1 of 1
-╞====================================================================================================╡
-| Source: ./requirements.txt
-╞====================================================================================================╡
-| ⚠️  Vulnerability Detected!
-╞----------------------------------------------------------------------------------------------------╡
-| Package -- requests
-╞----------------------------------------------------------------------------------------------------╡
-| Installed Version -- requests==2.19.0
-╞----------------------------------------------------------------------------------------------------╡
-| CVE -- CVE-2018-18074
-╞----------------------------------------------------------------------------------------------------╡
-| Severity -- 9.8 
-╞----------------------------------------------------------------------------------------------------╡
-| Affected Versions --  =0.0.1, =0.2.0, =0.2.1, =0.2.2, =0.2.3, =0.2.4, =0.3.0, =0.3.1, =0.3.2,
-=0.3.3, =0.3.4, =0.4.0, =0.4.1, =0.5.0, =0.5.1, =0.6.0, =0.6.1, =0.6.2, =0.6.3, =0.6.4, =0.6.5,
-=0.6.6, =0.7.0, =0.7.1, =0.7.2, =0.7.3, =0.7.4, =0.7.5, =0.7.6, =0.8.0, =0.8.1, =0.8.2, =0.8.3,
-=0.8.4, =0.8.5, =0.8.6, =0.8.7, =0.8.8, =0.8.9, =0.9.0, =0.9.1, =0.9.2, =0.9.3, =0.10.0, =0.10.1,
-=0.10.2, =0.10.3, =0.10.4, =0.10.5, =0.10.6, =0.10.7, =0.10.8, =0.11.0, =0.11.1, =0.11.2, =0.12.0,
-=0.12.1, =0.13.0, =0.13.1, =0.13.2, =0.13.3, =0.13.4, =0.13.5, =0.13.6, =0.13.7, =0.13.8, =0.13.9,
-=0.14.0, =0.14.1, =0.14.2, =1.0.0, =1.0.1, =1.0.2, =1.0.3, =1.0.4, =1.1.0, =1.2.0, =1.2.1, =1.2.2,
-=1.2.3, =2.0, =2.0.0, =2.0.1, =2.1.0, =2.2.0, =2.2.1, =2.3.0, =2.4.0, =2.4.1, =2.4.2, =2.4.3,
-=2.5.0, =2.5.1, =2.5.2, =2.5.3, =2.6.0, =2.6.1, =2.6.2, =2.7.0, =2.8.0, =2.8.1, =2.9.0, =2.9.1,
-=2.9.2, =2.10.0, =2.11.0, =2.11.1, =2.12.0, =2.12.1, =2.12.2, =2.12.3, =2.12.4, =2.12.5, =2.13.0,
-=2.14.0, =2.14.1, =2.14.2, =2.15.0, =2.15.1, =2.16.0, =2.16.1, =2.16.2, =2.16.3, =2.16.4, =2.16.5,
-=2.17.0, =2.17.1, =2.17.2, =2.17.3, =2.18.0, =2.18.1, =2.18.2, =2.18.3, =2.18.4, =2.19.0,
-=2.19.1
-╞----------------------------------------------------------------------------------------------------╡
-╞====================================================================================================╡
-
-```
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_basic.png" width="500"/></p>](https://ochrona.dev)
 
 ### Full
-```
-Report 1 of 1
-╞====================================================================================================╡
-| Source: ./tests/test_data/fail/requirements.txt
-╞====================================================================================================╡
-| ⚠️  Vulnerability Detected!
-╞----------------------------------------------------------------------------------------------------╡
-| Package -- requests
-╞----------------------------------------------------------------------------------------------------╡
-| Installed Version -- requests==2.19.0
-╞----------------------------------------------------------------------------------------------------╡
-| Reason -- Flagged as a confirmed vulnerability because version was an exact match for
-dependency: requests
-╞----------------------------------------------------------------------------------------------------╡
-| CVE -- CVE-2018-18074
-╞----------------------------------------------------------------------------------------------------╡
-| Vulnerability Publish Date -- 2018-10-09T17:29Z
-╞----------------------------------------------------------------------------------------------------╡
-| Severity -- 9.8 
-╞----------------------------------------------------------------------------------------------------╡
-| Description -- The Requests package before 2.20.0 for Python sends an HTTP Authorization
-header to an http URI upon receiving a same-hostname https-to-http redirect, which makes it easier
-for remote attackers to discover credentials by sniffing the network.
-╞----------------------------------------------------------------------------------------------------╡
-| Affected Version(s) --  =0.0.1, =0.2.0, =0.2.1, =0.2.2, =0.2.3, =0.2.4, =0.3.0, =0.3.1,
-=0.3.2, =0.3.3, =0.3.4, =0.4.0, =0.4.1, =0.5.0, =0.5.1, =0.6.0, =0.6.1, =0.6.2, =0.6.3, =0.6.4,
-=0.6.5, =0.6.6, =0.7.0, =0.7.1, =0.7.2, =0.7.3, =0.7.4, =0.7.5, =0.7.6, =0.8.0, =0.8.1, =0.8.2,
-=0.8.3, =0.8.4, =0.8.5, =0.8.6, =0.8.7, =0.8.8, =0.8.9, =0.9.0, =0.9.1, =0.9.2, =0.9.3, =0.10.0,
-=0.10.1, =0.10.2, =0.10.3, =0.10.4, =0.10.5, =0.10.6, =0.10.7, =0.10.8, =0.11.0, =0.11.1, =0.11.2,
-=0.12.0, =0.12.1, =0.13.0, =0.13.1, =0.13.2, =0.13.3, =0.13.4, =0.13.5, =0.13.6, =0.13.7, =0.13.8,
-=0.13.9, =0.14.0, =0.14.1, =0.14.2, =1.0.0, =1.0.1, =1.0.2, =1.0.3, =1.0.4, =1.1.0, =1.2.0, =1.2.1,
-=1.2.2, =1.2.3, =2.0, =2.0.0, =2.0.1, =2.1.0, =2.2.0, =2.2.1, =2.3.0, =2.4.0, =2.4.1, =2.4.2,
-=2.4.3, =2.5.0, =2.5.1, =2.5.2, =2.5.3, =2.6.0, =2.6.1, =2.6.2, =2.7.0, =2.8.0, =2.8.1, =2.9.0,
-=2.9.1, =2.9.2, =2.10.0, =2.11.0, =2.11.1, =2.12.0, =2.12.1, =2.12.2, =2.12.3, =2.12.4, =2.12.5,
-=2.13.0, =2.14.0, =2.14.1, =2.14.2, =2.15.0, =2.15.1, =2.16.0, =2.16.1, =2.16.2, =2.16.3, =2.16.4,
-=2.16.5, =2.17.0, =2.17.1, =2.17.2, =2.17.3, =2.18.0, =2.18.1, =2.18.2, =2.18.3, =2.18.4, =2.19.0,
-=2.19.1
-╞----------------------------------------------------------------------------------------------------╡
-| References -- 
-        http://docs.python-requests.org/en/master/community/updates/#release-and-version-history
-        http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00024.html
-        https://access.redhat.com/errata/RHSA-2019:2035
-        https://bugs.debian.org/910766
-        https://github.com/requests/requests/commit/c45d7c49ea75133e52ab22a8e9e13173938e36ff
-        https://github.com/requests/requests/issues/4716
-        https://github.com/requests/requests/pull/4718
-        https://usn.ubuntu.com/3790-1/
-        https://usn.ubuntu.com/3790-2/ 
-╞====================================================================================================╡
-╞====================================================================================================╡
-```
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_full.png" width="500"/></p>](https://ochrona.dev)
 
 ### XML (Junit)
-```
-<?xml version="1.0" ?>
-<testsuites>
-   <testsuite tests="84">
-      <properties>
-         <property name="source" value="./tests/test_data/fail/requirements.txt"/>
-         <property name="timestamp" value="2019-10-18T15:53:57.145247"/>
-      </properties>
-      <testcase classname="ochronaDependencyVulnCheck" name="requests==2.19.0">
-         <failure type="confirmed_vulnerability">The Requests package before 2.20.0 for Python sends an HTTP Authorization header to an http URI upon receiving a same-hostname https-to-http redirect, which makes it easier for remote attackers to discover credentials by sniffing the network.</failure>
-      </testcase>
-      <testcase classname="ochronaDependencyVulnCheck" name="Click==7.0"/>
-      <testcase classname="ochronaDependencyVulnCheck" name="Flask==1.1.1"/>
-      <testcase classname="ochronaDependencyVulnCheck" name="itsdangerous==1.1.0"/>
-      <testcase classname="ochronaDependencyVulnCheck" name="Jinja2==2.10.1"/>
-      <testcase classname="ochronaDependencyVulnCheck" name="MarkupSafe==1.1.1"/>
-      <testcase classname="ochronaDependencyVulnCheck" name="Werkzeug==0.15.4"/>
-      <testcase classname="ochronaDependencyVulnCheck" name="coverage"/>
-      ...
-      <testcase classname="ochronaDependencyVulnCheck" name="python-dotenv"/>
-   </testsuite>
-</testsuites>
-```
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_xml.png" width="500"/></p>](https://ochrona.dev)
 
 ### JSON
-```
-{
-    "meta": {
-        "source": "./tests/test_data/fail/requirements.txt",
-        "timestamp": "2019-10-18T16:04:45.312481"
-    },
-    "findings": [
-        {
-            "owner": "python-requests",
-            "repo_url": "http://python-requests.org",
-            "ochrona_id": "595ace88-3240-468b-a2a3-331e2439e659",
-            "references": [
-                "http://docs.python-requests.org/en/master/community/updates/#release-and-version-history",
-                "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00024.html",
-                "https://access.redhat.com/errata/RHSA-2019:2035",
-                "https://bugs.debian.org/910766",
-                "https://github.com/requests/requests/commit/c45d7c49ea75133e52ab22a8e9e13173938e36ff",
-                "https://github.com/requests/requests/issues/4716",
-                "https://github.com/requests/requests/pull/4718",
-                "https://usn.ubuntu.com/3790-1/",
-                "https://usn.ubuntu.com/3790-2/"
-            ],
-            "cwe_id": "CWE-255",
-            "impact": {
-                "a": "HIGH",
-                "ac": "LOW",
-                "pr": "NONE",
-                "c": "HIGH",
-                "vector_string": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-                "i": "HIGH",
-                "impact_score": "5.9",
-                "cvss3_severity": "CRITICAL",
-                "cvss2_severity": "MEDIUM",
-                "s": "UNCHANGED",
-                "ui": "NONE",
-                "cvss2_score": "5.0",
-                "av": "NETWORK",
-                "exploitability_score": "3.9",
-                "cvss3_score": "9.8"
-            },
-            "description": "The Requests package before 2.20.0 for Python sends an HTTP Authorization header to an http URI upon receiving a same-hostname https-to-http redirect, which makes it easier for remote attackers to discover credentials by sniffing the network.",
-            "language": "python",
-            "ochrona_severity_score": "9.8",
-            "repository_summary": "Python HTTP for Humans.",
-            "license": "Apache 2.0",
-            "latest_version": "2.22.0",
-            "cve_id": "CVE-2018-18074",
-            "affected_versions": [
-                {
-                    "version_value": "0.0.1",
-                    "operator": "="
-                },
-                {
-                    "version_value": "0.2.0",
-                    "operator": "="
-                },
-                ...
-                {
-                    "version_value": "2.19.1",
-                    "operator": "="
-                }
-            ],
-            "name": "requests",
-            "publish_date": "2018-10-09T17:29Z",
-            "found_version": "requests==2.19.0",
-            "reason": "Flagged as a confirmed vulnerability because version was an exact match for dependency: requests"
-        }
-    ]
-}
-```
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_json.png" width="500"/></p>](https://ochrona.dev)

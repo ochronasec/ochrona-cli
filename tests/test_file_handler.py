@@ -139,3 +139,18 @@ class TestFileHandlerParseToPayload:
             "B==0.1.2",
             "C==2.3.1",
         ]
+
+    def test_parse_requirements_txt(self):
+        conf = MockConfig()
+        test_file = f"{dir_path}/test_data/pass/requirements.txt"
+        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            "requests==2.22.0",
+            "Click==7.0",
+            "Flask==1.1.1",
+            "itsdangerous==1.1.0",
+            "Jinja2==2.10.1",
+            "MarkupSafe==1.1.1",
+            "Werkzeug==0.15.4",
+        ]
