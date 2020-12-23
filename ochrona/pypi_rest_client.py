@@ -1,11 +1,19 @@
+# -*- coding: utf-8 -*-
+"""
+Ochrona-cli
+:author: ascott
+"""
+
 import requests
+
+from ochrona.logger import OchronaLogger
 
 
 class PYPIAPIClient:
-    def __init__(self, logger):
+    def __init__(self, logger: OchronaLogger):
         self.logger = logger
 
-    def latest_version(self, package):
+    def latest_version(self, package: str) -> str:
         """
         Calls pypi to fetch the latest version of a package.
 

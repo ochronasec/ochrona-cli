@@ -1,21 +1,30 @@
+# -*- coding: utf-8 -*-
+"""
+Ochrona-cli
+:author: ascott
+"""
+
 import json
 import os
 import subprocess
 import sys
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ochrona.const import INVALID_SPECIFIERS, EQUALS_SPECIFIER
 from ochrona.exceptions import OchronaImportException
 from ochrona.file_handler import _parse_requirements_file
+from ochrona.logger import OchronaLogger
 from ochrona.pypi_rest_client import PYPIAPIClient
+from ochrona.ochrona_rest_client import OchronaAPIClient
 
 
 class SafeImport:
-    def __init__(self, logger, client):
+    def __init__(self, logger: OchronaLogger, client: OchronaAPIClient):
         self.logger = logger
         self.ochrona = client
         self.pypi = PYPIAPIClient(logger=logger)
 
-    def install(self, package):
+    def install(self, package: str):
         """
         Calls the analysis API endpoint with a package and if it's safe, imports via pip.
 
@@ -44,14 +53,14 @@ class SafeImport:
                     f"Import of {package} aborted due to detected vulnerabilities."
                 )
 
-    def _check_package(self, package):
+    def _check_package(self, package: Union[str, list]) -> bool:
         """
         Calls the analysis API endpoint with a package to see if a package is safe.
 
         :param package: a package string with an optional version specified
         :return: bool
         """
-        vuln_results = ()
+        vuln_results: Tuple[Union[Any, List[Any]], Union[Any, List[Any]]] = ([], [])
         if isinstance(package, str):
             if any(spec in package for spec in INVALID_SPECIFIERS):
                 raise OchronaImportException(
@@ -80,7 +89,7 @@ class SafeImport:
         )
         return True
 
-    def _get_most_recent_version(self, package):
+    def _get_most_recent_version(self, package: str) -> str:
         """
         If a package does not have a version specified we will assume that the latest version
         should be used.
@@ -95,18 +104,20 @@ class SafeImport:
             self.logger.warn("Unable to reach Pypi to confirm latest version")
             return package
 
-    def _parse_ochrona_results(self, results):
+    def _parse_ochrona_results(
+        self, results: Dict[str, Any]
+    ) -> Tuple[Union[Any, List[Any]], Union[Any, List[Any]]]:
         """
         Parses Ochrona API results and outputs information regarding any confirmed vulnerabilities.
         :param results: API results
         :return: tuple<list, list> - a list of discovered vulnerabilities, a list of dependencies
         """
         return (
-            results.get("flat_list"),
+            results.get("flat_list") or [],
             results.get("confirmed_vulnerabilities") or [],
         )
 
-    def _install(self, package):
+    def _install(self, package: str) -> bool:
         """
         Call pip to install a package
 
@@ -119,7 +130,7 @@ class SafeImport:
         except subprocess.CalledProcessError as ex:
             raise OchronaImportException("Error during pip install") from ex
 
-    def _install_file(self, file_path):
+    def _install_file(self, file_path: str) -> bool:
         """
         Call pip to install a requirements.txt style
 
@@ -134,7 +145,7 @@ class SafeImport:
         except subprocess.CalledProcessError as ex:
             raise OchronaImportException("Error during pip install") from ex
 
-    def _format_vulnerability(self, vulnerability):
+    def _format_vulnerability(self, vulnerability: Dict[str, Any]) -> str:
         """
         Formats a vulnerability to a friendly output
 

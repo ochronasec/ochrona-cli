@@ -5,3 +5,4 @@ pytest-vcr
 pytest-cov
 codecov
 ochrona
+mypy

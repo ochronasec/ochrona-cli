@@ -1,10 +1,9 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Ochrona-cli
 :author: ascott
 """
+
 from ochrona import __version__
 
 
@@ -55,7 +54,7 @@ class OchronaLogger:
             print(f"{OchronaLogger.ERROR}[!] {val}{OchronaLogger.ENDC}")
 
     @staticmethod
-    def error(val):
+    def static_error(val):
         print(f"{OchronaLogger.ERROR}[!] {val}{OchronaLogger.ENDC}")
 
     @staticmethod

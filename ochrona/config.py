@@ -10,6 +10,7 @@ import os
 import re
 import sys
 import yaml
+from typing import List, Optional
 
 
 class OchronaConfig:
@@ -17,28 +18,28 @@ class OchronaConfig:
     Config for running ochrona cli.
     """
 
-    _api_key = None
-    _debug = False
-    _silent = False
-    _dir = None
-    _file = None
-    _python_version = None
-    _report_type = None
-    _report_location = None
-    _api_url = None
-    _alert_api_url = None
-    _exit = None
-    _ignore = None
-    _include_dev = None
+    _api_key: Optional[str] = None
+    _debug: bool = False
+    _silent: bool = False
+    _dir: Optional[str] = None
+    _file: Optional[str] = None
+    _python_version: Optional[str] = None
+    _report_type: Optional[str] = None
+    _report_location: Optional[str] = None
+    _api_url: Optional[str] = None
+    _alert_api_url: Optional[str] = None
+    _exit: bool = False
+    _ignore: Optional[str] = None
+    _include_dev: bool = False
 
-    _project_name = None
-    _alert_config = None
+    _project_name: Optional[str] = None
+    _alert_config: Optional[str] = None
 
-    REPORT_OPTIONS = ["BASIC", "FULL", "JSON", "XML"]
-    DEFAULT_SL_API_URL = "https://api.ochrona.dev/python/analyze"
-    DEFAULT_ALERT_API_URL = "https://api.ochrona.dev/alerts/project-alerts"
+    REPORT_OPTIONS: List[str] = ["BASIC", "FULL", "JSON", "XML"]
+    DEFAULT_SL_API_URL: str = "https://api.ochrona.dev/python/analyze"
+    DEFAULT_ALERT_API_URL: str = "https://api.ochrona.dev/alerts/project-alerts"
 
-    ALERT_ADDRESS_PATTERN = r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$"
+    ALERT_ADDRESS_PATTERN: str = r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$"
 
     def __init__(self, **kwargs):
         self.get_config(**kwargs)
@@ -73,7 +74,7 @@ class OchronaConfig:
             self._report_location = location
         self._exit = kwargs.get("exit", False)
         self._ignore = kwargs.get("ignore")
-        self._include_dev = kwargs.get("include_dev")
+        self._include_dev = kwargs.get("include_dev", False)
         self._project_name = kwargs.get("project_name")
         if "alert_config" in kwargs and kwargs.get("alert_config") is not None:
             self._alert_config = json.loads(kwargs.get("alert_config"))
