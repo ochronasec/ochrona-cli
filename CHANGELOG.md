@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.0.10
+- Added type hints and mypy support
+
 ## 0.0.9
 - Added support for safe pip -r style installs for requirements.txt style files
 - Prevent using requirements.txt lines that are not direct dependencies
