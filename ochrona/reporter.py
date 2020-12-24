@@ -1,10 +1,9 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Ochrona-cli
 :author: ascott
 """
+
 import datetime
 import json
 import os
@@ -14,9 +13,14 @@ import textwrap
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
+from typing import Any, Dict, List, Optional
+
+from ochrona.config import OchronaConfig
+from ochrona.logger import OchronaLogger
+
 
 class OchronaReporter:
-    def __init__(self, logger, config):
+    def __init__(self, logger: OchronaLogger, config: OchronaConfig):
         self._config = config
         self.logger = logger
         self._report_type = self._config.report_type
@@ -24,7 +28,7 @@ class OchronaReporter:
         self._exit = self._config.exit
         self._ignore = self._config.ignore
 
-    def report_collector(self, sources, results):
+    def report_collector(self, sources: List[str], results: List[Dict[str, Any]]):
         """
         Collects and generates each report and exits the program
         :param sources: list of file locations
@@ -36,7 +40,7 @@ class OchronaReporter:
             if "confirmed_vulnerabilities" in result:
                 result["confirmed_vulnerabilities"] = list(
                     filter(
-                        lambda cv: self._filter_ignored_vulns(cv),
+                        lambda cv: self._filter_ignored_vuln(cv),
                         result.get("confirmed_vulnerabilities", []),
                     )
                 )
@@ -55,13 +59,16 @@ class OchronaReporter:
                     sys.exit(-1)
                 sys.exit(0)
 
-    def generate_report(self, source, result, index, total):
+    def generate_report(
+        self, source: str, result: Dict[str, Any], index: int, total: int
+    ):
         """
+        Handles report generate based on configured type.
 
-        :param source:
-        :param result:
-        :param index:
-        :param total:
+        :param source: str - The source of the data
+        :param result: dict - The results from the API
+        :param index: int - the index of the file results
+        :param total: int - the total number of file results
         :return:
         """
         if self._report_type in ["BASIC", "FULL"]:
@@ -88,10 +95,10 @@ class OchronaReporter:
                     )
             BaseReport.print_new_line()
         elif self._report_type == "JSON":
-            report = result.get("confirmed_vulnerabilities", None)
+            report = result.get("confirmed_vulnerabilities")
             # TODO potential_vulnerabilities will be removed
             if not report:
-                report = result.get("potential_vulnerabilities", None)
+                report = result.get("potential_vulnerabilities")
 
             if report:
                 if not self._report_location:
@@ -112,16 +119,16 @@ class OchronaReporter:
                     result, self._report_location, source, index
                 )
 
-    def _filter_ignored_vulns(self, c_vulns):
+    def _filter_ignored_vuln(self, confirmed_vuln: Dict[str, Any]) -> bool:
         """
-
-        :param c_vulns:
-        :return:
+        Returns False is the confirmed vuln matches an ignore rule
+        :param confirmed_vuln: dict - Confirmed vulnerability from API results.
+        :return: bool
         """
-        if not c_vulns or not self._ignore:
+        if not confirmed_vuln or not self._ignore:
             return True
         for cv in self._ignore:
-            if cv == c_vulns["cve_id"] or cv == c_vulns["name"]:
+            if cv == confirmed_vuln["cve_id"] or cv == confirmed_vuln["name"]:
                 return False
         return True
 
@@ -137,7 +144,7 @@ class BaseReport:
     NEWLINE = "\n"
 
     @staticmethod
-    def print_report_number(index, total):
+    def print_report_number(index: int, total: int):
         print(f"{BaseReport.INFO}Report {index + 1} of {total}{BaseReport.ENDC}")
 
     @staticmethod
@@ -145,7 +152,7 @@ class BaseReport:
         print(BaseReport.NEWLINE)
 
     @staticmethod
-    def print_report_source(source):
+    def print_report_source(source: str):
         print(BaseReport.REPORT_LINE_BREAK)
         print(f"{BaseReport.INFO}| Source: {source}{BaseReport.ENDC}")
         print(BaseReport.REPORT_LINE_BREAK)
@@ -167,7 +174,7 @@ class BasicReport(BaseReport):
     """
 
     @staticmethod
-    def print_vuln_finding(finding, confirmed):
+    def print_vuln_finding(finding: Dict[str, Any], confirmed: bool):
         if confirmed:
             print(
                 f"{BaseReport.INFO}|{BaseReport.ERROR} ⚠️  Vulnerability Detected!{BaseReport.ENDC}"
@@ -215,7 +222,7 @@ class FullReport(BaseReport):
     """
 
     @staticmethod
-    def print_vuln_finding(finding, confirmed):
+    def print_vuln_finding(finding: Dict[str, Any], confirmed: bool):
         if confirmed:
             print(
                 f"{BaseReport.INFO}|{BaseReport.ERROR} ⚠️  Vulnerability Detected!{BaseReport.ENDC}"
@@ -286,20 +293,24 @@ class JSONReport(BaseReport):
     """
 
     @staticmethod
-    def display_report(result, source, total, index):
+    def display_report(
+        result: List[Dict[str, Any]], source: str, total: int, index: int
+    ):
         BaseReport.print_report_number(index, total)
         BaseReport.print_report_source(source)
         print(JSONReport.generate_report_body(result, source))
 
     @staticmethod
-    def save_report_to_file(result, location, source, index):
+    def save_report_to_file(
+        result: List[Dict[str, Any]], location: str, source: str, index: int
+    ):
         with open(
             JSONReport.generate_report_filename(location, source, index), "w"
         ) as f:
             f.write(JSONReport.generate_report_body(result, source))
 
     @staticmethod
-    def generate_report_body(result, source):
+    def generate_report_body(result: List[Dict[str, Any]], source: str) -> str:
         report = {
             "meta": {
                 "source": str(source),
@@ -310,7 +321,7 @@ class JSONReport(BaseReport):
         return json.dumps(report, indent=4)
 
     @staticmethod
-    def generate_report_filename(location, source, index):
+    def generate_report_filename(location: str, source: str, index: int) -> str:
         return f"{location}/{index+1}_{os.path.basename(source).lower()}_results.json"
 
 
@@ -322,20 +333,22 @@ class XMLReport(BaseReport):
     """
 
     @staticmethod
-    def display_report(result, source, total, index):
+    def display_report(result: Dict[str, Any], source: str, total: int, index: int):
         BaseReport.print_report_number(index, total)
         BaseReport.print_report_source(source)
         print(XMLReport.generate_report_body(result, source))
 
     @staticmethod
-    def save_report_to_file(result, location, source, index):
+    def save_report_to_file(
+        result: Dict[str, Any], location: str, source: str, index: int
+    ):
         with open(
             XMLReport.generate_report_filename(location, source, index), "w"
         ) as f:
             f.write(XMLReport.generate_report_body(result, source))
 
     @staticmethod
-    def generate_report_body(result, source):
+    def generate_report_body(result: Dict[str, Any], source: str) -> str:
         suites = ET.Element("testsuites")
         suite = ET.SubElement(suites, "testsuite")
         suite.set("tests", str(len(result["flat_list"])))
@@ -364,7 +377,7 @@ class XMLReport(BaseReport):
         return minidom.parseString(ET.tostring(suites)).toprettyxml(indent="   ")
 
     @staticmethod
-    def generate_report_filename(location, source, index):
+    def generate_report_filename(location: str, source: str, index: int) -> str:
         return f"{location}/{index + 1}_{os.path.basename(source).lower()}_results.xml"
 
 

@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+Ochrona-cli
+:author: ascott
+"""
+
 PIPFILE_LOCK = "Pipfile.lock"
 POETRY_LOCK = "poetry.lock"
 SETUP_PY = "setup.py"

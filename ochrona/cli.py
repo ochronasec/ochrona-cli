@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Ochrona-cli
 :author: ascott
 """
 
 import sys
+
 import click
+from typing import Optional
 
 from ochrona.config import OchronaConfig
 from ochrona.exceptions import OchronaException, OchronaAPIException
@@ -53,19 +54,19 @@ from ochrona.ochrona_rest_client import OchronaAPIClient
 @click.option("--alert_config", help="The Alert configuration for your project.")
 @click.option("--install", help="A safe wrapper for pip --install")
 def run(
-    api_key,
-    dir,
-    file,
-    debug,
-    silent,
-    report_type,
-    output,
-    exit,
-    ignore,
-    include_dev,
-    project_name,
-    alert_config,
-    install,
+    api_key: Optional[str],
+    dir: Optional[str],
+    file: Optional[str],
+    debug: bool,
+    silent: bool,
+    report_type: Optional[str],
+    output: Optional[str],
+    exit: bool,
+    ignore: Optional[str],
+    include_dev: bool,
+    project_name: Optional[str],
+    alert_config: Optional[str],
+    install: Optional[str],
 ):
     config = OchronaConfig(
         api_key=api_key,
@@ -89,7 +90,7 @@ def run(
             importer = SafeImport(logger=log, client=client)
             importer.install(package=install)
         except OchronaException as ex:
-            OchronaLogger.error(ex)
+            OchronaLogger.static_error(ex)
             sys.exit(1)
     else:
         # Regular operational check
@@ -105,9 +106,9 @@ def run(
                 [client.analyze(parse_to_payload(log, file, config)) for file in files],
             )
             if config.alert_config is not None and config.project_name is not None:
-                client.update_alert(payload=config)
+                client.update_alert(config=config)
         except OchronaAPIException as ex:
-            OchronaLogger.error(ex)
+            OchronaLogger.static_error(ex)
             sys.exit(1)
 
 
@@ -115,5 +116,5 @@ if __name__ == "__main__":
     try:
         run()
     except OchronaException as ex:
-        OchronaLogger.error(ex)
+        OchronaLogger.static_error(ex)
         sys.exit(1)

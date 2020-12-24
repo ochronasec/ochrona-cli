@@ -88,7 +88,7 @@ class TestFileHandlerParseToPayload:
         conf._include_dev = True
         test_file = f"{dir_path}/test_data/pipfile/Pipfile.lock"
         payload = loads(
-            parse_to_payload(logger=MockLogger(), file=test_file, config=conf)
+            parse_to_payload(logger=MockLogger(), file_path=test_file, config=conf)
         )
         assert "dependencies" in payload
         assert payload["dependencies"] == [
