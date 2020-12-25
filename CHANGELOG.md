@@ -2,6 +2,7 @@
 
 ## 0.0.10
 - Added type hints and mypy support
+- Improved XML reporting
 
 ## 0.0.9
 - Added support for safe pip -r style installs for requirements.txt style files

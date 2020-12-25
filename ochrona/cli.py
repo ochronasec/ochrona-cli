@@ -51,7 +51,10 @@ from ochrona.ochrona_rest_client import OchronaAPIClient
     is_flag=True,
 )
 @click.option("--project_name", help="The name of your project.")
-@click.option("--alert_config", help="The Alert configuration for your project.")
+@click.option(
+    "--alert_config",
+    help="The Alert configuration for your project. This should be a json string with quotation marks escaped.",
+)
 @click.option("--install", help="A safe wrapper for pip --install")
 def run(
     api_key: Optional[str],

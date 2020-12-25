@@ -45,7 +45,7 @@ pipenv install <--dev> ochrona
 | `--ignore`       | Ignore a CVE or package                                                   | str  | requests                                                                   |
 | `--include_dev`  | Include develop dependencies from Pipfile.lock [False]                    | bool | True                                                                       |
 | `--project_name` | The name of your project. Setting this will enable `record` mode.         | str  | My Example Project                                                         |
-| `--alert_config` | Alert configuration for use with DADA. This is expressed as a json string | str  | '{"alerting_addresses": "test@ohrona.dev", "alerting_rules": "not:boto3"}' |
+| `--alert_config` | Alert configuration for use with DADA. This is expressed as a json string | str  | '{"alerting_addresses": "test@ochrona.dev", "alerting_rules": "not:boto3"}'|
 
 ### via environment variables
 | Variable Name         | Corresponding Arg |

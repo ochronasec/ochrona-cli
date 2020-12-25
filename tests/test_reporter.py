@@ -106,7 +106,7 @@ class TestOchronaReporter:
             {
                 "flat_list": ["fake"],
                 "confirmed_vulnerabilities": [
-                    {"found_version": "fake", "description": "fake finding"}
+                    {"found_version": "fake", "description": "fake finding", "cve_id": "123", "name": "fake", "ochrona_severity_score": 8.4}
                 ],
             },
             0,
@@ -115,7 +115,7 @@ class TestOchronaReporter:
         captured = capsys.readouterr()
         assert '<testsuite tests="1">' in captured.out
         assert (
-            '<failure type="confirmed_vulnerability">fake finding</failure>'
+            '<failure type="confirmed_vulnerability">Package name: fake\nVulnerability description: fake finding\nCVE: 123\nSeverity: 8.4</failure>'
             in captured.out
         )
 
