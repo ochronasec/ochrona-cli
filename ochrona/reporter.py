@@ -199,7 +199,7 @@ class BasicReport(BaseReport):
         affected_versions = ", ".join(
             [
                 f"{f.get('operator')}{f.get('version_value')}"
-                for f in finding.get("affected_versions")
+                for f in finding.get("affected_versions", [])
             ]
         )
         print(
@@ -270,7 +270,7 @@ class FullReport(BaseReport):
         affected_versions = ", ".join(
             [
                 f"{f.get('operator')}{f.get('version_value')}"
-                for f in finding.get("affected_versions")
+                for f in finding.get("affected_versions", [])
             ]
         )
         print(
@@ -353,7 +353,7 @@ class XMLReport(BaseReport):
     def generate_report_body(result: Dict[str, Any], source: str) -> str:
         suites = ET.Element("testsuites")
         suite = ET.SubElement(suites, "testsuite")
-        suite.set("tests", str(len(result.get("flat_list"))))
+        suite.set("tests", str(len(result.get("flat_list", []))))
         props = ET.SubElement(suite, "properties")
         source_prop = ET.SubElement(props, "property")
         source_prop.set("name", "source")
@@ -361,12 +361,12 @@ class XMLReport(BaseReport):
         ts_prop = ET.SubElement(props, "property")
         ts_prop.set("name", "timestamp")
         ts_prop.set("value", datetime.datetime.now().isoformat())
-        for dep in result.get("flat_list"):
+        for dep in result.get("flat_list", []):
             case = ET.SubElement(suite, "testcase")
             case.set("classname", "ochronaDependencyVulnCheck")
             case.set("name", dep)
         if "confirmed_vulnerabilities" in result:
-            for vuln in result.get("confirmed_vulnerabilities"):
+            for vuln in result.get("confirmed_vulnerabilities", []):
                 case = list(
                     filter(
                         lambda x: x.get("name") == vuln.get("found_version"),
