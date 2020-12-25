@@ -128,7 +128,7 @@ class OchronaReporter:
         if not confirmed_vuln or not self._ignore:
             return True
         for cv in self._ignore:
-            if cv == confirmed_vuln["cve_id"] or cv == confirmed_vuln["name"]:
+            if cv == confirmed_vuln.get("cve_id") or cv == confirmed_vuln.get("name"):
                 return False
         return True
 
@@ -184,22 +184,22 @@ class BasicReport(BaseReport):
                 f"{BaseReport.INFO}|{BaseReport.WARNING} ⚠️  [Potential] Vulnerability Detected!{BaseReport.ENDC}"
             )
         print(BaseReport.REPORT_ROW_BREAK)
-        print(f"{BaseReport.INFO}| Package -- {finding['name']}{BaseReport.ENDC}")
+        print(f"{BaseReport.INFO}| Package -- {finding.get('name')}{BaseReport.ENDC}")
         print(BaseReport.REPORT_ROW_BREAK)
         print(
-            f"{BaseReport.INFO}| Installed Version -- {finding['found_version']}{BaseReport.ENDC}"
+            f"{BaseReport.INFO}| Installed Version -- {finding.get('found_version')}{BaseReport.ENDC}"
         )
         print(BaseReport.REPORT_ROW_BREAK)
-        print(f"{BaseReport.INFO}| CVE -- {finding['cve_id']}{BaseReport.ENDC}")
+        print(f"{BaseReport.INFO}| CVE -- {finding.get('cve_id')}{BaseReport.ENDC}")
         print(BaseReport.REPORT_ROW_BREAK)
         print(
-            f"{BaseReport.INFO}| Severity -- {finding['ochrona_severity_score']} {BaseReport.ENDC}"
+            f"{BaseReport.INFO}| Severity -- {finding.get('ochrona_severity_score')} {BaseReport.ENDC}"
         )
         print(BaseReport.REPORT_ROW_BREAK)
         affected_versions = ", ".join(
             [
-                f"{f['operator']}{f['version_value']}"
-                for f in finding["affected_versions"]
+                f"{f.get('operator')}{f.get('version_value')}"
+                for f in finding.get("affected_versions")
             ]
         )
         print(
@@ -232,43 +232,45 @@ class FullReport(BaseReport):
                 f"{BaseReport.INFO}|{BaseReport.WARNING} ⚠️  [Potential] Vulnerability Detected!{BaseReport.ENDC}"
             )
         print(BaseReport.REPORT_ROW_BREAK)
-        print(f"{BaseReport.INFO}| Package -- {finding['name']}{BaseReport.ENDC}")
+        print(f"{BaseReport.INFO}| Package -- {finding.get('name')}{BaseReport.ENDC}")
         print(BaseReport.REPORT_ROW_BREAK)
         print(
-            f"{BaseReport.INFO}| Installed Version -- {finding['found_version']}{BaseReport.ENDC}"
+            f"{BaseReport.INFO}| Installed Version -- {finding.get('found_version')}{BaseReport.ENDC}"
         )
         print(BaseReport.REPORT_ROW_BREAK)
 
         print(
             textwrap.fill(
-                f"{BaseReport.INFO}| Reason -- {finding['reason']}{BaseReport.ENDC}",
+                f"{BaseReport.INFO}| Reason -- {finding.get('reason')}{BaseReport.ENDC}",
                 100,
             )
         )
         print(BaseReport.REPORT_ROW_BREAK)
-        print(f"{BaseReport.INFO}| CVE -- {finding['cve_id']}{BaseReport.ENDC}")
+        print(f"{BaseReport.INFO}| CVE -- {finding.get('cve_id')}{BaseReport.ENDC}")
         print(BaseReport.REPORT_ROW_BREAK)
         print(
-            f"{BaseReport.INFO}| Vulnerability Publish Date -- {finding['publish_date']}{BaseReport.ENDC}"
+            f"{BaseReport.INFO}| Vulnerability Publish Date -- {finding.get('publish_date')}{BaseReport.ENDC}"
         )
         print(BaseReport.REPORT_ROW_BREAK)
         print(
-            f"{BaseReport.INFO}| Severity -- {finding['ochrona_severity_score']} {BaseReport.ENDC}"
+            f"{BaseReport.INFO}| Severity -- {finding.get('ochrona_severity_score')} {BaseReport.ENDC}"
         )
         print(BaseReport.REPORT_ROW_BREAK)
         print(
             textwrap.fill(
-                f"{BaseReport.INFO}| Description -- {finding['description']}{BaseReport.ENDC}",
+                f"{BaseReport.INFO}| Description -- {finding.get('description')}{BaseReport.ENDC}",
                 100,
             )
         )
         print(BaseReport.REPORT_ROW_BREAK)
-        print(f"{BaseReport.INFO}| License -- {finding['license']} {BaseReport.ENDC}")
+        print(
+            f"{BaseReport.INFO}| License -- {finding.get('license')} {BaseReport.ENDC}"
+        )
         print(BaseReport.REPORT_ROW_BREAK)
         affected_versions = ", ".join(
             [
-                f"{f['operator']}{f['version_value']}"
-                for f in finding["affected_versions"]
+                f"{f.get('operator')}{f.get('version_value')}"
+                for f in finding.get("affected_versions")
             ]
         )
         print(
@@ -351,7 +353,7 @@ class XMLReport(BaseReport):
     def generate_report_body(result: Dict[str, Any], source: str) -> str:
         suites = ET.Element("testsuites")
         suite = ET.SubElement(suites, "testsuite")
-        suite.set("tests", str(len(result["flat_list"])))
+        suite.set("tests", str(len(result.get("flat_list"))))
         props = ET.SubElement(suite, "properties")
         source_prop = ET.SubElement(props, "property")
         source_prop.set("name", "source")
@@ -359,21 +361,21 @@ class XMLReport(BaseReport):
         ts_prop = ET.SubElement(props, "property")
         ts_prop.set("name", "timestamp")
         ts_prop.set("value", datetime.datetime.now().isoformat())
-        for dep in result["flat_list"]:
+        for dep in result.get("flat_list"):
             case = ET.SubElement(suite, "testcase")
             case.set("classname", "ochronaDependencyVulnCheck")
             case.set("name", dep)
         if "confirmed_vulnerabilities" in result:
-            for vuln in result["confirmed_vulnerabilities"]:
+            for vuln in result.get("confirmed_vulnerabilities"):
                 case = list(
                     filter(
-                        lambda x: x.get("name") == vuln["found_version"],
+                        lambda x: x.get("name") == vuln.get("found_version"),
                         list(suite.iter()),
                     )
                 )[0]
                 failure = ET.SubElement(case, "failure")
                 failure.set("type", "confirmed_vulnerability")
-                failure.text = f"{vuln['description']}"
+                failure.text = f"Package name: {vuln.get('name')}\nVulnerability description: {vuln.get('description')}\nCVE: {vuln.get('cve_id')}\nSeverity: {vuln.get('ochrona_severity_score')}"
         return minidom.parseString(ET.tostring(suites)).toprettyxml(indent="   ")
 
     @staticmethod
