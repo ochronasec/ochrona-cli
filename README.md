@@ -6,12 +6,11 @@
 [![codecov](https://codecov.io/gh/ochronasec/ochrona-cli/branch/master/graph/badge.svg?token=uWNZiXnXto)](https://codecov.io/gh/ochronasec/ochrona-cli)
 
 
-Ochrona is a command line tool for checking python projects for vulnerabilities in their dependencies. 
-Ochrona has a free-tier license which allows 25 scans per month. 
+This module is the command line tool for accessing Ochrona Security, a solution for validating the dependencies used in python projects.
 
-You can sign up for an API key at https://ochrona.dev.
+Ochrona requires a license to operate. We offer a free-tier license which allows up to 25 scans per month. You can sign up for an API key at https://ochrona.dev.
 
-We care deeply about Developer Experience (dx), if you have any feedback or run into issues please open an issue [here](https://github.com/ochronasec/ochrona-cli/issues).
+We care deeply about Developer Experience (DX), if you have any feedback or run into issues please open an issue [here](https://github.com/ochronasec/ochrona-cli/issues).
 
 ### Supported file types
 - `*requirements*.txt`
@@ -34,7 +33,7 @@ pipenv install <--dev> ochrona
 # Configuration
 ### via command line args
 | Arg              | Description                                                               | Type | Example                                                                    |
-|------------------|---------------------------------------------------------------------------|------|----------------------------------------------------------------------------|
+|------------------|---------------------------------------------------------------------------|------|----------------------------------------------------------------------|
 | `--api_key`      | Ochrona API Key                                                           | str  | abc123                                                                     |
 | `--dir`          | Directory to recursively search for dependencies files to scan [.]        | path | /User/me/my_project                                                        |
 | `--file`         | Single dependency file to scan                                            | file | /User/me/my_project/requirements.txt                                       |
@@ -45,7 +44,7 @@ pipenv install <--dev> ochrona
 | `--exit`         | Exit with Code 0 regardless of vulnerability findings. [False]            | bool | True                                                                       |
 | `--ignore`       | Ignore a CVE or package                                                   | str  | requests                                                                   |
 | `--include_dev`  | Include develop dependencies from Pipfile.lock [False]                    | bool | True                                                                       |
-| `--project_name` | The name of your project                                                  | str  | "My Example Project                                                        |
+| `--project_name` | The name of your project. Setting this will enable `record` mode.         | str  | My Example Project                                                         |
 | `--alert_config` | Alert configuration for use with DADA. This is expressed as a json string | str  | '{"alerting_addresses": "test@ohrona.dev", "alerting_rules": "not:boto3"}' |
 
 ### via environment variables
@@ -106,3 +105,12 @@ Ochrona supports several built in output options include a `BASIC` and `FULL` pl
 
 ### JSON
 [<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_json.png"/></p>](https://ochrona.dev)
+
+# DADA Support
+DADA stands for Deployed Application Dependency Analysis. It is an additional product from Ochrona available to paying customers that allows for monitoring of the dependencies used in their python applications after they've been deployed. This functionality can give advanced alerting when a new vulnerability is discovered for a dependency being used in your deployed application.
+
+Ochrona operates in two different modes, `ad-hoc` and `record`. By default it operates in `ad-hoc` mode, meaning your dependency usage is not recorded. When you are ready to deploy your application to production you should run Ochrona in `record` mode so it can record a snapshot of your dependency usage. To set Ochrona in `record` mode, all you need to do is include a `project_name` either as a command line argument (i.e. `--project_name`) or in your `.ochrona.yml` file. 
+
+Each time Ochrona is run in `record` mode it will overwrite the snapshot for the specified project name. If you'd like to utilize DADA to record multiple branches of the same project it is recommended that you simply use a naming convention to support this (ex. `my-project` vs `my-project_develop`).
+
+Utilizing the `alert_config` parameters are also important for using DADA. These parameters dictate whether there are any special alerting conditions and where you would like alert emails to be sent. 
