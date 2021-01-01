@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ochrona.const import INVALID_SPECIFIERS, EQUALS_SPECIFIER
 from ochrona.exceptions import OchronaImportException
-from ochrona.file_handler import _parse_requirements_file
+from ochrona.parsers import Parsers
 from ochrona.logger import OchronaLogger
 from ochrona.pypi_rest_client import PYPIAPIClient
 from ochrona.ochrona_rest_client import OchronaAPIClient
@@ -32,7 +32,8 @@ class SafeImport:
         :return: bool
         """
         if os.path.isfile(package):
-            packages = _parse_requirements_file(package)
+            parsers = Parsers()
+            packages = parsers.requirements.parse(package)
             if self._check_package(packages):
                 self.logger.info(
                     f"No vulnerabilities found for {', '.join(packages)}, install proceeding."

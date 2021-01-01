@@ -1,0 +1,45 @@
+name: Test and Lint
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install ochrona
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+    - name: Black
+      run: |
+        black --check ./ochrona
+    - name: Type Checking
+      run: |
+        mypy --show-error-codes ./ochrona
+    - name: SAST with Bandit
+      run: |
+        bandit ./ochrona -r -n 3 -lll
+    - name: Unit Tests
+      env:
+        OCHRONA_API_URL: http://localhost:5000/python/analyze
+        OCHRONA_ALERT_API_URL: http://localhost:5000/alerts/project-alerts
+      run: |
+        pytest --cov=./ -vvs
+    - name: SCA check with Ochrona
+      env:
+        OCHRONA_API_KEY: ${{ secrets.OCHRONA_API_KEY }}
+      run: |
+        ochrona --file requirements.txt
+    - name: Coverage
+      run: |
+        codecov

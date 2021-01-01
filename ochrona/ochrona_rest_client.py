@@ -33,6 +33,7 @@ class OchronaAPIClient:
             "POST", self._url, headers=self._generate_headers(), data=payload
         )
         if response.status_code > 300:
+            self.logger.debug(f"Unexpected Response from {self._url} - {response.text}")
             self._error_response_handler(response.status_code)
         return self._response_handler(response)
 
@@ -51,6 +52,9 @@ class OchronaAPIClient:
         )
 
         if response.status_code > 300:
+            self.logger.debug(
+                f"Unexpected Response from {self._alert_api_url} - {response.text}"
+            )
             self._error_response_handler(response.status_code)
         return self._response_handler(response)
 
