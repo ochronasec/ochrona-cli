@@ -17,6 +17,9 @@ We care deeply about Developer Experience (DX), if you have any feedback or run 
 - `Pipfile.lock`
 - `poetry.lock`
 - `setup.py`
+- `*constraints*.txt`
+- `environment.yml`
+- `tox.ini`
 
 # Installation
 

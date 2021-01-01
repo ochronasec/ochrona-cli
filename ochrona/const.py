@@ -7,12 +7,19 @@ Ochrona-cli
 PIPFILE_LOCK = "Pipfile.lock"
 POETRY_LOCK = "poetry.lock"
 SETUP_PY = "setup.py"
+REQUIREMENTS_TXT = "requirements.txt"
+CONSTRAINTS_TXT = "constraints.txt"
+CONDA_ENVIRONMENT = "environment.yml"
+TOX_INI = "tox.ini"
 
 SUPPORTED_DEPENDENCY_FILE_PATTERNS = {
-    "requirements_txt": "**/*requirements*.txt",
-    "pipfile_lock": "**/*Pipfile.lock",
-    "poetry_lock": "**/*poetry.lock",
-    "setup_py": "**/*setup.py",
+    REQUIREMENTS_TXT: "**/*requirements*.txt",
+    CONSTRAINTS_TXT: "**/*constraints*.txt",
+    PIPFILE_LOCK: "**/*Pipfile.lock",
+    POETRY_LOCK: "**/*poetry.lock",
+    SETUP_PY: "**/*setup.py",
+    CONDA_ENVIRONMENT: "**/environment.yml",
+    TOX_INI: "**/tox.ini"
 }
 
 INVALID_REQUIREMENTS_LINES = [
@@ -27,6 +34,11 @@ INVALID_REQUIREMENTS_LINES = [
     "--allow-external",
     "--allow-unverified",
     "--always-unzip",
+]
+
+TOX_LINKED_REQUIREMENTS = "-r"
+INVALID_TOX_LINES = [
+    "{"
 ]
 
 INVALID_SPECIFIERS = {"<", ">", "!", "~"}

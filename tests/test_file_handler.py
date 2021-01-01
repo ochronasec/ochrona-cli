@@ -51,8 +51,8 @@ class TestFileHandlerRfindAllDependenciesFiles:
     def test_recursive_pipfile(self):
         logger = MockLogger()
         files = rfind_all_dependencies_files(logger, f"{dir_path}/test_data", None)
-        assert len(files) == 5, "Expected to find three files"
-        assert len(logger._logged) == 5, "Expected three debug log messages"
+        assert len(files) == 10, "Expected to find ten files"
+        assert len(logger._logged) == 10, "Expected ten debug log messages"
 
     def test_no_files(self):
         logger = MockLogger()
@@ -153,4 +153,48 @@ class TestFileHandlerParseToPayload:
             "Jinja2==2.10.1",
             "MarkupSafe==1.1.1",
             "Werkzeug==0.15.4",
+        ]
+
+    def test_parse_conda_environment(self):
+        conf = MockConfig()
+        test_file = f"{dir_path}/test_data/conda/environment.yml"
+        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            "Flask-Testing",
+            "pycryptodomex==3.8.1",
+            "pytest-mpl==0.10.*",
+        ]
+
+    def test_parse_tox_direct(self):
+        conf = MockConfig()
+        test_file = f"{dir_path}/test_data/tox/direct/tox.ini"
+        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            'Django>=2.2,<2.3',
+            'Django>=3.0,<3.1',
+            'PyMySQL',
+            'urllib3',
+            'fakefakefake',
+        ]
+    
+    def test_parse_tox_reference(self):
+        conf = MockConfig()
+        test_file = f"{dir_path}/test_data/tox/reference/tox.ini"
+        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            'requests=2.11.0',
+        ]
+
+    def test_parse_constraints(self):
+        conf = MockConfig()
+        test_file = f"{dir_path}/test_data/constraints/constraints.txt"
+        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            "defusedxml==0.4.1",
+            "requests==2.9.1",
+            "requests-oauthlib==0.6.1",
         ]

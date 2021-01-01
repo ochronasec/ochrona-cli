@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.0.11
+- Added support for Conda environment.yml files
+- Added support for tox.ini files
+- Added support for constraints.txt files
+
 ## 0.0.10
 - Added type hints and mypy support
 - Improved XML reporting
