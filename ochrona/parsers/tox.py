@@ -26,8 +26,6 @@ class ToxFile:
                         if line.startswith(TOX_LINKED_REQUIREMENTS):
                             path = ToxFile._tox_path(file_path)
                             req_file_name = line.replace(TOX_LINKED_REQUIREMENTS, "")
-                            print(file_path)
-                            print(f"{path}{req_file_name}")
                             return RequirementsFile.parse(f"{path}{req_file_name}")
                         elif not any([line.startswith(i) for i in INVALID_TOX_LINES]):
                             if ":" in line:
