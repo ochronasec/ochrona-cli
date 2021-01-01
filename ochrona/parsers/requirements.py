@@ -1,6 +1,7 @@
 from typing import List
 
 from ochrona.const import INVALID_REQUIREMENTS_LINES
+from ochrona.exceptions import OchronaFileException
 
 
 class RequirementsFile:

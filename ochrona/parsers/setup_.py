@@ -2,6 +2,8 @@ import ast
 
 from typing import List
 
+from ochrona.exceptions import OchronaFileException
+
 
 class SetupFile:
     @staticmethod

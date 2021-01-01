@@ -24,9 +24,9 @@ class CondaFile:
                     and "dependencies" in data
                     and isinstance(data.get("dependencies"), list)
                 ):
-                    for line in data.get("dependencies"):
+                    for line in data.get("dependencies", []):
                         if isinstance(line, dict) and "pip" in line:
-                            for _, req in enumerate(line.get("pip")):
+                            for _, req in enumerate(line.get("pip", {})):
                                 dependencies.append(req)
                         else:
                             # Non-pip specified dependencies

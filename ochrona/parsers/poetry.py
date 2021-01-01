@@ -1,6 +1,7 @@
 from typing import List
 
 import toml
+from ochrona.exceptions import OchronaFileException
 
 
 class PoetryFile:

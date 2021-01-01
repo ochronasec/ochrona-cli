@@ -3,7 +3,6 @@ from io import StringIO
 from typing import List
 
 from ochrona.const import TOX_LINKED_REQUIREMENTS, INVALID_TOX_LINES, TOX_INI
-from ochrona.exceptions import OchronaFileException
 from ochrona.parsers.requirements import RequirementsFile
 
 
