@@ -6,8 +6,8 @@ from ochrona.parsers.requirements import RequirementsFile
 from ochrona.parsers.setup_ import SetupFile
 from ochrona.parsers.tox import ToxFile
 
-class Parsers:
 
+class Parsers:
     @property
     def conda(self):
         return CondaFile

@@ -3,8 +3,8 @@ from typing import List
 
 from ochrona.exceptions import OchronaFileException
 
-class Pipfile:
 
+class Pipfile:
     @staticmethod
     def parse(file_path: str, include_dev: bool = False) -> List[str]:
         """

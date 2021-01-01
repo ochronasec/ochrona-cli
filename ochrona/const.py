@@ -19,7 +19,7 @@ SUPPORTED_DEPENDENCY_FILE_PATTERNS = {
     POETRY_LOCK: "**/*poetry.lock",
     SETUP_PY: "**/*setup.py",
     CONDA_ENVIRONMENT: "**/environment.yml",
-    TOX_INI: "**/tox.ini"
+    TOX_INI: "**/tox.ini",
 }
 
 INVALID_REQUIREMENTS_LINES = [
@@ -37,9 +37,7 @@ INVALID_REQUIREMENTS_LINES = [
 ]
 
 TOX_LINKED_REQUIREMENTS = "-r"
-INVALID_TOX_LINES = [
-    "{"
-]
+INVALID_TOX_LINES = ["{"]
 
 INVALID_SPECIFIERS = {"<", ">", "!", "~"}
 EQUALS_SPECIFIER = "=="

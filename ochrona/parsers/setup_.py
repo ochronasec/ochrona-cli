@@ -2,8 +2,8 @@ import ast
 
 from typing import List
 
-class SetupFile:
 
+class SetupFile:
     @staticmethod
     def parse(file_path: str, include_dev: bool = False) -> List[str]:
         """

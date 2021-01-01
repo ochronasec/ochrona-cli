@@ -2,8 +2,8 @@ from typing import List
 
 import toml
 
-class PoetryFile:
 
+class PoetryFile:
     @staticmethod
     def parse(file_path: str, include_dev: bool = False) -> List[str]:
         """

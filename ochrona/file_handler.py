@@ -109,11 +109,17 @@ def parse_to_payload(
     dependencies = []
     parsers = Parsers()
     if os.path.basename(file_path).lower() == PIPFILE_LOCK.lower():
-        dependencies = parsers.pipfile.parse(file_path=file_path, include_dev=config.include_dev)
+        dependencies = parsers.pipfile.parse(
+            file_path=file_path, include_dev=config.include_dev
+        )
     elif os.path.basename(file_path).lower() == POETRY_LOCK.lower():
-        dependencies = parsers.poetry.parse(file_path=file_path, include_dev=config.include_dev)
+        dependencies = parsers.poetry.parse(
+            file_path=file_path, include_dev=config.include_dev
+        )
     elif os.path.basename(file_path).lower() == SETUP_PY.lower():
-        dependencies = parsers.setup.parse(file_path=file_path, include_dev=config.include_dev)
+        dependencies = parsers.setup.parse(
+            file_path=file_path, include_dev=config.include_dev
+        )
     elif os.path.basename(file_path).lower() == CONDA_ENVIRONMENT.lower():
         dependencies = parsers.conda.parse(file_path=file_path)
     elif os.path.basename(file_path).lower() == TOX_INI.lower():

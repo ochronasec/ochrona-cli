@@ -2,8 +2,8 @@ from typing import List
 
 from ochrona.const import INVALID_REQUIREMENTS_LINES
 
-class RequirementsFile:
 
+class RequirementsFile:
     @staticmethod
     def parse(file_path: str) -> List[str]:
         """
