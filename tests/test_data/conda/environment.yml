@@ -1,0 +1,13 @@
+name: stats2
+channels:
+  - javascript
+dependencies:
+  - python=3.4   # or 2.7
+  - bokeh=0.9.2
+  - numpy=1.9.*
+  - nodejs=0.10.*
+  - flask
+  - pip:
+    - Flask-Testing
+    - pycryptodomex==3.8.1
+    - pytest-mpl==0.10.*
