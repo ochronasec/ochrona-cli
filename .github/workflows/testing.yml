@@ -33,6 +33,7 @@ jobs:
       env:
         OCHRONA_API_URL: http://localhost:5000/python/analyze
         OCHRONA_ALERT_API_URL: http://localhost:5000/alerts/project-alerts
+        PYTHONPATH: .
       run: |
         pytest --cov=./ -vvs
     - name: SCA check with Ochrona

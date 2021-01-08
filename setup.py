@@ -25,7 +25,7 @@ setup(
     author="Ochrona Security",
     author_email="andrew@ochrona.dev",
     url="https://github.com/ochorna/ochrona-cli",
-    packages=["ochrona",],
+    packages=["ochrona","ochrona.parsers"],
     package_dir={"ochrona": "ochrona"},
     entry_points={"console_scripts": ["ochrona=ochrona.cli:run"]},
     python_requires=">=3.6",

@@ -21,9 +21,8 @@ from ochrona.const import (
     TOX_INI,
 )
 from ochrona.exceptions import OchronaFileException
-from ochrona.parsers import Parsers
 from ochrona.logger import OchronaLogger
-
+from ochrona.parsers import Parsers
 
 Path: Optional[Type] = None
 try:

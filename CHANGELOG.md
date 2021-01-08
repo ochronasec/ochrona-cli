@@ -1,6 +1,9 @@
 # Change Log
 
 ## 0.0.11
+- Fix import error when running in some scenarios
+
+## 0.0.11
 - Added support for Conda environment.yml files
 - Added support for tox.ini files
 - Added support for constraints.txt files
