@@ -59,7 +59,25 @@ pipenv install <--dev> ochrona
 
 ### via .ochrona.yml
 There is an empty `.ochrona.yml` file included in the repo. 
-Example:
+| Key | Description | Type | Example |
+|-|-|-|-|
+| `api_key` | Ochrona API Key | str | abc123 |
+| `api_url` | This field can optionally set an alternative analysis url [https://api.ochrona.dev/python/analyze] | str | N/A |
+| `alert_url` | For DADA users only, this field can optionally set an alternative alert registration url  [https://api.ochrona.dev/alerts/project-alerts] | str | N/A |
+| `dir` | Directory to recursively search for dependencies files to scan [.] | path | /User/me/my_project |
+| `file` | Single dependency file to scan | file | /User/me/my_project/requirements.txt |
+| `debug` | Enable debug logging [false] | bool | true |
+| `silent` | Silent mode [false] | bool | true |
+| `report_type` | The report type that's desired [BASIC] | str | XML |
+| `report_location` | Location for report output [.] | path | /User/me/my_project/logs |
+| `exit` | Exit with Code 0 regardless of vulnerability findings [false] | bool | true |
+| `ignore` | Ignore a CVE or package name | str | requests |
+| `include_dev` | Include develop dependencies from files that support dev/required dependencies [false] | bool | true |
+| `project_name` | For DADA users only, the name of your project. If using a multi-branched approach it  is recommended to specify the branch name here as well | str | My Example Project |
+| `alert_config.alerting_addresses` | For DADA users only, this is the emails that should be notified in the event of a new  vulnerability that impacts the project.  | str | test@ohrona.dev |
+| `alert_config.alerting_rules` | For DADA users only, these are the rules that dictate whether an alert should be raised. Valid operators include `not:``package_name` and `severity:`>=`float` | str | not:boto3,severity:>7.0 |
+
+**Example**:
 ```
 # api_key: <your key>
 # debug: true
