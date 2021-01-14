@@ -73,6 +73,7 @@ There is an empty `.ochrona.yml` file included in the repo.
 | `exit` | Exit with Code 0 regardless of vulnerability findings [false] | bool | true |
 | `ignore` | Ignore a CVE or package name | str | requests |
 | `include_dev` | Include develop dependencies from files that support dev/required dependencies [false] | bool | true |
+| `color_output` | Whether or not std out text should use color. Note: this is enabled by default when running in a non-Windows environment [true] | bool | false |
 | `project_name` | For DADA users only, the name of your project. If using a multi-branched approach it  is recommended to specify the branch name here as well | str | My Example Project |
 | `alert_config.alerting_addresses` | For DADA users only, this is the emails that should be notified in the event of a new  vulnerability that impacts the project.  | str | test@ohrona.dev |
 | `alert_config.alerting_rules` | For DADA users only, these are the rules that dictate whether an alert should be raised. Valid operators include `not:``package_name` and `severity:`>=`float` | str | not:boto3,severity:>7.0 |
@@ -87,6 +88,7 @@ There is an empty `.ochrona.yml` file included in the repo.
 # report_location: .
 # ignore: requests
 # include_dev: false
+# color_output: false
 # project_name: my_test_project
 # alert_config:
 #   alerting_addresses: test@web.com
