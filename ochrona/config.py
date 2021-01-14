@@ -6,6 +6,7 @@ Ochrona-cli
 
 import json
 import os
+import platform
 import re
 import sys
 import yaml
@@ -30,6 +31,7 @@ class OchronaConfig:
     _exit: bool = False
     _ignore: Optional[str] = None
     _include_dev: bool = False
+    _color_output: bool = True
 
     _project_name: Optional[str] = None
     _alert_config: Optional[str] = None
@@ -77,6 +79,11 @@ class OchronaConfig:
         self._project_name = kwargs.get("project_name")
         if "alert_config" in kwargs and kwargs.get("alert_config") is not None:
             self._alert_config = json.loads(kwargs.get("alert_config"))
+
+        # check runtime environment
+        sys_type = platform.system()
+        if sys_type == "Windows":
+            self._color_output = False
 
         # check environment variables
         self._api_key = (
@@ -130,6 +137,9 @@ class OchronaConfig:
                     self._exit = yaml_loaded.get("exit", self._exit)
                     self._ignore = yaml_loaded.get("ignore", self._ignore)
                     self._include_dev = yaml_loaded.get("include_dev", self._ignore)
+                    self._color_output = yaml_loaded.get(
+                        "color_output", self._color_output
+                    )
                     # Project and DADA configuration
                     self._project_name = yaml_loaded.get(
                         "project_name", self._project_name
@@ -220,6 +230,10 @@ class OchronaConfig:
     @property
     def include_dev(self):
         return self._include_dev
+
+    @property
+    def color_output(self):
+        return self._color_output
 
     @property
     def project_name(self):

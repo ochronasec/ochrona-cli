@@ -87,6 +87,20 @@ class TestCli:
         assert result.exit_code == 0
 
     @pytest.mark.vcr()
+    def test_cli_pass_empty_requirements(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "--api_key",
+                "1234",
+                "--file",
+                f"{dir_path}/test_data/no_op/requirements.txt",
+            ],
+        )
+        assert result.exit_code == 0
+
+    @pytest.mark.vcr()
     def test_cli_pass_fail_ignore_package(self):
         runner = CliRunner()
         result = runner.invoke(

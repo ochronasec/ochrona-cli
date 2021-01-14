@@ -51,8 +51,8 @@ class TestFileHandlerRfindAllDependenciesFiles:
     def test_recursive_pipfile(self):
         logger = MockLogger()
         files = rfind_all_dependencies_files(logger, f"{dir_path}/test_data", None)
-        assert len(files) == 10, "Expected to find ten files"
-        assert len(logger._logged) == 10, "Expected ten debug log messages"
+        assert len(files) == 11, "Expected to find ten files"
+        assert len(logger._logged) == 11, "Expected ten debug log messages"
 
     def test_no_files(self):
         logger = MockLogger()
@@ -73,7 +73,7 @@ class TestFileHandlerParseToPayload:
     def test_parse_pipfile_lock(self):
         conf = MockConfig()
         test_file = f"{dir_path}/test_data/pipfile/Pipfile.lock"
-        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "certifi==2019.9.11",
@@ -87,9 +87,7 @@ class TestFileHandlerParseToPayload:
         conf = MockConfig()
         conf._include_dev = True
         test_file = f"{dir_path}/test_data/pipfile/Pipfile.lock"
-        payload = loads(
-            parse_to_payload(logger=MockLogger(), file_path=test_file, config=conf)
-        )
+        payload = parse_to_payload(logger=MockLogger(), file_path=test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "certifi==2019.9.11",
@@ -103,7 +101,7 @@ class TestFileHandlerParseToPayload:
     def test_parse_poetry_lock(self):
         conf = MockConfig()
         test_file = f"{dir_path}/test_data/poetry/poetry.lock"
-        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "A==1.0",
@@ -114,14 +112,14 @@ class TestFileHandlerParseToPayload:
         conf = MockConfig()
         conf._include_dev = True
         test_file = f"{dir_path}/test_data/poetry/poetry.lock"
-        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == ["A==1.0", "B==1.1", "C==1.22.0"]
 
     def test_parse_setup_py(self):
         conf = MockConfig()
         test_file = f"{dir_path}/test_data/setup/setup.py"
-        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "A>=1.0.0",
@@ -132,7 +130,7 @@ class TestFileHandlerParseToPayload:
         conf = MockConfig()
         conf._include_dev = True
         test_file = f"{dir_path}/test_data/setup/setup.py"
-        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "A>=1.0.0",
@@ -143,7 +141,7 @@ class TestFileHandlerParseToPayload:
     def test_parse_requirements_txt(self):
         conf = MockConfig()
         test_file = f"{dir_path}/test_data/pass/requirements.txt"
-        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "requests==2.22.0",
@@ -155,10 +153,17 @@ class TestFileHandlerParseToPayload:
             "Werkzeug==0.15.4",
         ]
 
+    def test_parse_empty_requirements_txt(self):
+        conf = MockConfig()
+        test_file = f"{dir_path}/test_data/no_op/requirements.txt"
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
+        assert "dependencies" in payload
+        assert payload["dependencies"] == []
+
     def test_parse_conda_environment(self):
         conf = MockConfig()
         test_file = f"{dir_path}/test_data/conda/environment.yml"
-        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "Flask-Testing",
@@ -169,7 +174,7 @@ class TestFileHandlerParseToPayload:
     def test_parse_tox_direct(self):
         conf = MockConfig()
         test_file = f"{dir_path}/test_data/tox/direct/tox.ini"
-        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             'Django>=2.2,<2.3',
@@ -182,7 +187,7 @@ class TestFileHandlerParseToPayload:
     def test_parse_tox_reference(self):
         conf = MockConfig()
         test_file = f"{dir_path}/test_data/tox/reference/tox.ini"
-        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             'requests=2.11.0',
@@ -191,7 +196,7 @@ class TestFileHandlerParseToPayload:
     def test_parse_constraints(self):
         conf = MockConfig()
         test_file = f"{dir_path}/test_data/constraints/constraints.txt"
-        payload = loads(parse_to_payload(MockLogger(), test_file, config=conf))
+        payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "defusedxml==0.4.1",

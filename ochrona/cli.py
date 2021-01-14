@@ -5,6 +5,7 @@ Ochrona-cli
 :author: ascott
 """
 
+import json
 import sys
 
 import click
@@ -104,10 +105,14 @@ def run(
         files = rfind_all_dependencies_files(log, config.dir, config.file)
 
         try:
-            reporter.report_collector(
-                files,
-                [client.analyze(parse_to_payload(log, file, config)) for file in files],
-            )
+            results = []
+            for file_ in files:
+                payload = parse_to_payload(log, file_, config)
+                if payload.get("dependencies") != []:
+                    results.append(client.analyze(json.dumps(payload)))
+            if results == []:
+                log.warn(f"No dependencies found in {', '.join(files)}")
+            reporter.report_collector(files, results)
             if config.alert_config is not None and config.project_name is not None:
                 client.update_alert(config=config)
         except OchronaAPIException as ex:

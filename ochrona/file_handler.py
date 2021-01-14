@@ -4,7 +4,6 @@ Ochrona-cli
 :author: ascott
 """
 
-import json
 import os
 
 from typing import Any, Dict, IO, Optional, List, Type, TextIO
@@ -97,7 +96,7 @@ def rfind_all_dependencies_files(
 
 def parse_to_payload(
     logger: OchronaLogger, file_path: str, config: OchronaConfig
-) -> str:
+) -> Dict[str, Any]:
     """
     Parses a requirements.txt type file or Pipefile.lock into a JSON payload.
     :param logger: A configured `OchronaLogger` instance
@@ -129,8 +128,6 @@ def parse_to_payload(
         dependencies = parsers.requirements.parse(file_path=file_path)
     logger.debug(f"Discovered dependencies: {dependencies}")
     if config.project_name is not None:
-        return json.dumps(
-            {"dependencies": dependencies, "project_name": config.project_name}
-        )
+        return {"dependencies": dependencies, "project_name": config.project_name}
     else:
-        return json.dumps({"dependencies": dependencies})
+        return {"dependencies": dependencies}
