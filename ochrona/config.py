@@ -137,7 +137,9 @@ class OchronaConfig:
                     self._exit = yaml_loaded.get("exit", self._exit)
                     self._ignore = yaml_loaded.get("ignore", self._ignore)
                     self._include_dev = yaml_loaded.get("include_dev", self._ignore)
-                    self._color_output = yaml_loaded.get("color_output", self._color_output)
+                    self._color_output = yaml_loaded.get(
+                        "color_output", self._color_output
+                    )
                     # Project and DADA configuration
                     self._project_name = yaml_loaded.get(
                         "project_name", self._project_name

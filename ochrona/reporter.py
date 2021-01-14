@@ -146,7 +146,9 @@ class BaseReport:
 
     @staticmethod
     def print_report_number(index: int, total: int, color: bool = True):
-        print(f"{BaseReport.INFO if color else BaseReport.NO}Report {index + 1} of {total}{BaseReport.ENDC if color else BaseReport.NO}")
+        print(
+            f"{BaseReport.INFO if color else BaseReport.NO}Report {index + 1} of {total}{BaseReport.ENDC if color else BaseReport.NO}"
+        )
 
     @staticmethod
     def print_new_line():
@@ -154,17 +156,24 @@ class BaseReport:
 
     @staticmethod
     def print_report_source(source: str, color: bool = True):
-        print(f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * 100}╡{BaseReport.ENDC if color else BaseReport.NO}")
-        print(f"{BaseReport.INFO if color else BaseReport.NO}| Source: {source}{BaseReport.ENDC if color else BaseReport.NO}")
-        print(f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * 100}╡{BaseReport.ENDC if color else BaseReport.NO}")
-
+        print(
+            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * 100}╡{BaseReport.ENDC if color else BaseReport.NO}"
+        )
+        print(
+            f"{BaseReport.INFO if color else BaseReport.NO}| Source: {source}{BaseReport.ENDC if color else BaseReport.NO}"
+        )
+        print(
+            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * 100}╡{BaseReport.ENDC if color else BaseReport.NO}"
+        )
 
     @staticmethod
-    def print_no_vulns(color: bool =True):
+    def print_no_vulns(color: bool = True):
         print(
             f"{BaseReport.INFO if color else BaseReport.NO}|{BaseReport.PASS if color else BaseReport.NO} ✅  No Vulnerabilities detected{BaseReport.ENDC if color else BaseReport.NO}"
         )
-        print(f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * 100}╡{BaseReport.ENDC if color else BaseReport.NO}")
+        print(
+            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * 100}╡{BaseReport.ENDC if color else BaseReport.NO}"
+        )
 
 
 class BasicReport(BaseReport):
@@ -176,7 +185,9 @@ class BasicReport(BaseReport):
     """
 
     @staticmethod
-    def print_vuln_finding(finding: Dict[str, Any], confirmed: bool, color: bool = True):
+    def print_vuln_finding(
+        finding: Dict[str, Any], confirmed: bool, color: bool = True
+    ):
         INFO = BaseReport.INFO if color else BaseReport.NO
         ERROR = BaseReport.ERROR if color else BaseReport.NO
         WARNING = BaseReport.WARNING if color else BaseReport.NO
@@ -185,25 +196,17 @@ class BasicReport(BaseReport):
         LINE_BREAK = f"{INFO}╞{'=' * 100}╡{ENDC}"
 
         if confirmed:
-            print(
-                f"{INFO}|{ERROR} ⚠️  Vulnerability Detected!{ENDC}"
-            )
+            print(f"{INFO}|{ERROR} ⚠️  Vulnerability Detected!{ENDC}")
         else:
-            print(
-                f"{INFO}|{WARNING} ⚠️  [Potential] Vulnerability Detected!{ENDC}"
-            )
+            print(f"{INFO}|{WARNING} ⚠️  [Potential] Vulnerability Detected!{ENDC}")
         print(ROW_BREAK)
         print(f"{INFO}| Package -- {finding.get('name')}{ENDC}")
         print(ROW_BREAK)
-        print(
-            f"{INFO}| Installed Version -- {finding.get('found_version')}{ENDC}"
-        )
+        print(f"{INFO}| Installed Version -- {finding.get('found_version')}{ENDC}")
         print(ROW_BREAK)
         print(f"{INFO}| CVE -- {finding.get('cve_id')}{ENDC}")
         print(ROW_BREAK)
-        print(
-            f"{INFO}| Severity -- {finding.get('ochrona_severity_score')} {ENDC}"
-        )
+        print(f"{INFO}| Severity -- {finding.get('ochrona_severity_score')} {ENDC}")
         print(ROW_BREAK)
         affected_versions = ", ".join(
             [
@@ -231,7 +234,9 @@ class FullReport(BaseReport):
     """
 
     @staticmethod
-    def print_vuln_finding(finding: Dict[str, Any], confirmed: bool, color: bool = True):
+    def print_vuln_finding(
+        finding: Dict[str, Any], confirmed: bool, color: bool = True
+    ):
         INFO = BaseReport.INFO if color else BaseReport.NO
         ERROR = BaseReport.ERROR if color else BaseReport.NO
         WARNING = BaseReport.WARNING if color else BaseReport.NO
@@ -240,19 +245,13 @@ class FullReport(BaseReport):
         LINE_BREAK = f"{INFO}╞{'=' * 100}╡{ENDC}"
 
         if confirmed:
-            print(
-                f"{INFO}|{ERROR} ⚠️  Vulnerability Detected!{ENDC}"
-            )
+            print(f"{INFO}|{ERROR} ⚠️  Vulnerability Detected!{ENDC}")
         else:
-            print(
-                f"{INFO}|{WARNING} ⚠️  [Potential] Vulnerability Detected!{ENDC}"
-            )
+            print(f"{INFO}|{WARNING} ⚠️  [Potential] Vulnerability Detected!{ENDC}")
         print(ROW_BREAK)
         print(f"{INFO}| Package -- {finding.get('name')}{ENDC}")
         print(ROW_BREAK)
-        print(
-            f"{INFO}| Installed Version -- {finding.get('found_version')}{ENDC}"
-        )
+        print(f"{INFO}| Installed Version -- {finding.get('found_version')}{ENDC}")
         print(ROW_BREAK)
 
         print(
@@ -268,9 +267,7 @@ class FullReport(BaseReport):
             f"{INFO}| Vulnerability Publish Date -- {finding.get('publish_date')}{ENDC}"
         )
         print(ROW_BREAK)
-        print(
-            f"{INFO}| Severity -- {finding.get('ochrona_severity_score')} {ENDC}"
-        )
+        print(f"{INFO}| Severity -- {finding.get('ochrona_severity_score')} {ENDC}")
         print(ROW_BREAK)
         print(
             textwrap.fill(
@@ -279,9 +276,7 @@ class FullReport(BaseReport):
             )
         )
         print(ROW_BREAK)
-        print(
-            f"{INFO}| License -- {finding.get('license')} {ENDC}"
-        )
+        print(f"{INFO}| License -- {finding.get('license')} {ENDC}")
         print(ROW_BREAK)
         affected_versions = ", ".join(
             [

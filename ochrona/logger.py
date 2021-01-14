@@ -40,19 +40,27 @@ class OchronaLogger:
 
     def debug(self, val):
         if self._debug and not self._silent:
-            print(f"{OchronaLogger.INFO if self._color else OchronaLogger.NO}[DEBUG] {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}")
+            print(
+                f"{OchronaLogger.INFO if self._color else OchronaLogger.NO}[DEBUG] {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}"
+            )
 
     def info(self, val):
         if not self._silent:
-            print(f"{OchronaLogger.INFO if self._color else OchronaLogger.NO}{val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}")
+            print(
+                f"{OchronaLogger.INFO if self._color else OchronaLogger.NO}{val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}"
+            )
 
     def warn(self, val):
         if not self._silent:
-            print(f"{OchronaLogger.WARNING if self._color else OchronaLogger.NO}[!] {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}")
+            print(
+                f"{OchronaLogger.WARNING if self._color else OchronaLogger.NO}[!] {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}"
+            )
 
     def error(self, val):
         if not self._silent:
-            print(f"{OchronaLogger.ERROR if self._color else OchronaLogger.NO}[!] {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}")
+            print(
+                f"{OchronaLogger.ERROR if self._color else OchronaLogger.NO}[!] {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}"
+            )
 
     @staticmethod
     def static_error(val):
