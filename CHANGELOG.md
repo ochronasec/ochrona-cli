@@ -2,6 +2,7 @@
 
 ## 0.0.13
 - Allow colored output to be disabled and auto-disable for Windows users
+- Fixed API error on empty requirements file
 
 ## 0.0.12
 - Fix import error when running in some scenarios
