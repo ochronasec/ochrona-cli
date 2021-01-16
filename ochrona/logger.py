@@ -64,10 +64,20 @@ class OchronaLogger:
 
     @staticmethod
     def static_error(val):
-        print(f"{OchronaLogger.ERROR}[!] {val}{OchronaLogger.ENDC}")
+        color = (
+            OchronaLogger.ERROR if platform.system() != "Windows" else OchronaLogger.NO
+        )
+        endc = (
+            OchronaLogger.ENDC if platform.system() != "Windows" else OchronaLogger.NO
+        )
+        print(f"{color}[!] {val}{endc}")
 
     @staticmethod
     def header():
-        color = OchronaLogger.INFO if platform.system != "Windows" else OchronaLogger.NO
-        endc = OchronaLogger.ENDC if platform.system != "Windows" else OchronaLogger.NO
+        color = (
+            OchronaLogger.INFO if platform.system() != "Windows" else OchronaLogger.NO
+        )
+        endc = (
+            OchronaLogger.ENDC if platform.system() != "Windows" else OchronaLogger.NO
+        )
         print(OchronaLogger.HEADER.format(color=color, version=__version__, endc=endc))

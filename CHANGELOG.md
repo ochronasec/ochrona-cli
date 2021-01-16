@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.0.14
+- Additional minor fixes when running in a Windows environment
+
 ## 0.0.13
 - Allow colored output to be disabled and auto-disable for Windows users
 - Fixed API error on empty requirements file
