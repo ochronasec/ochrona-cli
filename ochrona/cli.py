@@ -111,7 +111,7 @@ def run(
                 if payload.get("dependencies") != []:
                     results.append(client.analyze(json.dumps(payload)))
             if results == []:
-                log.warn(f"No dependencies found in {', '.join(files)}")
+                log.warn(f"No dependencies found in {files}")
             reporter.report_collector(files, results)
             if config.alert_config is not None and config.project_name is not None:
                 client.update_alert(config=config)
