@@ -110,6 +110,9 @@ def run(
                 payload = parse_to_payload(log, file_, config)
                 if payload.get("dependencies") != []:
                     results.append(client.analyze(json.dumps(payload)))
+                else:
+                    # can't leave empty otherwise result counts are off
+                    results.append(client.empty_result())
             if results == []:
                 log.warn(f"No dependencies found in {files}")
             reporter.report_collector(files, results)
