@@ -17,9 +17,23 @@ class RequirementsFile:
             with open(file_path) as rfile:
                 deps = [line.rstrip("\n") for line in rfile]
                 return [
-                    dep
+                    RequirementsFile.clean_dependency(dep)
                     for dep in deps
-                    if not any([dep.startswith(s) for s in INVALID_REQUIREMENTS_LINES])
+                    if not any(
+                        [dep.strip().startswith(s) for s in INVALID_REQUIREMENTS_LINES]
+                    )
                 ]
         except OSError as ex:
             raise OchronaFileException(f"OS error when parsing {file_path}") from ex
+
+    @staticmethod
+    def clean_dependency(dependency: str) -> str:
+        """
+        Removes any comments or hashes following the dependency.
+
+        :param file_path: a dependency with optional pinned version
+        :return: str a cleaned dependency string
+        """
+        if " " in dependency or ";" in dependency or "#" in dependency:
+            return dependency.split(" ")[0].replace(";", "")
+        return dependency

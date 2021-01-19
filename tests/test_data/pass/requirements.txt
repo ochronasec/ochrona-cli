@@ -1,5 +1,7 @@
 requests==2.22.0
-Click==7.0
+Click==7.0; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" \
+    --hash=sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc \
+    --hash=sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a
 Flask==1.1.1
 itsdangerous==1.1.0
 Jinja2==2.10.1
