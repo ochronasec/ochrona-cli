@@ -34,6 +34,7 @@ INVALID_REQUIREMENTS_LINES = [
     "--allow-external",
     "--allow-unverified",
     "--always-unzip",
+    "--hash",
 ]
 
 TOX_LINKED_REQUIREMENTS = "-r"

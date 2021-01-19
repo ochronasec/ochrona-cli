@@ -20,13 +20,21 @@ class SetupFile:
             with open(file_path) as setuppy:
                 tree = ast.parse(setuppy.read())
                 for body in tree.body:
-                    if isinstance(body, ast.Expr):
+                    if (
+                        isinstance(body, ast.Expr)
+                        and isinstance(body.value, ast.Call)
+                        and isinstance(body.value.func, ast.Name)
+                    ):
                         if body.value.func.id in setup_func_names:  # type: ignore[attr-defined]
                             for kw in body.value.keywords:  # type: ignore[attr-defined]
                                 if kw.arg == "install_requires":
-                                    dependencies += [arg.s for arg in kw.value.elts]
+                                    dependencies += [
+                                        arg.s.replace(" ", "") for arg in kw.value.elts
+                                    ]
                                 elif kw.arg == "tests_require" and include_dev:
-                                    dependencies += [arg.s for arg in kw.value.elts]
+                                    dependencies += [
+                                        arg.s.replace(" ", "") for arg in kw.value.elts
+                                    ]
             return dependencies
         except OSError as ex:
             raise OchronaFileException(f"OS error when parsing {file_path}") from ex
