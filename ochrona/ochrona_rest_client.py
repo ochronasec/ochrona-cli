@@ -116,3 +116,9 @@ class OchronaAPIClient:
                 "alerting_rules": config.alert_config.get("alerting_rules"),
             }
         )
+
+    def empty_result(self):
+        return {
+            "potential_vulnerabilities": [],
+            "confirmed_vulnerabilities": [],
+        }

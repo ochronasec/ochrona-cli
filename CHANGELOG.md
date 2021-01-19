@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.0.16
+- Fixed incorrect report count if a dependency file was empty
+
 ## 0.0.15
 - Fix for AttributeError when parsing some setup.py files
 - Additional cleanup for requirements files with specified hashes or python version requirements
