@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.15
+- Fix for AttributeError when parsing some setup.py files
+- Additional cleanup for requirements files with specified hashes or python version requirements
+
 ## 0.0.14
 - Additional minor fixes when running in a Windows environment
 

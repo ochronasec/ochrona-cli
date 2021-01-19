@@ -29,14 +29,18 @@ class SetupFile:
                             for kw in body.value.keywords:  # type: ignore[attr-defined]
                                 if kw.arg == "install_requires":
                                     dependencies += [
-                                        arg.s.replace(" ", "") for arg in kw.value.elts
+                                        SetupFile.clean(arg.s) for arg in kw.value.elts  # type: ignore
                                     ]
                                 elif kw.arg == "tests_require" and include_dev:
                                     dependencies += [
-                                        arg.s.replace(" ", "") for arg in kw.value.elts
+                                        SetupFile.clean(arg.s) for arg in kw.value.elts  # type: ignore
                                     ]
             return dependencies
         except OSError as ex:
             raise OchronaFileException(f"OS error when parsing {file_path}") from ex
         except AttributeError as ex:
             raise OchronaFileException(f"AST error when parsing {file_path}") from ex
+
+    @staticmethod
+    def clean(dependency: str) -> str:
+        return dependency.replace(" ", "")
