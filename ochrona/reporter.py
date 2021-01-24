@@ -7,6 +7,7 @@ Ochrona-cli
 import datetime
 import json
 import os
+import shutil
 import sys
 import textwrap
 
@@ -139,8 +140,6 @@ class BaseReport:
     WARNING = "\033[93m"
     ERROR = "\033[91m"
     ENDC = "\033[0m"
-    REPORT_LINE_BREAK = f"{INFO}╞{'=' * 100}╡{ENDC}"
-    REPORT_ROW_BREAK = f"{INFO}╞{'-' * 100}╡{ENDC}"
     NEWLINE = "\n"
     NO = ""
 
@@ -156,23 +155,25 @@ class BaseReport:
 
     @staticmethod
     def print_report_source(source: str, color: bool = True):
+        term_size = shutil.get_terminal_size((100, 20))
         print(
-            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * 100}╡{BaseReport.ENDC if color else BaseReport.NO}"
+            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * (term_size.columns-2)}╡{BaseReport.ENDC if color else BaseReport.NO}"
         )
         print(
             f"{BaseReport.INFO if color else BaseReport.NO}| Source: {source}{BaseReport.ENDC if color else BaseReport.NO}"
         )
         print(
-            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * 100}╡{BaseReport.ENDC if color else BaseReport.NO}"
+            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * (term_size.columns-2)}╡{BaseReport.ENDC if color else BaseReport.NO}"
         )
 
     @staticmethod
     def print_no_vulns(color: bool = True):
+        term_size = shutil.get_terminal_size((100, 20))
         print(
             f"{BaseReport.INFO if color else BaseReport.NO}|{BaseReport.PASS if color else BaseReport.NO} ✅  No Vulnerabilities detected{BaseReport.ENDC if color else BaseReport.NO}"
         )
         print(
-            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * 100}╡{BaseReport.ENDC if color else BaseReport.NO}"
+            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * (term_size.columns-2)}╡{BaseReport.ENDC if color else BaseReport.NO}"
         )
 
 
@@ -188,12 +189,14 @@ class BasicReport(BaseReport):
     def print_vuln_finding(
         finding: Dict[str, Any], confirmed: bool, color: bool = True
     ):
+        term_size = shutil.get_terminal_size((100, 20))
+
         INFO = BaseReport.INFO if color else BaseReport.NO
         ERROR = BaseReport.ERROR if color else BaseReport.NO
         WARNING = BaseReport.WARNING if color else BaseReport.NO
         ENDC = BaseReport.ENDC if color else BaseReport.NO
-        ROW_BREAK = f"{INFO}╞{'-' * 100}╡{ENDC}"
-        LINE_BREAK = f"{INFO}╞{'=' * 100}╡{ENDC}"
+        ROW_BREAK = f"{INFO}╞{'-' * (term_size.columns-2)}╡{ENDC}"
+        LINE_BREAK = f"{INFO}╞{'=' * (term_size.columns-2)}╡{ENDC}"
 
         if confirmed:
             print(f"{INFO}|{ERROR} ⚠️  Vulnerability Detected!{ENDC}")
@@ -216,8 +219,11 @@ class BasicReport(BaseReport):
         )
         print(
             textwrap.fill(
-                f"{INFO}| Affected Versions -- \n{affected_versions}{ENDC}",
-                100,
+                f"{INFO}| Affected Versions -- \n| {affected_versions}{ENDC}",
+                (term_size.columns - 2),
+                replace_whitespace=False,
+                initial_indent="",
+                subsequent_indent="| ",
             )
         )
         print(ROW_BREAK)
@@ -237,12 +243,13 @@ class FullReport(BaseReport):
     def print_vuln_finding(
         finding: Dict[str, Any], confirmed: bool, color: bool = True
     ):
+        term_size = shutil.get_terminal_size((100, 20))
         INFO = BaseReport.INFO if color else BaseReport.NO
         ERROR = BaseReport.ERROR if color else BaseReport.NO
         WARNING = BaseReport.WARNING if color else BaseReport.NO
         ENDC = BaseReport.ENDC if color else BaseReport.NO
-        ROW_BREAK = f"{INFO}╞{'-' * 100}╡{ENDC}"
-        LINE_BREAK = f"{INFO}╞{'=' * 100}╡{ENDC}"
+        ROW_BREAK = f"{INFO}╞{'-' * (term_size.columns-2)}╡{ENDC}"
+        LINE_BREAK = f"{INFO}╞{'=' * (term_size.columns-2)}╡{ENDC}"
 
         if confirmed:
             print(f"{INFO}|{ERROR} ⚠️  Vulnerability Detected!{ENDC}")
@@ -257,7 +264,9 @@ class FullReport(BaseReport):
         print(
             textwrap.fill(
                 f"{INFO}| Reason -- {finding.get('reason')}{ENDC}",
-                100,
+                (term_size.columns - 2),
+                initial_indent="",
+                subsequent_indent="| ",
             )
         )
         print(ROW_BREAK)
@@ -272,7 +281,9 @@ class FullReport(BaseReport):
         print(
             textwrap.fill(
                 f"{INFO}| Description -- {finding.get('description')}{ENDC}",
-                100,
+                (term_size.columns - 2),
+                initial_indent="",
+                subsequent_indent="| ",
             )
         )
         print(ROW_BREAK)
@@ -286,13 +297,16 @@ class FullReport(BaseReport):
         )
         print(
             textwrap.fill(
-                f"{INFO}| Affected Version(s) -- \n{affected_versions}{ENDC}",
-                100,
+                f"{INFO}| Affected Version(s) -- \n| {affected_versions}{ENDC}",
+                (term_size.columns - 2),
+                replace_whitespace=False,
+                initial_indent="",
+                subsequent_indent="| ",
             )
         )
         print(ROW_BREAK)
-        references = "\n\t".join(finding["references"])
-        print(f"{INFO}| References -- \n\t{references} {ENDC}")
+        references = "".join([f"\n| - {ref}" for ref in finding["references"]])
+        print(f"{INFO}| References -- {references}{ENDC}")
         print(LINE_BREAK)
         print(LINE_BREAK)
 

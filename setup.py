@@ -24,7 +24,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Ochrona Security",
     author_email="andrew@ochrona.dev",
-    url="https://github.com/ochorna/ochrona-cli",
+    url="https://github.com/ochronasec/ochrona-cli",
     packages=["ochrona","ochrona.parsers"],
     package_dir={"ochrona": "ochrona"},
     entry_points={"console_scripts": ["ochrona=ochrona.cli:run"]},

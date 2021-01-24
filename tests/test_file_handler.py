@@ -13,7 +13,8 @@ dir_path = os.path.dirname(os.path.abspath(__file__))
 
 class MockLogger:
 
-    _logged = []
+    def __init__(self):
+        self._logged = []
 
     def debug(self, msg):
         self._logged.append(msg)
@@ -40,26 +41,32 @@ class TestFileHandlerRfindAllDependenciesFiles:
 
     def test_single_requirements(self):
         with open(f"{dir_path}/test_data/fail/requirements.txt", "r") as file:
-            files = rfind_all_dependencies_files(MockLogger(), None, file)
+            files = rfind_all_dependencies_files(MockLogger(), None, None, file)
             assert len(files) == 1, "Expected to find a single file"
 
     def test_single_pipfile(self):
         with open(f"{dir_path}/test_data/pipfile/Pipfile.lock", "r") as file:
-            files = rfind_all_dependencies_files(MockLogger(), None, file)
+            files = rfind_all_dependencies_files(MockLogger(), None, None, file)
             assert len(files) == 1, "Expected to find a single file"
 
-    def test_recursive_pipfile(self):
+    def test_recursive_find(self):
         logger = MockLogger()
-        files = rfind_all_dependencies_files(logger, f"{dir_path}/test_data", None)
-        assert len(files) == 11, "Expected to find ten files"
-        assert len(logger._logged) == 11, "Expected ten debug log messages"
+        files = rfind_all_dependencies_files(logger, f"{dir_path}/test_data", None, None)
+        assert len(files) == 11, "Expected to find eleven files"
+        assert len(logger._logged) == 11, "Expected eleven debug log messages"
+
+    def test_recursive_find_with_exclude(self):
+        logger = MockLogger()
+        files = rfind_all_dependencies_files(logger, f"{dir_path}/test_data", "fail,no_op", None)
+        assert len(files) == 9, "Expected to find nine files"
+        assert len(logger._logged) == 9, "Expected nine debug log messages"
 
     def test_no_files(self):
         logger = MockLogger()
         files = None
         with pytest.raises(OchronaFileException) as ex:
             files = rfind_all_dependencies_files(
-                logger, f"{dir_path}/test_data/empty", None
+                logger, f"{dir_path}/test_data/empty", None, None
             )
             assert ex == "No dependencies files found"
         assert not files
