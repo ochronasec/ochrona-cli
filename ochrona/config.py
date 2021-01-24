@@ -22,6 +22,7 @@ class OchronaConfig:
     _debug: bool = False
     _silent: bool = False
     _dir: Optional[str] = None
+    _exclude_dir: Optional[List[str]] = None
     _file: Optional[str] = None
     _python_version: Optional[str] = None
     _report_type: Optional[str] = None
@@ -29,7 +30,7 @@ class OchronaConfig:
     _api_url: Optional[str] = None
     _alert_api_url: Optional[str] = None
     _exit: bool = False
-    _ignore: Optional[str] = None
+    _ignore: Optional[List[str]] = None
     _include_dev: bool = False
     _color_output: bool = True
 
@@ -66,6 +67,7 @@ class OchronaConfig:
         self._debug = kwargs.get("debug", False)
         self._silent = kwargs.get("silent", False)
         self._dir = kwargs.get("dir")
+        self._exclude_dir = kwargs.get("exclude_dir")
         self._file = kwargs.get("file")
         self._report_type = kwargs.get("report_type")
         location = kwargs.get("report_location")
@@ -106,7 +108,18 @@ class OchronaConfig:
             else os.environ.get("OCHRONA_IGNORED_VULNS", None)
         )
         if self._ignore:
-            self._ignore = self._ignore.split(",")
+            self._ignore = (
+                self._ignore.split(",")
+                if isinstance(self._ignore, str)
+                else self._ignore
+            )
+
+        if self._exclude_dir:
+            self._exclude_dir = (
+                self._exclude_dir.split(",")
+                if isinstance(self._exclude_dir, str)
+                else self._exclude_dir
+            )
 
         # check config .ochrona.yml
         try:
@@ -121,6 +134,9 @@ class OchronaConfig:
                     self._debug = yaml_loaded.get("debug", self._debug)
                     self._silent = yaml_loaded.get("silent", self._silent)
                     self._dir = yaml_loaded.get("dir", self._dir)
+                    self._exclude_dir = yaml_loaded.get(
+                        "exclude_dir", self._exclude_dir
+                    )
                     self._file = (
                         yaml_loaded["file"] if "file" in yaml_loaded else self._file
                     )
@@ -136,7 +152,9 @@ class OchronaConfig:
                     )
                     self._exit = yaml_loaded.get("exit", self._exit)
                     self._ignore = yaml_loaded.get("ignore", self._ignore)
-                    self._include_dev = yaml_loaded.get("include_dev", self._ignore)
+                    self._include_dev = yaml_loaded.get(
+                        "include_dev", self._include_dev
+                    )
                     self._color_output = yaml_loaded.get(
                         "color_output", self._color_output
                     )
@@ -198,6 +216,10 @@ class OchronaConfig:
     @property
     def dir(self):
         return self._dir
+
+    @property
+    def exclude_dir(self):
+        return self._exclude_dir
 
     @property
     def file(self):

@@ -27,6 +27,11 @@ from ochrona.ochrona_rest_client import OchronaAPIClient
     help="Directory to recursively search for dependencies files.",
     type=click.Path(exists=True),
 )
+@click.option(
+    "--exclude_dir",
+    help="Directories to Exclude.",
+    type=str,
+)
 @click.option("--file", "-r", help="Dependency file to use.", type=click.File("r"))
 @click.option("--debug", help="Enable debug logging.", default=False, is_flag=True)
 @click.option("--silent", help="Silent mode.", default=False, is_flag=True)
@@ -60,6 +65,7 @@ from ochrona.ochrona_rest_client import OchronaAPIClient
 def run(
     api_key: Optional[str],
     dir: Optional[str],
+    exclude_dir: Optional[str],
     file: Optional[str],
     debug: bool,
     silent: bool,
@@ -75,6 +81,7 @@ def run(
     config = OchronaConfig(
         api_key=api_key,
         dir=dir,
+        exclude_dir=exclude_dir,
         file=file,
         debug=debug,
         silent=silent,
@@ -102,7 +109,9 @@ def run(
         if not config.silent:
             log.header()
 
-        files = rfind_all_dependencies_files(log, config.dir, config.file)
+        files = rfind_all_dependencies_files(
+            log, config.dir, config.exclude_dir, config.file
+        )
 
         try:
             results = []

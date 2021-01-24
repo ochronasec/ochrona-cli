@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.17
+- Improved output formatting
+- Added ability to exclude directories
+
 ## 0.0.16
 - Fixed incorrect report count if a dependency file was empty
 

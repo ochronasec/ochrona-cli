@@ -33,6 +33,7 @@ except ImportError:
 def rfind_all_dependencies_files(
     logger: OchronaLogger,
     directory: Optional[str] = None,
+    excluded_directories: Optional[str] = None,
     file_obj: Optional[IO] = None,
 ) -> List[str]:
     """
@@ -47,6 +48,9 @@ def rfind_all_dependencies_files(
         directory = os.getcwd()
 
     files = []
+    directories_to_exclude = (
+        excluded_directories.split(",") if isinstance(excluded_directories, str) else []
+    )
 
     if file_obj:
         files.append(file_obj.name)
@@ -55,38 +59,49 @@ def rfind_all_dependencies_files(
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[REQUIREMENTS_TXT]
             ):
-                logger.debug(f"Found matching requirements*.txt file at {filename}")
-                files.append(filename)
+                if not any([excl in str(filename) for excl in directories_to_exclude]):
+                    logger.debug(f"Found matching requirements*.txt file at {filename}")
+                    files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[PIPFILE_LOCK]
             ):
-                logger.debug(f"Found matching pipfile.lock file at {filename}")
-                files.append(filename)
+                if not any([excl in str(filename) for excl in directories_to_exclude]):
+                    logger.debug(f"Found matching pipfile.lock file at {filename}")
+                    files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[POETRY_LOCK]
             ):
-                logger.debug(f"Found matching poetry.lock file at {filename}")
-                files.append(filename)
+                if not any([excl in str(filename) for excl in directories_to_exclude]):
+                    logger.debug(f"Found matching poetry.lock file at {filename}")
+                    files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[SETUP_PY]
             ):
-                logger.debug(f"Found matching setup.py file at {filename}")
-                files.append(filename)
+                if not any([excl in str(filename) for excl in directories_to_exclude]):
+                    logger.debug(f"Found matching setup.py file at {filename}")
+                    files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[CONDA_ENVIRONMENT]
             ):
-                logger.debug(f"Found matching conda environment.yml file at {filename}")
-                files.append(filename)
+                if not any([excl in str(filename) for excl in directories_to_exclude]):
+                    logger.debug(
+                        f"Found matching conda environment.yml file at {filename}"
+                    )
+                    files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[TOX_INI]
             ):
-                logger.debug(f"Found matching conda tox.ini file at {filename}")
-                files.append(filename)
+                if not any([excl in str(filename) for excl in directories_to_exclude]):
+                    logger.debug(f"Found matching conda tox.ini file at {filename}")
+                    files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[CONSTRAINTS_TXT]
             ):
-                logger.debug(f"Found matching conda constraints.txt file at {filename}")
-                files.append(filename)
+                if not any([excl in str(filename) for excl in directories_to_exclude]):
+                    logger.debug(
+                        f"Found matching conda constraints.txt file at {filename}"
+                    )
+                    files.append(filename)
 
     if not files:
         raise OchronaFileException("No dependencies files found")

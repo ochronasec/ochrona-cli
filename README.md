@@ -40,6 +40,7 @@ pipenv install <--dev> ochrona
 |------------------|---------------------------------------------------------------------------|------|----------------------------------------------------------------------|
 | `--api_key`      | Ochrona API Key                                                           | str  | abc123                                                                     |
 | `--dir`          | Directory to recursively search for dependencies files to scan [.]        | path | /User/me/my_project                                                        |
+| `--exclude_dir`  | Directory names that should be excluded from recursive search. Comma separated   | str | build,dev                                                    |
 | `--file`         | Single dependency file to scan                                            | file | /User/me/my_project/requirements.txt                                       |
 | `--debug`        | Enable debug logging [False]                                              | bool | True                                                                       |
 | `--silent`       | Silent mode [False]                                                       | bool | True                                                                       |
@@ -66,6 +67,7 @@ There is an empty `.ochrona.yml` file included in the repo.
 | `api_url` | This field can optionally set an alternative analysis url [https://api.ochrona.dev/python/analyze] | str | N/A |
 | `alert_url` | For DADA users only, this field can optionally set an alternative alert registration url  [https://api.ochrona.dev/alerts/project-alerts] | str | N/A |
 | `dir` | Directory to recursively search for dependencies files to scan [.] | path | /User/me/my_project |
+| `exclude_dir` | Directory names that should be excluded from recursive search. | list | build |
 | `file` | Single dependency file to scan | file | /User/me/my_project/requirements.txt |
 | `debug` | Enable debug logging [false] | bool | true |
 | `silent` | Silent mode [false] | bool | true |
@@ -138,3 +140,11 @@ Ochrona operates in two different modes, `ad-hoc` and `record`. By default it op
 Each time Ochrona is run in `record` mode it will overwrite the snapshot for the specified project name. If you'd like to utilize DADA to record multiple branches of the same project it is recommended that you simply use a naming convention to support this (ex. `my-project` vs `my-project_develop`).
 
 Utilizing the `alert_config` parameters are also important for using DADA. These parameters dictate whether there are any special alerting conditions and where you would like alert emails to be sent. 
+
+# Represent!
+[![Ochrona](https://img.shields.io/badge/secured_by-ochrona-blue)](https://ochrona.dev)
+
+Let the world know you're keeping your project safe with Ochrona. Add our shield to your `README.md` by adding the following line.
+```
+[![Ochrona](https://img.shields.io/badge/secured_by-ochrona-blue)](https://ochrona.dev)
+```
