@@ -143,6 +143,7 @@ Utilizing the `alert_config` parameters are also important for using DADA. These
 
 # Represent!
 [![Ochrona](https://img.shields.io/badge/secured_by-ochrona-blue)](https://ochrona.dev)
+
 Let the world know you're keeping your project safe with Ochrona. Add our shield to your `README.md` by adding the following line.
 ```
 [![Ochrona](https://img.shields.io/badge/secured_by-ochrona-blue)](https://ochrona.dev)
