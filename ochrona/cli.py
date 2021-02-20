@@ -12,7 +12,11 @@ import click
 from typing import Optional
 
 from ochrona.config import OchronaConfig
-from ochrona.exceptions import OchronaException, OchronaAPIException
+from ochrona.exceptions import (
+    OchronaException,
+    OchronaAPIException,
+    OchronaFileException,
+)
 from ochrona.file_handler import rfind_all_dependencies_files, parse_to_payload
 from ochrona.import_wrapper import SafeImport
 from ochrona.logger import OchronaLogger
@@ -109,9 +113,13 @@ def run(
         if not config.silent:
             log.header()
 
-        files = rfind_all_dependencies_files(
-            log, config.dir, config.exclude_dir, config.file
-        )
+        try:
+            files = rfind_all_dependencies_files(
+                log, config.dir, config.exclude_dir, config.file
+            )
+        except OchronaFileException as ex:
+            OchronaLogger.static_error(ex)
+            sys.exit(1)
 
         try:
             results = []

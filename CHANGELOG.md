@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.18
+- Fixed bug where file name could not be provided from config
+- Friendly Error when no dependency files are found
+
 ## 0.0.17
 - Improved output formatting
 - Added ability to exclude directories
