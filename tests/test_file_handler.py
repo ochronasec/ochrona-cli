@@ -71,6 +71,11 @@ class TestFileHandlerRfindAllDependenciesFiles:
             assert ex == "No dependencies files found"
         assert not files
 
+    def test_file_as_str(self):
+        test_file = f"{dir_path}/test_data/fail/requirements.txt"
+        files = rfind_all_dependencies_files(MockLogger(), None, None, test_file)
+        assert len(files) == 1, "Expected to find a single file"
+
 
 class TestFileHandlerParseToPayload:
     """

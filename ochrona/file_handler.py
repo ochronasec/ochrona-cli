@@ -4,6 +4,7 @@ Ochrona-cli
 :author: ascott
 """
 
+import io
 import os
 
 from typing import Any, Dict, IO, Optional, List, Type, TextIO
@@ -53,7 +54,15 @@ def rfind_all_dependencies_files(
     )
 
     if file_obj:
-        files.append(file_obj.name)
+        print(type(file_obj), file_obj)
+        if isinstance(file_obj, str):
+            files.append(file_obj)
+        elif isinstance(file_obj, io.TextIOWrapper):
+            files.append(file_obj.name)
+        else:
+            raise OchronaFileException(
+                f"Unknown type for file path {type(file_obj)} - {file_obj}"
+            )
     else:
         if Path:
             for filename in Path(directory).glob(
@@ -104,7 +113,7 @@ def rfind_all_dependencies_files(
                     files.append(filename)
 
     if not files:
-        raise OchronaFileException("No dependencies files found")
+        raise OchronaFileException("No dependency files found")
 
     return files
 
