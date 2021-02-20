@@ -12,7 +12,11 @@ import click
 from typing import Optional
 
 from ochrona.config import OchronaConfig
-from ochrona.exceptions import OchronaException, OchronaAPIException, OchronaFileException
+from ochrona.exceptions import (
+    OchronaException,
+    OchronaAPIException,
+    OchronaFileException,
+)
 from ochrona.file_handler import rfind_all_dependencies_files, parse_to_payload
 from ochrona.import_wrapper import SafeImport
 from ochrona.logger import OchronaLogger
