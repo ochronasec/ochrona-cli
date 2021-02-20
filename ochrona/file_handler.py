@@ -7,7 +7,7 @@ Ochrona-cli
 import io
 import os
 
-from typing import Any, Dict, IO, Optional, List, Type, TextIO
+from typing import Any, Dict, IO, Optional, List, Type, TextIO, Union
 
 from ochrona.config import OchronaConfig
 from ochrona.const import (
@@ -35,7 +35,7 @@ def rfind_all_dependencies_files(
     logger: OchronaLogger,
     directory: Optional[str] = None,
     excluded_directories: Optional[str] = None,
-    file_obj: Optional[IO] = None,
+    file_obj: Optional[Union[IO, str]] = None,
 ) -> List[str]:
     """
     Recursively searches for dependency files to analyze
