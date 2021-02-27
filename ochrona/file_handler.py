@@ -54,7 +54,6 @@ def rfind_all_dependencies_files(
     )
 
     if file_obj:
-        print(type(file_obj), file_obj)
         if isinstance(file_obj, str):
             files.append(file_obj)
         elif isinstance(file_obj, io.TextIOWrapper):

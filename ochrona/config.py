@@ -12,6 +12,8 @@ import sys
 import yaml
 from typing import List, Optional
 
+from ochrona.auth import refresh
+
 
 class OchronaConfig:
     """
@@ -33,6 +35,7 @@ class OchronaConfig:
     _ignore: Optional[List[str]] = None
     _include_dev: bool = False
     _color_output: bool = True
+    _session_token: Optional[str] = None
 
     _project_name: Optional[str] = None
     _alert_config: Optional[str] = None
@@ -195,6 +198,9 @@ class OchronaConfig:
                     return (False, f"Invalid email address {email} found in config")
         return (True, None)
 
+    def _get_session(self):
+        self._session_token = refresh(api_key=self._api_key)
+
     def _detect_runtime_attributes(self):
         """
         Detects details about the runtime and updates the config.
@@ -204,6 +210,12 @@ class OchronaConfig:
     @property
     def api_key(self):
         return self._api_key
+
+    @property
+    def session_token(self):
+        if self._session_token is None:
+            self._get_session()
+        return self._session_token
 
     @property
     def debug(self):
@@ -260,6 +272,10 @@ class OchronaConfig:
     @property
     def project_name(self):
         return self._project_name
+
+    @property
+    def alert_config(self):
+        return self._alert_config
 
     @property
     def alert_config(self):

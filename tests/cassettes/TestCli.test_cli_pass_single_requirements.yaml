@@ -438,8 +438,7 @@ interactions:
         "sphinxcontrib-log-cabinet", "Babel>=0.8", "python-dotenv", "click>=5.1",
         "typing", "pyOpenSSL>=0.14", "cryptography>=2.3", "sphinx-rtd-theme", "pretend",
         "idna>=2.0.0", "chardet<3.1.0", "win-inet-pton", "urllib3!=1.25.0", "certifi>=2017.4.17",
-        "PySocks!=1.5.7", "ipaddress", "brotlipy>=0.6.0", "pytz>=2015.7"], "potential_vulnerabilities":
-        [], "confirmed_vulnerabilities": []}'
+        "PySocks!=1.5.7", "ipaddress", "brotlipy>=0.6.0", "pytz>=2015.7"], "confirmed_vulnerabilities": []}'
     headers:
       Content-Length:
       - '33260'

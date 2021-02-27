@@ -3,6 +3,7 @@ from unittest import mock
 import pytest
 
 from ochrona import cli
+from ochrona.config import OchronaConfig
 
 from click.testing import CliRunner
 
@@ -31,128 +32,136 @@ class TestCli:
 
     @pytest.mark.vcr()
     def test_cli_fail(self):
-        runner = CliRunner()
-        result = runner.invoke(
-            cli.run,
-            [
-                "--api_key",
-                "1234",
-                "--file",
-                f"{dir_path}/test_data/fail/requirements.txt",
-            ],
-        )
-        assert result.exit_code == -1
+        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+            runner = CliRunner()
+            result = runner.invoke(
+                cli.run,
+                [
+                    "--api_key",
+                    "1234",
+                    "--file",
+                    f"{dir_path}/test_data/fail/requirements.txt",
+                ],
+            )
+            assert result.exit_code == -1
 
     @pytest.mark.vcr()
     def test_cli_fail_clean_exit(self):
-        runner = CliRunner()
-        result = runner.invoke(
-            cli.run,
-            [
-                "--api_key",
-                "1234",
-                "--file",
-                f"{dir_path}/test_data/fail/requirements.txt",
-                "--exit",
-            ],
-        )
-        assert result.exit_code == 0
+        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+            runner = CliRunner()
+            result = runner.invoke(
+                cli.run,
+                [
+                    "--api_key",
+                    "1234",
+                    "--file",
+                    f"{dir_path}/test_data/fail/requirements.txt",
+                    "--exit",
+                ],
+            )
+            assert result.exit_code == 0
 
     @pytest.mark.vcr()
     def test_cli_pass_single_requirements(self):
-        runner = CliRunner()
-        result = runner.invoke(
-            cli.run,
-            [
-                "--api_key",
-                "1234",
-                "--file",
-                f"{dir_path}/test_data/pass/requirements.txt",
-            ],
-        )
-        assert result.exit_code == 0
+        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+            runner = CliRunner()
+            result = runner.invoke(
+                cli.run,
+                [
+                    "--api_key",
+                    "1234",
+                    "--file",
+                    f"{dir_path}/test_data/pass/requirements.txt",
+                ],
+            )
+            assert result.exit_code == 0
 
     @pytest.mark.vcr()
     def test_cli_pass_single_pipfile(self):
-        runner = CliRunner()
-        result = runner.invoke(
-            cli.run,
-            [
-                "--api_key",
-                "1234",
-                "--file",
-                f"{dir_path}/test_data/pipfile/Pipfile.lock",
-            ],
-        )
-        assert result.exit_code == 0
+        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+            runner = CliRunner()
+            result = runner.invoke(
+                cli.run,
+                [
+                    "--api_key",
+                    "1234",
+                    "--file",
+                    f"{dir_path}/test_data/pipfile/Pipfile.lock",
+                ],
+            )
+            assert result.exit_code == 0
 
     @pytest.mark.vcr()
     def test_cli_pass_empty_requirements(self):
-        runner = CliRunner()
-        result = runner.invoke(
-            cli.run,
-            [
-                "--api_key",
-                "1234",
-                "--file",
-                f"{dir_path}/test_data/no_op/requirements.txt",
-            ],
-        )
-        assert result.exit_code == 0
+        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+            runner = CliRunner()
+            result = runner.invoke(
+                cli.run,
+                [
+                    "--api_key",
+                    "1234",
+                    "--file",
+                    f"{dir_path}/test_data/no_op/requirements.txt",
+                ],
+            )
+            assert result.exit_code == 0
 
     @pytest.mark.vcr()
     def test_cli_pass_fail_ignore_package(self):
-        runner = CliRunner()
-        result = runner.invoke(
-            cli.run,
-            [
-                "--api_key",
-                "1234",
-                "--file",
-                f"{dir_path}/test_data/fail/requirements.txt",
-                "--ignore",
-                "requests",
-            ],
-        )
-        assert result.exit_code == 0
+        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+            runner = CliRunner()
+            result = runner.invoke(
+                cli.run,
+                [
+                    "--api_key",
+                    "1234",
+                    "--file",
+                    f"{dir_path}/test_data/fail/requirements.txt",
+                    "--ignore",
+                    "requests",
+                ],
+            )
+            assert result.exit_code == 0
 
     @pytest.mark.vcr()
     def test_cli_pass_fail_ignore_cve(self):
-        runner = CliRunner()
-        result = runner.invoke(
-            cli.run,
-            [
-                "--api_key",
-                "1234",
-                "--file",
-                f"{dir_path}/test_data/fail/requirements.txt",
-                "--ignore",
-                "CVE-2018-18074",
-            ],
-        )
-        assert result.exit_code == 0
+        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+            runner = CliRunner()
+            result = runner.invoke(
+                cli.run,
+                [
+                    "--api_key",
+                    "1234",
+                    "--file",
+                    f"{dir_path}/test_data/fail/requirements.txt",
+                    "--ignore",
+                    "CVE-2018-18074",
+                ],
+            )
+            assert result.exit_code == 0
 
     @pytest.mark.vcr()
     def test_cli_pass_fail_ignore_no_match(self):
-        runner = CliRunner()
-        result = runner.invoke(
-            cli.run,
-            [
-                "--api_key",
-                "1234",
-                "--file",
-                f"{dir_path}/test_data/fail/requirements.txt",
-                "--ignore",
-                "CVE-2001-1",
-            ],
-        )
-        assert result.exit_code == -1
+        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+            runner = CliRunner()
+            result = runner.invoke(
+                cli.run,
+                [
+                    "--api_key",
+                    "1234",
+                    "--file",
+                    f"{dir_path}/test_data/fail/requirements.txt",
+                    "--ignore",
+                    "CVE-2001-1",
+                ],
+            )
+            assert result.exit_code == -1
 
+    @mock.patch("ochrona.config.OchronaConfig._get_session")
     @mock.patch("ochrona.ochrona_rest_client.OchronaAPIClient.analyze")
     @mock.patch("ochrona.ochrona_rest_client.OchronaAPIClient.update_alert")
-    def test_cli_do_alert_registration(self, alert, analyze):
+    def test_cli_do_alert_registration(self, alert, analyze, session):
         analyze.return_value = {
-            "potential_vulnerabilities": [],
             "confirmed_vulnerabilities": [],
         }
 
@@ -173,11 +182,11 @@ class TestCli:
         analyze.assert_called_once()
         alert.assert_called_once()
 
+    @mock.patch("ochrona.config.OchronaConfig._get_session")
     @mock.patch("ochrona.ochrona_rest_client.OchronaAPIClient.analyze")
     @mock.patch("ochrona.ochrona_rest_client.OchronaAPIClient.update_alert")
-    def test_cli_no_alert_registration(self, alert, analyze):
+    def test_cli_no_alert_registration(self, alert, analyze, session):
         analyze.return_value = {
-            "potential_vulnerabilities": [],
             "confirmed_vulnerabilities": [],
         }
 
@@ -196,9 +205,10 @@ class TestCli:
         analyze.assert_called_once()
         alert.assert_not_called()
 
+    @mock.patch("ochrona.config.OchronaConfig._get_session")
     @mock.patch("ochrona.import_wrapper.SafeImport._check_package")
     @mock.patch("ochrona.import_wrapper.SafeImport._install")
-    def test_cli_install_vuln(self, install, check):
+    def test_cli_install_vuln(self, install, check, session):
         check.return_value = False
         runner = CliRunner()
         result = runner.invoke(
@@ -208,9 +218,10 @@ class TestCli:
         check.assert_called_once()
         install.assert_not_called()
 
+    @mock.patch("ochrona.config.OchronaConfig._get_session")
     @mock.patch("ochrona.import_wrapper.SafeImport._check_package")
     @mock.patch("ochrona.import_wrapper.SafeImport._install")
-    def test_cli_install_safe(self, install, check):
+    def test_cli_install_safe(self, install, check, session):
         check.return_value = True
         runner = CliRunner()
         result = runner.invoke(

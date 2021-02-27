@@ -6,6 +6,7 @@
 # report_type: JSON
 # report_location: .
 # include_dev: false
+# color_output: false
 # project_name: My Sample Project
 # alert_config:
 #   alerting_addresses: test@web.com
