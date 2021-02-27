@@ -152,7 +152,6 @@ class TestCli:
     @mock.patch("ochrona.ochrona_rest_client.OchronaAPIClient.update_alert")
     def test_cli_do_alert_registration(self, alert, analyze):
         analyze.return_value = {
-            "potential_vulnerabilities": [],
             "confirmed_vulnerabilities": [],
         }
 
@@ -177,7 +176,6 @@ class TestCli:
     @mock.patch("ochrona.ochrona_rest_client.OchronaAPIClient.update_alert")
     def test_cli_no_alert_registration(self, alert, analyze):
         analyze.return_value = {
-            "potential_vulnerabilities": [],
             "confirmed_vulnerabilities": [],
         }
 

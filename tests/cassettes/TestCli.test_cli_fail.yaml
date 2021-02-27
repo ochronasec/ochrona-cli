@@ -439,7 +439,7 @@ interactions:
         "snowballstemmer>=1.1", "setuptools", "alabaster<0.8", "sphinxcontrib-serializinghtml",
         "sphinxcontrib-jsmath", "docutils-stubs", "sphinxcontrib-applehelp", "mypy>=0.720",
         "html5lib", "pytz>=2015.7", "Babel>=0.8", "sphinxcontrib-log-cabinet", "typing",
-        "click>=5.0", "python-dotenv"], "potential_vulnerabilities": [], "confirmed_vulnerabilities":
+        "click>=5.0", "python-dotenv"], "confirmed_vulnerabilities":
         [{"owner": "python-requests", "repo_url": "http://python-requests.org", "ochrona_id":
         "595ace88-3240-468b-a2a3-331e2439e659", "references": ["http://docs.python-requests.org/en/master/community/updates/#release-and-version-history",
         "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00024.html",

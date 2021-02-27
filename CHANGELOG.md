@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.0
+- Updated to support new authentication provider
+
 ## 0.0.18
 - Fixed bug where file name could not be provided from config
 - Friendly Error when no dependency files are found

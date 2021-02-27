@@ -17,7 +17,7 @@ from ochrona.logger import OchronaLogger
 
 class OchronaAPIClient:
     def __init__(self, logger: OchronaLogger, config: OchronaConfig):
-        self._api_key = config.api_key
+        self._session_token = config.session_token
         self.logger = logger
         self._url = config.api_url
         self._alert_api_url = config.alert_api_url
@@ -33,7 +33,9 @@ class OchronaAPIClient:
             "POST", self._url, headers=self._generate_headers(), data=payload
         )
         if response.status_code > 300:
-            self.logger.debug(f"Unexpected Response from {self._url} - {response.text}")
+            self.logger.debug(
+                f"Unexpected Response from {self._url} - {response.status_code} - {response.text}"
+            )
             self._error_response_handler(response.status_code)
         return self._response_handler(response)
 
@@ -53,7 +55,7 @@ class OchronaAPIClient:
 
         if response.status_code > 300:
             self.logger.debug(
-                f"Unexpected Response from {self._alert_api_url} - {response.text}"
+                f"Unexpected Response from {self._alert_api_url} - {response.status_code} - {response.text}"
             )
             self._error_response_handler(response.status_code)
         return self._response_handler(response)
@@ -61,7 +63,7 @@ class OchronaAPIClient:
     def _generate_headers(self) -> Dict[str, str]:
         return {
             "Content-Type": "application/json",
-            "x-api-key": f"{self._api_key}",
+            "Authorization": f"{self._session_token}",
             "User-Agent": f"OchronaClient/{__version__}/{'.'.join([str(i) for i in sys.version_info][0:3])}",
             "Accept": "*/*",
             "Cache-Control": "no-cache",
@@ -76,6 +78,7 @@ class OchronaAPIClient:
         :return:
         """
         if 500 >= status_code >= 400:
+
             raise OchronaAPIException(
                 "Unexpected request sent for analysis. "
                 "Please report this at https://github.com/ochronasec/ochrona-cli/issues"
@@ -119,6 +122,5 @@ class OchronaAPIClient:
 
     def empty_result(self):
         return {
-            "potential_vulnerabilities": [],
             "confirmed_vulnerabilities": [],
         }

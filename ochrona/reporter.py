@@ -47,9 +47,6 @@ class OchronaReporter:
                 )
             else:
                 result["confirmed_vulnerabilities"] = []
-            result["potential_vulnerabilities"] = result.get(
-                "potential_vulnerabilities", []
-            )
             reports.append(self.generate_report(source, result, index, len(sources)))
         for result in results:
             if (
@@ -75,19 +72,9 @@ class OchronaReporter:
         if self._report_type in ["BASIC", "FULL"]:
             BaseReport.print_report_number(index, total, self._config.color_output)
             BaseReport.print_report_source(source, self._config.color_output)
-            if (
-                not result["confirmed_vulnerabilities"]
-                and not result["potential_vulnerabilities"]
-            ):
+            if not result["confirmed_vulnerabilities"]:
                 BaseReport.print_no_vulns(self._config.color_output)
             else:
-                # TODO potential_vulnerabilities will be removed
-                for finding in result.get("potential_vulnerabilities", []):
-                    BasicReport.print_vuln_finding(
-                        finding, False, self._config.color_output
-                    ) if self._config.report_type == "BASIC" else FullReport.print_vuln_finding(
-                        finding, False, self._config.color_output
-                    )
                 for finding in result.get("confirmed_vulnerabilities", []):
                     BasicReport.print_vuln_finding(
                         finding, True, self._config.color_output
@@ -97,9 +84,6 @@ class OchronaReporter:
             BaseReport.print_new_line()
         elif self._report_type == "JSON":
             report = result.get("confirmed_vulnerabilities")
-            # TODO potential_vulnerabilities will be removed
-            if not report:
-                report = result.get("potential_vulnerabilities")
 
             if report:
                 if not self._report_location:
@@ -200,34 +184,32 @@ class BasicReport(BaseReport):
 
         if confirmed:
             print(f"{INFO}|{ERROR} ⚠️  Vulnerability Detected!{ENDC}")
-        else:
-            print(f"{INFO}|{WARNING} ⚠️  [Potential] Vulnerability Detected!{ENDC}")
-        print(ROW_BREAK)
-        print(f"{INFO}| Package -- {finding.get('name')}{ENDC}")
-        print(ROW_BREAK)
-        print(f"{INFO}| Installed Version -- {finding.get('found_version')}{ENDC}")
-        print(ROW_BREAK)
-        print(f"{INFO}| CVE -- {finding.get('cve_id')}{ENDC}")
-        print(ROW_BREAK)
-        print(f"{INFO}| Severity -- {finding.get('ochrona_severity_score')} {ENDC}")
-        print(ROW_BREAK)
-        affected_versions = ", ".join(
-            [
-                f"{f.get('operator')}{f.get('version_value')}"
-                for f in finding.get("affected_versions", [])
-            ]
-        )
-        print(
-            textwrap.fill(
-                f"{INFO}| Affected Versions -- \n| {affected_versions}{ENDC}",
-                (term_size.columns - 2),
-                replace_whitespace=False,
-                initial_indent="",
-                subsequent_indent="| ",
+            print(ROW_BREAK)
+            print(f"{INFO}| Package -- {finding.get('name')}{ENDC}")
+            print(ROW_BREAK)
+            print(f"{INFO}| Installed Version -- {finding.get('found_version')}{ENDC}")
+            print(ROW_BREAK)
+            print(f"{INFO}| CVE -- {finding.get('cve_id')}{ENDC}")
+            print(ROW_BREAK)
+            print(f"{INFO}| Severity -- {finding.get('ochrona_severity_score')} {ENDC}")
+            print(ROW_BREAK)
+            affected_versions = ", ".join(
+                [
+                    f"{f.get('operator')}{f.get('version_value')}"
+                    for f in finding.get("affected_versions", [])
+                ]
             )
-        )
-        print(ROW_BREAK)
-        print(LINE_BREAK)
+            print(
+                textwrap.fill(
+                    f"{INFO}| Affected Versions -- \n| {affected_versions}{ENDC}",
+                    (term_size.columns - 2),
+                    replace_whitespace=False,
+                    initial_indent="",
+                    subsequent_indent="| ",
+                )
+            )
+            print(ROW_BREAK)
+            print(LINE_BREAK)
 
 
 class FullReport(BaseReport):
@@ -253,62 +235,60 @@ class FullReport(BaseReport):
 
         if confirmed:
             print(f"{INFO}|{ERROR} ⚠️  Vulnerability Detected!{ENDC}")
-        else:
-            print(f"{INFO}|{WARNING} ⚠️  [Potential] Vulnerability Detected!{ENDC}")
-        print(ROW_BREAK)
-        print(f"{INFO}| Package -- {finding.get('name')}{ENDC}")
-        print(ROW_BREAK)
-        print(f"{INFO}| Installed Version -- {finding.get('found_version')}{ENDC}")
-        print(ROW_BREAK)
+            print(ROW_BREAK)
+            print(f"{INFO}| Package -- {finding.get('name')}{ENDC}")
+            print(ROW_BREAK)
+            print(f"{INFO}| Installed Version -- {finding.get('found_version')}{ENDC}")
+            print(ROW_BREAK)
 
-        print(
-            textwrap.fill(
-                f"{INFO}| Reason -- {finding.get('reason')}{ENDC}",
-                (term_size.columns - 2),
-                initial_indent="",
-                subsequent_indent="| ",
+            print(
+                textwrap.fill(
+                    f"{INFO}| Reason -- {finding.get('reason')}{ENDC}",
+                    (term_size.columns - 2),
+                    initial_indent="",
+                    subsequent_indent="| ",
+                )
             )
-        )
-        print(ROW_BREAK)
-        print(f"{INFO}| CVE -- {finding.get('cve_id')}{ENDC}")
-        print(ROW_BREAK)
-        print(
-            f"{INFO}| Vulnerability Publish Date -- {finding.get('publish_date')}{ENDC}"
-        )
-        print(ROW_BREAK)
-        print(f"{INFO}| Severity -- {finding.get('ochrona_severity_score')} {ENDC}")
-        print(ROW_BREAK)
-        print(
-            textwrap.fill(
-                f"{INFO}| Description -- {finding.get('description')}{ENDC}",
-                (term_size.columns - 2),
-                initial_indent="",
-                subsequent_indent="| ",
+            print(ROW_BREAK)
+            print(f"{INFO}| CVE -- {finding.get('cve_id')}{ENDC}")
+            print(ROW_BREAK)
+            print(
+                f"{INFO}| Vulnerability Publish Date -- {finding.get('publish_date')}{ENDC}"
             )
-        )
-        print(ROW_BREAK)
-        print(f"{INFO}| License -- {finding.get('license')} {ENDC}")
-        print(ROW_BREAK)
-        affected_versions = ", ".join(
-            [
-                f"{f.get('operator')}{f.get('version_value')}"
-                for f in finding.get("affected_versions", [])
-            ]
-        )
-        print(
-            textwrap.fill(
-                f"{INFO}| Affected Version(s) -- \n| {affected_versions}{ENDC}",
-                (term_size.columns - 2),
-                replace_whitespace=False,
-                initial_indent="",
-                subsequent_indent="| ",
+            print(ROW_BREAK)
+            print(f"{INFO}| Severity -- {finding.get('ochrona_severity_score')} {ENDC}")
+            print(ROW_BREAK)
+            print(
+                textwrap.fill(
+                    f"{INFO}| Description -- {finding.get('description')}{ENDC}",
+                    (term_size.columns - 2),
+                    initial_indent="",
+                    subsequent_indent="| ",
+                )
             )
-        )
-        print(ROW_BREAK)
-        references = "".join([f"\n| - {ref}" for ref in finding["references"]])
-        print(f"{INFO}| References -- {references}{ENDC}")
-        print(LINE_BREAK)
-        print(LINE_BREAK)
+            print(ROW_BREAK)
+            print(f"{INFO}| License -- {finding.get('license')} {ENDC}")
+            print(ROW_BREAK)
+            affected_versions = ", ".join(
+                [
+                    f"{f.get('operator')}{f.get('version_value')}"
+                    for f in finding.get("affected_versions", [])
+                ]
+            )
+            print(
+                textwrap.fill(
+                    f"{INFO}| Affected Version(s) -- \n| {affected_versions}{ENDC}",
+                    (term_size.columns - 2),
+                    replace_whitespace=False,
+                    initial_indent="",
+                    subsequent_indent="| ",
+                )
+            )
+            print(ROW_BREAK)
+            references = "".join([f"\n| - {ref}" for ref in finding["references"]])
+            print(f"{INFO}| References -- {references}{ENDC}")
+            print(LINE_BREAK)
+            print(LINE_BREAK)
 
 
 class JSONReport(BaseReport):
