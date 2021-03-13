@@ -44,7 +44,7 @@ class RequirementsFile:
                 )
             ]
         except OSError as ex:
-            raise OchronaFileException(f"OS error when parsing {file_path}") from ex
+            raise OchronaFileException(f"OS error when parsing {direct}") from ex
 
     @staticmethod
     def clean_dependency(dependency: str) -> str:
