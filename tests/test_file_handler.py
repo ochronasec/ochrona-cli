@@ -5,6 +5,7 @@ from json import loads
 from ochrona.file_handler import (
     rfind_all_dependencies_files,
     parse_to_payload,
+    parse_direct_to_payload,
 )
 from ochrona.exceptions import OchronaFileException
 
@@ -12,7 +13,6 @@ dir_path = os.path.dirname(os.path.abspath(__file__))
 
 
 class MockLogger:
-
     def __init__(self):
         self._logged = []
 
@@ -51,13 +51,17 @@ class TestFileHandlerRfindAllDependenciesFiles:
 
     def test_recursive_find(self):
         logger = MockLogger()
-        files = rfind_all_dependencies_files(logger, f"{dir_path}/test_data", None, None)
+        files = rfind_all_dependencies_files(
+            logger, f"{dir_path}/test_data", None, None
+        )
         assert len(files) == 11, "Expected to find eleven files"
         assert len(logger._logged) == 11, "Expected eleven debug log messages"
 
     def test_recursive_find_with_exclude(self):
         logger = MockLogger()
-        files = rfind_all_dependencies_files(logger, f"{dir_path}/test_data", "fail,no_op", None)
+        files = rfind_all_dependencies_files(
+            logger, f"{dir_path}/test_data", "fail,no_op", None
+        )
         assert len(files) == 9, "Expected to find nine files"
         assert len(logger._logged) == 9, "Expected nine debug log messages"
 
@@ -99,7 +103,9 @@ class TestFileHandlerParseToPayload:
         conf = MockConfig()
         conf._include_dev = True
         test_file = f"{dir_path}/test_data/pipfile/Pipfile.lock"
-        payload = parse_to_payload(logger=MockLogger(), file_path=test_file, config=conf)
+        payload = parse_to_payload(
+            logger=MockLogger(), file_path=test_file, config=conf
+        )
         assert "dependencies" in payload
         assert payload["dependencies"] == [
             "certifi==2019.9.11",
@@ -189,20 +195,20 @@ class TestFileHandlerParseToPayload:
         payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
-            'Django>=2.2,<2.3',
-            'Django>=3.0,<3.1',
-            'PyMySQL',
-            'urllib3',
-            'fakefakefake',
+            "Django>=2.2,<2.3",
+            "Django>=3.0,<3.1",
+            "PyMySQL",
+            "urllib3",
+            "fakefakefake",
         ]
-    
+
     def test_parse_tox_reference(self):
         conf = MockConfig()
         test_file = f"{dir_path}/test_data/tox/reference/tox.ini"
         payload = parse_to_payload(MockLogger(), test_file, config=conf)
         assert "dependencies" in payload
         assert payload["dependencies"] == [
-            'requests=2.11.0',
+            "requests=2.11.0",
         ]
 
     def test_parse_constraints(self):
@@ -214,4 +220,14 @@ class TestFileHandlerParseToPayload:
             "defusedxml==0.4.1",
             "requests==2.9.1",
             "requests-oauthlib==0.6.1",
+        ]
+
+    def test_parse_direct(self):
+        conf = MockConfig()
+        test_input = "#comment\ndefusedxml==0.4.1\nrequests==2.9.1"
+        payload = parse_direct_to_payload(MockLogger(), test_input, config=conf)
+        assert "dependencies" in payload
+        assert payload["dependencies"] == [
+            "defusedxml==0.4.1",
+            "requests==2.9.1",
         ]

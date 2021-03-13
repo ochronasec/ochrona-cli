@@ -17,14 +17,26 @@ from ochrona.exceptions import (
     OchronaAPIException,
     OchronaFileException,
 )
-from ochrona.file_handler import rfind_all_dependencies_files, parse_to_payload
+from ochrona.file_handler import (
+    rfind_all_dependencies_files,
+    parse_to_payload,
+    parse_direct_to_payload,
+)
 from ochrona.import_wrapper import SafeImport
 from ochrona.logger import OchronaLogger
 from ochrona.reporter import OchronaReporter
 from ochrona.ochrona_rest_client import OchronaAPIClient
 
 
+def get_direct(ctx, param, value):
+    if not value and not click.get_text_stream("stdin").isatty():
+        return click.get_text_stream("stdin").read().strip()
+    else:
+        return value
+
+
 @click.command()
+@click.argument("direct", callback=get_direct, required=False)
 @click.option("--api_key", help="Ochrona API Key (https://ochrona.dev).")
 @click.option(
     "--dir",
@@ -67,6 +79,7 @@ from ochrona.ochrona_rest_client import OchronaAPIClient
 )
 @click.option("--install", help="A safe wrapper for pip --install")
 def run(
+    direct: Optional[str],
     api_key: Optional[str],
     dir: Optional[str],
     exclude_dir: Optional[str],
@@ -114,9 +127,12 @@ def run(
             log.header()
 
         try:
-            files = rfind_all_dependencies_files(
-                log, config.dir, config.exclude_dir, config.file
-            )
+            if direct is None:
+                files = rfind_all_dependencies_files(
+                    log, config.dir, config.exclude_dir, config.file
+                )
+            else:
+                files = []
         except OchronaFileException as ex:
             OchronaLogger.static_error(ex)
             sys.exit(1)
@@ -125,6 +141,14 @@ def run(
             results = []
             for file_ in files:
                 payload = parse_to_payload(log, file_, config)
+                if payload.get("dependencies") != []:
+                    results.append(client.analyze(json.dumps(payload)))
+                else:
+                    # can't leave empty otherwise result counts are off
+                    results.append(client.empty_result())
+            if direct is not None:
+                # use piped input directly and treat as PEP-508 format
+                payload = parse_direct_to_payload(log, direct, config)
                 if payload.get("dependencies") != []:
                     results.append(client.analyze(json.dumps(payload)))
                 else:

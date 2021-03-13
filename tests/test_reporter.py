@@ -106,7 +106,13 @@ class TestOchronaReporter:
             {
                 "flat_list": ["fake"],
                 "confirmed_vulnerabilities": [
-                    {"found_version": "fake", "description": "fake finding", "cve_id": "123", "name": "fake", "ochrona_severity_score": 8.4}
+                    {
+                        "found_version": "fake",
+                        "description": "fake finding",
+                        "cve_id": "123",
+                        "name": "fake",
+                        "ochrona_severity_score": 8.4,
+                    }
                 ],
             },
             0,

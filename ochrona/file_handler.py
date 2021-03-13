@@ -154,3 +154,23 @@ def parse_to_payload(
         return {"dependencies": dependencies, "project_name": config.project_name}
     else:
         return {"dependencies": dependencies}
+
+
+def parse_direct_to_payload(
+    logger: OchronaLogger, direct: str, config: OchronaConfig
+) -> Dict[str, Any]:
+    """
+    Parses direct input string as PEP-508 compliant file and outputs a JSON payload.
+    :param logger: A configured `OchronaLogger` instance
+    :param direct: input string
+    :param config: An instance of `OchronaConfig`
+    :return: JSON payload
+    """
+    dependencies = []
+    parsers = Parsers()
+    dependencies = parsers.requirements.direct_parse(direct=direct)
+    logger.debug(f"Discovered dependencies: {dependencies}")
+    if config.project_name is not None:
+        return {"dependencies": dependencies, "project_name": config.project_name}
+    else:
+        return {"dependencies": dependencies}

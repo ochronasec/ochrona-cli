@@ -32,7 +32,7 @@ class TestCli:
 
     @pytest.mark.vcr()
     def test_cli_fail(self):
-        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+        with mock.patch.object(OchronaConfig, "_get_session", return_value=None):
             runner = CliRunner()
             result = runner.invoke(
                 cli.run,
@@ -47,7 +47,7 @@ class TestCli:
 
     @pytest.mark.vcr()
     def test_cli_fail_clean_exit(self):
-        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+        with mock.patch.object(OchronaConfig, "_get_session", return_value=None):
             runner = CliRunner()
             result = runner.invoke(
                 cli.run,
@@ -63,7 +63,7 @@ class TestCli:
 
     @pytest.mark.vcr()
     def test_cli_pass_single_requirements(self):
-        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+        with mock.patch.object(OchronaConfig, "_get_session", return_value=None):
             runner = CliRunner()
             result = runner.invoke(
                 cli.run,
@@ -78,7 +78,7 @@ class TestCli:
 
     @pytest.mark.vcr()
     def test_cli_pass_single_pipfile(self):
-        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+        with mock.patch.object(OchronaConfig, "_get_session", return_value=None):
             runner = CliRunner()
             result = runner.invoke(
                 cli.run,
@@ -93,7 +93,7 @@ class TestCli:
 
     @pytest.mark.vcr()
     def test_cli_pass_empty_requirements(self):
-        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+        with mock.patch.object(OchronaConfig, "_get_session", return_value=None):
             runner = CliRunner()
             result = runner.invoke(
                 cli.run,
@@ -107,8 +107,22 @@ class TestCli:
             assert result.exit_code == 0
 
     @pytest.mark.vcr()
+    def test_cli_pass_stdin(self):
+        with mock.patch.object(OchronaConfig, "_get_session", return_value=None):
+            runner = CliRunner()
+            result = runner.invoke(
+                cli.run,
+                [
+                    "requests==2.22.0",
+                    "--api_key",
+                    "1234",
+                ],
+            )
+            assert result.exit_code == 0
+
+    @pytest.mark.vcr()
     def test_cli_pass_fail_ignore_package(self):
-        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+        with mock.patch.object(OchronaConfig, "_get_session", return_value=None):
             runner = CliRunner()
             result = runner.invoke(
                 cli.run,
@@ -125,7 +139,7 @@ class TestCli:
 
     @pytest.mark.vcr()
     def test_cli_pass_fail_ignore_cve(self):
-        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+        with mock.patch.object(OchronaConfig, "_get_session", return_value=None):
             runner = CliRunner()
             result = runner.invoke(
                 cli.run,
@@ -142,7 +156,7 @@ class TestCli:
 
     @pytest.mark.vcr()
     def test_cli_pass_fail_ignore_no_match(self):
-        with mock.patch.object(OchronaConfig, '_get_session', return_value=None):
+        with mock.patch.object(OchronaConfig, "_get_session", return_value=None):
             runner = CliRunner()
             result = runner.invoke(
                 cli.run,

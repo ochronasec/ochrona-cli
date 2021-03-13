@@ -27,6 +27,26 @@ class RequirementsFile:
             raise OchronaFileException(f"OS error when parsing {file_path}") from ex
 
     @staticmethod
+    def direct_parse(direct: str) -> List[str]:
+        """
+        Parses a requirements.txt style string into a list of requirements.
+
+        :param file_path: requirements*.txt file path.
+        :return: list<str> list of dependencies ['dependency==semvar']
+        """
+        try:
+            deps = direct.split("\n")
+            return [
+                RequirementsFile.clean_dependency(dep)
+                for dep in deps
+                if not any(
+                    [dep.strip().startswith(s) for s in INVALID_REQUIREMENTS_LINES]
+                )
+            ]
+        except OSError as ex:
+            raise OchronaFileException(f"OS error when parsing {direct}") from ex
+
+    @staticmethod
     def clean_dependency(dependency: str) -> str:
         """
         Removes any comments or hashes following the dependency.
