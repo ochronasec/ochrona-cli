@@ -37,6 +37,8 @@ class OchronaReporter:
         :return: sys.exit -1 if vulns are discovered
         """
         reports = []
+        if len(sources) == 0:
+            sources.append("stdin")
         for index, (source, result) in enumerate(zip(sources, results)):
             if "confirmed_vulnerabilities" in result:
                 result["confirmed_vulnerabilities"] = list(

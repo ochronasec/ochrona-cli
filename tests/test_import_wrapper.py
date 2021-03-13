@@ -8,7 +8,6 @@ from ochrona.exceptions import OchronaImportException
 
 
 class MockLogger:
-
     def __init__(self):
         self._info = []
         self._warn = []
@@ -157,7 +156,10 @@ class TestImportWrapper:
         install_file.assert_called_once()
         install.assert_not_called()
         assert len(client._analyzed) == 1
-        assert client._analyzed[0] == '{"dependencies": ["requests==2.22.0", "Click==7.0", "Flask==1.1.1", "itsdangerous==1.1.0", "Jinja2==2.10.1", "MarkupSafe==1.1.1", "Werkzeug==0.15.4"]}'
+        assert (
+            client._analyzed[0]
+            == '{"dependencies": ["requests==2.22.0", "Click==7.0", "Flask==1.1.1", "itsdangerous==1.1.0", "Jinja2==2.10.1", "MarkupSafe==1.1.1", "Werkzeug==0.15.4"]}'
+        )
         assert (
             logger._info[0]
             == "A full list of packages to be installed, included dependencies: requests==2.22.0, Click==7.0, Flask==1.1.1, itsdangerous==1.1.0, Jinja2==2.10.1, MarkupSafe==1.1.1, Werkzeug==0.15.4"
@@ -195,7 +197,10 @@ class TestImportWrapper:
         install_file.assert_not_called()
         install.assert_not_called()
         assert len(client._analyzed) == 1
-        assert client._analyzed[0] == '{"dependencies": ["requests==2.19.0", "Click==7.0", "Flask==1.1.1", "itsdangerous==1.1.0", "Jinja2==2.10.1", "MarkupSafe==1.1.1", "Werkzeug==0.15.4"]}'
+        assert (
+            client._analyzed[0]
+            == '{"dependencies": ["requests==2.19.0", "Click==7.0", "Flask==1.1.1", "itsdangerous==1.1.0", "Jinja2==2.10.1", "MarkupSafe==1.1.1", "Werkzeug==0.15.4"]}'
+        )
         assert (
             logger._info[0]
             == "A full list of packages that would be installed, included dependencies: requests==2.19.0, Click==7.0, Flask==1.1.1, itsdangerous==1.1.0, Jinja2==2.10.1, MarkupSafe==1.1.1, Werkzeug==0.15.4"

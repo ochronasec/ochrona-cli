@@ -40,7 +40,8 @@ jobs:
       env:
         OCHRONA_API_KEY: ${{ secrets.OCHRONA_API_KEY }}
       run: |
-        ochrona --file requirements.txt
+        ochrona --file requirements.txt --project_name Ochrona-CLI
+        ochrona --file requirements-dev.txt --project_name Ochrona-CLI-Dev
     - name: Coverage
       run: |
         codecov

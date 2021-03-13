@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.1
+- Allow ochrona to accept piped input
+
 ## 0.1.0
 - Updated to support new authentication provider
 
