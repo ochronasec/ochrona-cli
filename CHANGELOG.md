@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.2
+- In some interpreters click accepts an empty string as an arguments, while others return None 
+
 ## 0.1.1
 - Allow ochrona to accept piped input
 

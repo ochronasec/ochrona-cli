@@ -126,6 +126,7 @@ def run(
         if not config.silent:
             log.header()
 
+        direct = direct if direct != "" else None
         try:
             if direct is None:
                 files = rfind_all_dependencies_files(
