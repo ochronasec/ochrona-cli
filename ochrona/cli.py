@@ -127,7 +127,7 @@ def run(
             log.header()
 
         try:
-            if direct is None:
+            if direct is None or direct == "":
                 files = rfind_all_dependencies_files(
                     log, config.dir, config.exclude_dir, config.file
                 )
@@ -146,7 +146,7 @@ def run(
                 else:
                     # can't leave empty otherwise result counts are off
                     results.append(client.empty_result())
-            if direct is not None:
+            if direct is not None or direct != "":
                 # use piped input directly and treat as PEP-508 format
                 payload = parse_direct_to_payload(log, direct, config)
                 if payload.get("dependencies") != []:
