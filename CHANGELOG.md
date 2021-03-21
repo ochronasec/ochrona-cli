@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.3
+- Updated documentation
+- Added Docker support
+
 ## 0.1.2
 - In some interpreters click accepts an empty string as an arguments, while others return None 
 
