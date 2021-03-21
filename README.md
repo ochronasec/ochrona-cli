@@ -38,7 +38,7 @@
 # Overview
 This module is the command line tool for accessing Ochrona Security, a solution for validating the dependencies used in python projects.
 
-Ochrona requires a license to operate. We offer a free-tier license which allows up to 25 scans per month. You can sign up for an API key on our Community plan at https://signup.ochrona.dev or visit https://ochrona.dev to learn about our other usage tiers. 
+Ochrona requires a license to operate. We offer a free-tier license which allows up to 25 scans per month. You can [sign up for an API key on our Community plan](https://signup.ochrona.dev) or visit [ochrona.dev](https://ochrona.dev) to learn about our other usage tiers. 
 
 We care deeply about Developer Experience (DX), if you have any feedback or run into issues please open an issue [here](https://github.com/ochronasec/ochrona-cli/issues).
 
