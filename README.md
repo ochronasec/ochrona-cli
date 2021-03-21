@@ -6,10 +6,39 @@
 [![Build Status](https://travis-ci.com/ochronasec/ochrona-cli.svg?token=9JDALtMe5VnkYyLdqiN6&branch=master)](https://travis-ci.com/ochronasec/ochrona-cli)
 [![codecov](https://codecov.io/gh/ochronasec/ochrona-cli/branch/master/graph/badge.svg?token=uWNZiXnXto)](https://codecov.io/gh/ochronasec/ochrona-cli)
 
+- [Overview](#overview)
+    + [Supported file types](#supported-file-types)
+- [Installation](#installation)
+    + [via pip](#via-pip)
+    + [via pipenv](#via-pipenv)
+    + [via poetry](#via-poetry)
+- [Configuration](#configuration)
+    + [via command line args](#via-command-line-args)
+    + [via environment variables](#via-environment-variables)
+    + [via .ochrona.yml](#via-ochronayml)
+- [Usage Examples](#usage-examples)
+    + [Default Mode](#default-mode)
+    + [Standard error code with Junit XML reporting saved to file](#standard-error-code-with-junit-xml-reporting-saved-to-file)
+    + [Safe Import Mode](#safe-import-mode)
+    + [stdin Support](#stdin-support)
+      - [Single dependency via stdin](#single-dependency-via-stdin)
+      - [Multi-dependency via stdin](#multi-dependency-via-stdin)
+    + [Docker Support](#docker-support)
+      - [Dockerized Ochrona passing api key](#dockerized-ochrona-passing-api-key)
+      - [Dockerized Ochrona with environment variables](#dockerized-ochrona-with-environment-variables)
+- [Output Formats](#output-formats)
+    + [Basic](#basic)
+    + [Full](#full)
+    + [XML (Junit)](#xml--junit-)
+    + [JSON](#json)
+- [Modes of Operation](#modes-of-operation)
+- [DADA Support](#dada-support)
+- [Represent!](#represent-)
 
+# Overview
 This module is the command line tool for accessing Ochrona Security, a solution for validating the dependencies used in python projects.
 
-Ochrona requires a license to operate. We offer a free-tier license which allows up to 25 scans per month. You can sign up for an API key at https://ochrona.dev.
+Ochrona requires a license to operate. We offer a free-tier license which allows up to 25 scans per month. You can [sign up for an API key on our Community plan](https://signup.ochrona.dev) or visit [ochrona.dev](https://ochrona.dev) to learn about our other usage tiers. 
 
 We care deeply about Developer Experience (DX), if you have any feedback or run into issues please open an issue [here](https://github.com/ochronasec/ochrona-cli/issues).
 
@@ -31,7 +60,12 @@ pip install ochrona
 
 ### via pipenv
 ```
-pipenv install <--dev> ochrona
+pipenv install --dev ochrona
+```
+
+### via poetry
+```
+poetry add -D ochrona
 ```
 
 # Configuration
@@ -99,7 +133,7 @@ There is an empty `.ochrona.yml` file included in the repo.
 ```
 
 # Usage Examples
-### Full Default Mode
+### Default Mode
 ```
 $ ochrona 
 ```
@@ -117,7 +151,35 @@ In this mode ochrona acts as a safe wrapper around standard pip installs to ensu
 $ ochrona --install <package_name>|<requirements.txt>
 ```
 
-# Reports
+### stdin Support
+Ochrona supports supplying dependencies via stdin and can accept a PEP-508 complaint (i.e. requirements.txt) formated string, or a single dependency. Single dependencies can be supplied as the first argument or piped.
+
+#### Single dependency via stdin
+```
+$ ochrona urllib3==1.26.4
+$ echo "urllib3==1.26.4" | ochrona
+```
+
+#### Multi-dependency via stdin
+```
+$ pip freeze | ochrona
+$ pipenv lock -r | ochrona
+$ cat requirements.txt | ochrona
+```
+
+### Docker Support
+Ochrona can be run via Docker. This is useful for the paranoid who may worry that an installed module could have modified the Python package namespace and allow malicious packages to bypass Ochrona's security checks. We've added this support in response to [CVE-2020-5252](https://mulch.dev/blog/CVE-2020-5252-python-safety-vuln/) which was disclosed prior to Ochrona and affects several other similar tools. 
+
+#### Dockerized Ochrona passing api key
+```
+$ pip freeze | docker run -i --rm ochrona/ochrona ochrona --api_key <API_KEY>
+```
+#### Dockerized Ochrona with environment variables
+```
+$ pip freeze | docker run -i -e OCHRONA_API_KEY=$OCHRONA_API_KEY --rm ochrona/ochrona ochrona
+```
+
+# Output Formats
 Ochrona supports several built in output options include a `BASIC` and `FULL` plaintext reports, as well as a Junit style `XML` report or a `JSON` style report for incorporating with other tools.
 
 ### Basic
@@ -132,14 +194,17 @@ Ochrona supports several built in output options include a `BASIC` and `FULL` pl
 ### JSON
 [<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_json.png"/></p>](https://ochrona.dev)
 
-# DADA Support
-DADA stands for Deployed Application Dependency Analysis. It is an additional product from Ochrona available to paying customers that allows for monitoring of the dependencies used in their python applications after they've been deployed. This functionality can give advanced alerting when a new vulnerability is discovered for a dependency being used in your deployed application.
-
+# Modes of Operation
 Ochrona operates in two different modes, `ad-hoc` and `record`. By default it operates in `ad-hoc` mode, meaning your dependency usage is not recorded. When you are ready to deploy your application to production you should run Ochrona in `record` mode so it can record a snapshot of your dependency usage. To set Ochrona in `record` mode, all you need to do is include a `project_name` either as a command line argument (i.e. `--project_name`) or in your `.ochrona.yml` file. 
 
 Each time Ochrona is run in `record` mode it will overwrite the snapshot for the specified project name. If you'd like to utilize DADA to record multiple branches of the same project it is recommended that you simply use a naming convention to support this (ex. `my-project` vs `my-project_develop`).
 
-Utilizing the `alert_config` parameters are also important for using DADA. These parameters dictate whether there are any special alerting conditions and where you would like alert emails to be sent. 
+When you sign up for Ochrona you are also granted access to https://app.ochrona.dev, which is a management portal for viewing/editing projects and retrieving your scan history.
+
+# DADA Support
+DADA stands for Deployed Application Dependency Analysis. It is an additional feature from Ochrona that allows for monitoring of the dependencies used in their python applications after they've been deployed. This functionality can give advanced alerting when a new vulnerability is discovered for a dependency being used in your deployed application. A single DADA project is available for all community users with Extended and Enterprise users having larger allowances.
+
+Utilizing the `alert_config` parameters are also important for using DADA. These parameters dictate whether there are any special alerting conditions and where you would like alert emails to be sent. DADA configurations can be supplied in the `.ochrona.yml` file, via command line, or set via the [web portal](https://app.ochrona.dev).
 
 # Represent!
 [![Ochrona](https://img.shields.io/badge/secured_by-ochrona-blue)](https://ochrona.dev)
