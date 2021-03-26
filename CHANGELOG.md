@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.4
+- Updated PyYAML
+
 ## 0.1.3
 - Updated documentation
 - Added Docker support
