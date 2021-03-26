@@ -15,7 +15,7 @@ except TypeError:
     with open("README.md") as readme_file:
         readme = readme_file.read()
 
-requirements = ["click>=7.1.2", "pyyaml>=5.3.1", "requests>=2.25.0", "toml>=0.10.2"]
+requirements = ["click>=7.1.2", "pyyaml>=5.4.1", "requests>=2.25.0", "toml>=0.10.2"]
 
 test_requirements = ["pytest>=6.1.2", "pytest-vcr>=1.0.2"]
 
