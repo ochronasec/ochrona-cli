@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.0
+- Added support for policies
+
 ## 0.1.4
 - Updated PyYAML
 

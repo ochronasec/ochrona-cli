@@ -7,6 +7,7 @@ Ochrona-cli
 import datetime
 import json
 import os
+import re
 import shutil
 import sys
 import textwrap
@@ -18,7 +19,6 @@ from typing import Any, Dict, List, Optional
 
 from ochrona.config import OchronaConfig
 from ochrona.logger import OchronaLogger
-
 
 class OchronaReporter:
     def __init__(self, logger: OchronaLogger, config: OchronaConfig):
@@ -83,21 +83,25 @@ class OchronaReporter:
                     ) if self._config.report_type == "BASIC" else FullReport.print_vuln_finding(
                         finding, True, self._config.color_output
                     )
+                for violation in result.get("policy_violations", []):
+                    BasicReport.print_policy_violation(violation)
             BaseReport.print_new_line()
         elif self._report_type == "JSON":
-            report = result.get("confirmed_vulnerabilities")
+            report = result.get("confirmed_vulnerabilities", [])
+            violations = result.get("policy_violations", [])
 
-            if report:
+            if report or violations:
                 if not self._report_location:
-                    JSONReport.display_report(report, source, total, index)
+                    JSONReport.display_report(report, violations, source, total, index)
                 else:
                     JSONReport.save_report_to_file(
-                        report, self._report_location, source, index
+                        report, violations, self._report_location, source, index
                     )
-            elif not report and not self._report_location:
-                JSONReport.display_report([], source, total, index)
+            elif (not report and not violations) and not self._report_location:
+                JSONReport.display_report(report, violations, source, total, index)
             else:
-                JSONReport.save_report_to_file([], self._report_location, source, index)
+                JSONReport.save_report_to_file(report, violations, self._report_location, source, index)
+
         elif self._report_type == "XML":
             if not self._report_location:
                 XMLReport.display_report(result, source, total, index)
@@ -212,7 +216,24 @@ class BasicReport(BaseReport):
             )
             print(ROW_BREAK)
             print(LINE_BREAK)
+    
+    @staticmethod
+    def print_policy_violation(violation: Dict[str, str], color: bool = True):
+        term_size = shutil.get_terminal_size((100, 20))
 
+        INFO = BaseReport.INFO if color else BaseReport.NO
+        ERROR = BaseReport.ERROR if color else BaseReport.NO
+        WARNING = BaseReport.WARNING if color else BaseReport.NO
+        ENDC = BaseReport.ENDC if color else BaseReport.NO
+        ROW_BREAK = f"{INFO}╞{'-' * (term_size.columns-2)}╡{ENDC}"
+        LINE_BREAK = f"{INFO}╞{'=' * (term_size.columns-2)}╡{ENDC}"
+
+        print(f"{INFO}|{ERROR} ⚠️  Policy Violation!{ENDC}")
+        print(ROW_BREAK)
+        print(f"{INFO}| Policy: {violation.get('friendly_policy_type')}{ENDC}")
+        print(f"{INFO}| {violation.get('message')}{ENDC}")
+        print(ROW_BREAK)
+        print(LINE_BREAK)
 
 class FullReport(BaseReport):
     """
@@ -303,29 +324,30 @@ class JSONReport(BaseReport):
 
     @staticmethod
     def display_report(
-        result: List[Dict[str, Any]], source: str, total: int, index: int
+        result: List[Dict[str, Any]], violations: List[str], source: str, total: int, index: int
     ):
         BaseReport.print_report_number(index, total)
         BaseReport.print_report_source(source)
-        print(JSONReport.generate_report_body(result, source))
+        print(JSONReport.generate_report_body(result, violations, source))
 
     @staticmethod
     def save_report_to_file(
-        result: List[Dict[str, Any]], location: str, source: str, index: int
+        result: List[Dict[str, Any]], violations: List[str], location: str, source: str, index: int
     ):
         with open(
             JSONReport.generate_report_filename(location, source, index), "w"
         ) as f:
-            f.write(JSONReport.generate_report_body(result, source))
+            f.write(JSONReport.generate_report_body(result, violations, source))
 
     @staticmethod
-    def generate_report_body(result: List[Dict[str, Any]], source: str) -> str:
+    def generate_report_body(result: List[Dict[str, Any]], violations: List[Dict[str, str]], source: str) -> str:
         report = {
             "meta": {
                 "source": str(source),
                 "timestamp": datetime.datetime.now().isoformat(),
             },
             "findings": result,
+            "violations": violations
         }
         return json.dumps(report, indent=4)
 
@@ -340,6 +362,8 @@ class XMLReport(BaseReport):
         - Includes only discovered vulnerabilities
     This report can be logged to stdout
     """
+
+    VIOLATION_PACKAGE_PATTERN = r"^.*\.\s+\(from (.*)\)$"
 
     @staticmethod
     def display_report(result: Dict[str, Any], source: str, total: int, index: int):
@@ -383,6 +407,22 @@ class XMLReport(BaseReport):
                 failure = ET.SubElement(case, "failure")
                 failure.set("type", "confirmed_vulnerability")
                 failure.text = f"Package name: {vuln.get('name')}\nVulnerability description: {vuln.get('description')}\nCVE: {vuln.get('cve_id')}\nSeverity: {vuln.get('ochrona_severity_score')}"
+        if "policy_violations" in result:
+            for dep in result.get("flat_list", []):
+                case = ET.SubElement(suite, "testcase")
+                case.set("classname", "ochronaDependencyPolicyCheck")
+                case.set("name", dep)
+            for violation in result.get("policy_violations", []):
+                violating_package = re.search(XMLReport.VIOLATION_PACKAGE_PATTERN, violation.get("mesage")).groups(1)[0]
+                case = list(
+                    filter(
+                        lambda x: x.get("name") == violating_package and x.get("classname") == "ochronaDependencyPolicyCheck",
+                        list(suite.iter()),
+                    )
+                )[0]
+                failure = ET.SubElement(case, "failure")
+                failure.set("type", "policy_violations")
+                failure.text = violation.get("message")
         return minidom.parseString(ET.tostring(suites)).toprettyxml(indent="   ")
 
     @staticmethod
