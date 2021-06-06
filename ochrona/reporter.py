@@ -427,9 +427,9 @@ class XMLReport(BaseReport):
                 case.set("classname", "ochronaDependencyPolicyCheck")
                 case.set("name", dep)
             for violation in result.get("policy_violations", []):
-                violating_package = re.search( # type: ignore
+                violating_package = re.search(  # type: ignore
                     XMLReport.VIOLATION_PACKAGE_PATTERN, violation.get("message")
-                ).groups(1)[0] 
+                ).groups(1)[0]
                 case = list(
                     filter(
                         lambda x: x.get("name") == violating_package
