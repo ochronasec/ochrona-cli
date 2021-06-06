@@ -20,6 +20,7 @@ from typing import Any, Dict, List, Optional
 from ochrona.config import OchronaConfig
 from ochrona.logger import OchronaLogger
 
+
 class OchronaReporter:
     def __init__(self, logger: OchronaLogger, config: OchronaConfig):
         self._config = config
@@ -100,7 +101,9 @@ class OchronaReporter:
             elif (not report and not violations) and not self._report_location:
                 JSONReport.display_report(report, violations, source, total, index)
             else:
-                JSONReport.save_report_to_file(report, violations, self._report_location, source, index)
+                JSONReport.save_report_to_file(
+                    report, violations, self._report_location, source, index
+                )
 
         elif self._report_type == "XML":
             if not self._report_location:
@@ -216,7 +219,7 @@ class BasicReport(BaseReport):
             )
             print(ROW_BREAK)
             print(LINE_BREAK)
-    
+
     @staticmethod
     def print_policy_violation(violation: Dict[str, str], color: bool = True):
         term_size = shutil.get_terminal_size((100, 20))
@@ -234,6 +237,7 @@ class BasicReport(BaseReport):
         print(f"{INFO}| {violation.get('message')}{ENDC}")
         print(ROW_BREAK)
         print(LINE_BREAK)
+
 
 class FullReport(BaseReport):
     """
@@ -324,7 +328,11 @@ class JSONReport(BaseReport):
 
     @staticmethod
     def display_report(
-        result: List[Dict[str, Any]], violations: List[str], source: str, total: int, index: int
+        result: List[Dict[str, Any]],
+        violations: List[Dict[str, str]],
+        source: str,
+        total: int,
+        index: int,
     ):
         BaseReport.print_report_number(index, total)
         BaseReport.print_report_source(source)
@@ -332,7 +340,11 @@ class JSONReport(BaseReport):
 
     @staticmethod
     def save_report_to_file(
-        result: List[Dict[str, Any]], violations: List[str], location: str, source: str, index: int
+        result: List[Dict[str, Any]],
+        violations: List[Dict[str, str]],
+        location: str,
+        source: str,
+        index: int,
     ):
         with open(
             JSONReport.generate_report_filename(location, source, index), "w"
@@ -340,14 +352,16 @@ class JSONReport(BaseReport):
             f.write(JSONReport.generate_report_body(result, violations, source))
 
     @staticmethod
-    def generate_report_body(result: List[Dict[str, Any]], violations: List[Dict[str, str]], source: str) -> str:
+    def generate_report_body(
+        result: List[Dict[str, Any]], violations: List[Dict[str, str]], source: str
+    ) -> str:
         report = {
             "meta": {
                 "source": str(source),
                 "timestamp": datetime.datetime.now().isoformat(),
             },
             "findings": result,
-            "violations": violations
+            "violations": violations,
         }
         return json.dumps(report, indent=4)
 
@@ -413,10 +427,13 @@ class XMLReport(BaseReport):
                 case.set("classname", "ochronaDependencyPolicyCheck")
                 case.set("name", dep)
             for violation in result.get("policy_violations", []):
-                violating_package = re.search(XMLReport.VIOLATION_PACKAGE_PATTERN, violation.get("mesage")).groups(1)[0]
+                violating_package = re.search(  # type: ignore
+                    XMLReport.VIOLATION_PACKAGE_PATTERN, violation.get("message")
+                ).groups(1)[0]
                 case = list(
                     filter(
-                        lambda x: x.get("name") == violating_package and x.get("classname") == "ochronaDependencyPolicyCheck",
+                        lambda x: x.get("name") == violating_package
+                        and x.get("classname") == "ochronaDependencyPolicyCheck",
                         list(suite.iter()),
                     )
                 )[0]
