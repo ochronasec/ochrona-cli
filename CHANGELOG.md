@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.1
+- Bump urllib3 dependency
+
 ## 0.2.0
 - Added support for policies
 
