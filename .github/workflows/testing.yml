@@ -27,7 +27,7 @@ jobs:
       env:
         PYTHONPATH: .
       run: |
-        mypy ./ochrona
+        mypy --install-types --non-interactive ./ochrona
     - name: SAST with Bandit
       run: |
         bandit ./ochrona -r -n 3 -lll
