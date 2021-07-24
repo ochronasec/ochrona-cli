@@ -68,7 +68,9 @@ class VulnDB:
             "wb",
         ) as f:
             f.write(r.content)
-        self.latest_version = sorted_releases[0].get("assets")[0].get("name").replace(".tar.gz", "")
+        self.latest_version = (
+            sorted_releases[0].get("assets")[0].get("name").replace(".tar.gz", "")
+        )
         self.latest_db_path = f"{self.user_app_dir}/{self.latest_version}.tar.gz"
         self._logger.debug(f"DB upgraded to {self.latest_version}")
 
