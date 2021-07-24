@@ -9,10 +9,6 @@ class OchronaException(Exception):
     pass
 
 
-class OchronaAPIException(OchronaException):
-    pass
-
-
 class OchronaFileException(OchronaException):
     pass
 

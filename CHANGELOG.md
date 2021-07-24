@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+- Operating model changed from API based to local analysis
+- Added support for policy checks
+- Removed support for project and DADA configuration
+- Removed the need for any account, credentials, or usage limits
+
 ## 0.2.1
 - Bump urllib3 dependency
 

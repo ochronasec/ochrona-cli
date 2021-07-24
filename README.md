@@ -3,7 +3,6 @@
 [![Ochrona](https://img.shields.io/badge/secured_by-ochrona-blue)](https://ochrona.dev)
 [![PyPI](https://img.shields.io/pypi/v/ochrona)](https://pypi.org/project/ochrona/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Build Status](https://travis-ci.com/ochronasec/ochrona-cli.svg?token=9JDALtMe5VnkYyLdqiN6&branch=master)](https://travis-ci.com/ochronasec/ochrona-cli)
 [![codecov](https://codecov.io/gh/ochronasec/ochrona-cli/branch/master/graph/badge.svg?token=uWNZiXnXto)](https://codecov.io/gh/ochronasec/ochrona-cli)
 
 - [Overview](#overview)
@@ -16,6 +15,8 @@
     + [via command line args](#via-command-line-args)
     + [via environment variables](#via-environment-variables)
     + [via .ochrona.yml](#via-ochronayml)
+- [Policies](#policies)
+    + [Policy Types](#policy-types)
 - [Usage Examples](#usage-examples)
     + [Default Mode](#default-mode)
     + [Standard error code with Junit XML reporting saved to file](#standard-error-code-with-junit-xml-reporting-saved-to-file)
@@ -31,16 +32,12 @@
     + [Full](#full)
     + [XML (Junit)](#xml--junit-)
     + [JSON](#json)
-- [Modes of Operation](#modes-of-operation)
-- [DADA Support](#dada-support)
 - [Represent!](#represent-)
 
 # Overview
-This module is the command line tool for accessing Ochrona Security, a solution for validating the dependencies used in python projects.
+Ochrona is a free solution for securing the dependencies used in Python projects. Ochrona also includes support for _policies_ which give you additional control over what aspects of your dependency usage you'd like to be alerted on.
 
-Ochrona requires a license to operate. We offer a free-tier license which allows up to 25 scans per month. You can [sign up for an API key on our Community plan](https://signup.ochrona.dev) or visit [ochrona.dev](https://ochrona.dev) to learn about our other usage tiers. 
-
-We care deeply about Developer Experience (DX), if you have any feedback or run into issues please open an issue [here](https://github.com/ochronasec/ochrona-cli/issues).
+The Ochrona maintainers care deeply about Developer Experience (DX), if you have any feedback or run into issues please open an issue [here](https://github.com/ochronasec/ochrona-cli/issues).
 
 ### Supported file types
 - `*requirements*.txt`
@@ -72,7 +69,6 @@ poetry add -D ochrona
 ### via command line args
 | Arg              | Description                                                               | Type | Example                                                                    |
 |------------------|---------------------------------------------------------------------------|------|----------------------------------------------------------------------|
-| `--api_key`      | Ochrona API Key                                                           | str  | abc123                                                                     |
 | `--dir`          | Directory to recursively search for dependencies files to scan [.]        | path | /User/me/my_project                                                        |
 | `--exclude_dir`  | Directory names that should be excluded from recursive search. Comma separated   | str | build,dev                                                    |
 | `--file`         | Single dependency file to scan                                            | file | /User/me/my_project/requirements.txt                                       |
@@ -83,13 +79,10 @@ poetry add -D ochrona
 | `--exit`         | Exit with Code 0 regardless of vulnerability findings. [False]            | bool | True                                                                       |
 | `--ignore`       | Ignore a CVE or package                                                   | str  | requests                                                                   |
 | `--include_dev`  | Include develop dependencies from Pipfile.lock [False]                    | bool | True                                                                       |
-| `--project_name` | The name of your project. Setting this will enable `record` mode.         | str  | My Example Project                                                         |
-| `--alert_config` | Alert configuration for use with DADA. This is expressed as a json string | str  | '{"alerting_addresses": "test@ochrona.dev", "alerting_rules": "not:boto3"}'|
 
 ### via environment variables
 | Variable Name         | Corresponding Arg |
 |-----------------------|-------------------|
-| OCHRONA_API_KEY       | `--api_key`       |
 | OCHRONA_DEBUG_LOGGING | `--debug`         |
 | OCHRONA_IGNORED_VULNS | `--ignore`        |
 
@@ -97,9 +90,6 @@ poetry add -D ochrona
 There is an empty `.ochrona.yml` file included in the repo. 
 | Key | Description | Type | Example |
 |-|-|-|-|
-| `api_key` | Ochrona API Key | str | abc123 |
-| `api_url` | This field can optionally set an alternative analysis url [https://api.ochrona.dev/python/analyze] | str | N/A |
-| `alert_url` | For DADA users only, this field can optionally set an alternative alert registration url  [https://api.ochrona.dev/alerts/project-alerts] | str | N/A |
 | `dir` | Directory to recursively search for dependencies files to scan [.] | path | /User/me/my_project |
 | `exclude_dir` | Directory names that should be excluded from recursive search. | list | build |
 | `file` | Single dependency file to scan | file | /User/me/my_project/requirements.txt |
@@ -111,13 +101,10 @@ There is an empty `.ochrona.yml` file included in the repo.
 | `ignore` | Ignore a CVE or package name | str | requests |
 | `include_dev` | Include develop dependencies from files that support dev/required dependencies [false] | bool | true |
 | `color_output` | Whether or not std out text should use color. Note: this is enabled by default when running in a non-Windows environment [true] | bool | false |
-| `project_name` | For DADA users only, the name of your project. If using a multi-branched approach it  is recommended to specify the branch name here as well | str | My Example Project |
-| `alert_config.alerting_addresses` | For DADA users only, this is the emails that should be notified in the event of a new  vulnerability that impacts the project.  | str | test@ohrona.dev |
-| `alert_config.alerting_rules` | For DADA users only, these are the rules that dictate whether an alert should be raised. Valid operators include `not:``package_name` and `severity:`>=`float` | str | not:boto3,severity:>7.0 |
+| `policies` | Policies are a way of defining additional checks against your dependencies. See [here](#policies) for more details | dict | [details](#policies) |
 
 **Example**:
 ```
-# api_key: <your key>
 # debug: true
 # silent: false
 # dir: .
@@ -126,11 +113,23 @@ There is an empty `.ochrona.yml` file included in the repo.
 # ignore: requests
 # include_dev: false
 # color_output: false
-# project_name: my_test_project
-# alert_config:
-#   alerting_addresses: test@web.com
-#   alerting_rules: not:boto3
+# policies:
+#  - policy_type: license_type
+#    deny_list: APSL,GPL-PA,JSON
 ```
+
+# Policies
+Policies are a way to add additional check to your Python dependency usage. A policy is defined using its name and one or more conditions which are evaluated at scan time.
+
+For example, the `license_type` policy allows you to be alerted if one of your dependency's open-source license is not part of your "Allow List" or if it uses a license from your "Deny List".
+
+Policy vioations are not the same as vulnerabilities, however they will cause Ochrona to emit a failure exit code and the output will include details about the policy violation.
+
+## Policy Types
+| Name | Description | Fields |
+|-|-|-|
+| `package_name` | Allows for checking whether the dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. | `allow_list`, `deny_list` | 
+| `license_type` | Allows for checking whether the licenses of dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. | `allow_list`, `deny_list` | 
 
 # Usage Examples
 ### Default Mode
@@ -194,17 +193,6 @@ Ochrona supports several built in output options include a `BASIC` and `FULL` pl
 ### JSON
 [<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_json.png"/></p>](https://ochrona.dev)
 
-# Modes of Operation
-Ochrona operates in two different modes, `ad-hoc` and `record`. By default it operates in `ad-hoc` mode, meaning your dependency usage is not recorded. When you are ready to deploy your application to production you should run Ochrona in `record` mode so it can record a snapshot of your dependency usage. To set Ochrona in `record` mode, all you need to do is include a `project_name` either as a command line argument (i.e. `--project_name`) or in your `.ochrona.yml` file. 
-
-Each time Ochrona is run in `record` mode it will overwrite the snapshot for the specified project name. If you'd like to utilize DADA to record multiple branches of the same project it is recommended that you simply use a naming convention to support this (ex. `my-project` vs `my-project_develop`).
-
-When you sign up for Ochrona you are also granted access to https://app.ochrona.dev, which is a management portal for viewing/editing projects and retrieving your scan history.
-
-# DADA Support
-DADA stands for Deployed Application Dependency Analysis. It is an additional feature from Ochrona that allows for monitoring of the dependencies used in their python applications after they've been deployed. This functionality can give advanced alerting when a new vulnerability is discovered for a dependency being used in your deployed application. A single DADA project is available for all community users with Extended and Enterprise users having larger allowances.
-
-Utilizing the `alert_config` parameters are also important for using DADA. These parameters dictate whether there are any special alerting conditions and where you would like alert emails to be sent. DADA configurations can be supplied in the `.ochrona.yml` file, via command line, or set via the [web portal](https://app.ochrona.dev).
 
 # Represent!
 [![Ochrona](https://img.shields.io/badge/secured_by-ochrona-blue)](https://ochrona.dev)

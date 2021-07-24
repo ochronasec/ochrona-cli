@@ -1,5 +1,4 @@
 ---
-# api_key: <your key>
 # debug: true
 # silent: false
 # dir: .
@@ -7,7 +6,8 @@
 # report_location: .
 # include_dev: false
 # color_output: false
-# project_name: My Sample Project
-# alert_config:
-#   alerting_addresses: test@web.com
-#   alerting_rules: not:boto3
+# policies:
+#  - policy_type: license_type
+#    deny_list: APSL,GPL-PA,JSON
+#  - policy_type: package_name
+#    deny_list: jsont
