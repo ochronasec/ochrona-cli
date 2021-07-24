@@ -37,6 +37,8 @@ jobs:
       run: |
         pytest
     - name: SCA check with Ochrona
+      env:
+        OCHRONA_API_KEY: ${{ secrets.OCHRONA_API_KEY }}
       run: |
         ochrona --file requirements.txt
         ochrona --file requirements-dev.txt
