@@ -57,7 +57,7 @@ setup(
     ],
     package_dir={"ochrona": "ochrona"},
     entry_points={"console_scripts": ["ochrona=ochrona.cli:run"]},
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     include_package_data=True,
     install_requires=requirements,
     license=license_,
