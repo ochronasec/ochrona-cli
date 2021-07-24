@@ -27,7 +27,7 @@ jobs:
       env:
         PYTHONPATH: .
       run: |
-        mypy --show-error-codes --ignore-missing-imports ./ochrona
+        mypy ./ochrona
     - name: SAST with Bandit
       run: |
         bandit ./ochrona -r -n 3 -lll
