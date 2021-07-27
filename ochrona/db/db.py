@@ -97,6 +97,9 @@ class VulnDB:
 
             for vuln_path in potential_vuln_paths:
                 potential_vulns.append(json.loads(tar.extractfile(vuln_path).read()))
+        self._logger.debug(
+            f"Found {len(potential_vulns)} vulnerabilities potentially affecting package: {name}"
+        )
         return potential_vulns
 
     @property

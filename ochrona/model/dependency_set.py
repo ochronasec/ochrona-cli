@@ -17,16 +17,20 @@ class DependencySet:
 
     def __init__(self, dependencies=[]):
         self._dependencies = dependencies
-        self._flat_list = list(self._flatten_dependencies(dependencies))
+        self._flat_list = self._flatten_dependencies(dependencies)
 
     def _flatten_dependencies(self, dependencies):
         """
         Flattens resolved transitive dependencies into a flat list.
         """
-        flat_list = []
+        unique_packages = {}
         for dependency in dependencies:
-            flat_list.append(dependency.full)
-        return set(flat_list)
+            if dependency.name not in unique_packages:
+                unique_packages[dependency.name] = dependency
+            else:
+                if dependency.version > unique_packages[dependency.name].version:
+                    unique_packages[dependency.name] = dependency
+        return list([k.full for k in unique_packages.values()])
 
     @property
     def dependencies(self):
@@ -73,16 +77,3 @@ def complex_handler(obj):
             type(obj), repr(obj)
         )
     )
-
-
-def flatten(lst):
-    """
-    Flattens a list of lists (..n) into a single dimension list
-    """
-    for elem in lst:
-        if isinstance(elem, collections.Iterable) and not isinstance(
-            elem, (str, bytes)
-        ):
-            yield from flatten(elem)
-        else:
-            yield elem

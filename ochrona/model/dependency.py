@@ -37,7 +37,7 @@ class Dependency:
             if "txt" in parts[0] and "-r" in parts[0]:
                 self.is_reference = True
                 return
-            self.name = parts[0]
+            self._name = parts[0]
         elif len(parts) > 1:
             self._name = parts[0]
             self._parse_version(parts[1])
@@ -150,3 +150,11 @@ class Dependency:
     @property
     def full(self) -> str:
         return self._full
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def version(self) -> str:
+        return self._version
