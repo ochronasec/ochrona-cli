@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -24,24 +24,24 @@ jobs:
       run: |
         black --check ./ochrona
     - name: Type Checking
+      env:
+        PYTHONPATH: .
       run: |
-        mypy --show-error-codes ./ochrona
+        mypy --install-types --non-interactive ./ochrona
     - name: SAST with Bandit
       run: |
         bandit ./ochrona -r -n 3 -lll
     - name: Unit Tests
       env:
-        OCHRONA_API_URL: http://localhost:5000/python/analyze
-        OCHRONA_ALERT_API_URL: http://localhost:5000/alerts/project-alerts
         PYTHONPATH: .
       run: |
-        pytest --cov=./ -vvs
+        pytest
     - name: SCA check with Ochrona
       env:
         OCHRONA_API_KEY: ${{ secrets.OCHRONA_API_KEY }}
       run: |
-        ochrona --file requirements.txt --project_name Ochrona-CLI
-        ochrona --file requirements-dev.txt --project_name Ochrona-CLI-Dev
+        ochrona --file requirements.txt
+        ochrona --file requirements-dev.txt
     - name: Coverage
       run: |
         codecov

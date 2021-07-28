@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 import pytest
 
 from ochrona.reporter import OchronaReporter
+from ochrona.model.confirmed_vulnerability import Vulnerability
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -32,6 +33,61 @@ class MockConfig:
         return self._ignore
 
 
+class MockDependencySet:
+    def __init__(self, confirmed_vulnerabilities=[], policy_violations=[], flat_list=[]):
+        self._confirmed_vulnerabilities = confirmed_vulnerabilities
+        self._policy_violations = policy_violations
+        self._flat_list = flat_list
+
+    @property
+    def confirmed_vulnerabilities(self):
+        return self._confirmed_vulnerabilities
+
+    @property
+    def policy_violations(self):
+        return self._policy_violations
+
+    @property
+    def flat_list(self):
+        return self._flat_list
+
+# class MockVulnerability:
+#     def __init__(self, name, found_version=None, description=None, cve_id=None, ochrona_severity_score=None):
+#         self._name = name
+#         self._found_version = found_version
+#         self._description = description
+#         self._cve_id = cve_id
+#         self._ochrona_severity_score = ochrona_severity_score
+
+#     @property
+#     def name(self):
+#         return self._name
+
+#     @property
+#     def found_version(self):
+#         return self._found_version
+
+#     @property
+#     def description(self):
+#         return self._description
+
+#     @property
+#     def cve_id(self):
+#         return self._cve_id
+
+#     @property
+#     def ochrona_severity_score(self):
+#         return self._ochrona_severity_score
+
+#     def asdict(self):
+#         return {
+#             "name": self.name,
+#             "found_version": self.found_version,
+#             "description": self.description,
+#             "cve_id": self.cve_id,
+#             "ochrona_severity_score": self.ochrona_severity_score
+#         }
+
 class TestOchronaReporter:
     def test_generate_empty_json_stdout(self, capsys):
         conf = MockConfig(
@@ -39,16 +95,19 @@ class TestOchronaReporter:
             None,
         )
         reporter = OchronaReporter(None, conf)
-        reporter.generate_report("fake", {}, 0, 1)
+        reporter.generate_report("fake", MockDependencySet(), 0, 1)
         captured = capsys.readouterr()
         assert "Source: fake" in captured.out
         assert '"findings": []' in captured.out
 
     def test_generate_json_stdout(self, capsys):
         conf = MockConfig("JSON", None)
+        result = MockDependencySet()
+        vuln = Vulnerability("fake", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
+        result._confirmed_vulnerabilities = [vuln]
         reporter = OchronaReporter(None, conf)
         reporter.generate_report(
-            "fake", {"confirmed_vulnerabilities": [{"name": "fake"}]}, 0, 1
+            "fake", result, 0, 1
         )
         captured = capsys.readouterr()
         assert "Source: fake" in captured.out
@@ -58,7 +117,7 @@ class TestOchronaReporter:
         conf = MockConfig("JSON", f"{dir_path}/test_data/output")
         reporter = OchronaReporter(None, conf)
         reporter.generate_report(
-            f"{dir_path}/test_data/fail/requirements.txt", {}, 0, 1
+            f"{dir_path}/test_data/fail/requirements.txt", MockDependencySet(), 0, 1
         )
         with open(
             f"{dir_path}/test_data/output/1_requirements.txt_results.json", "r"
@@ -73,10 +132,13 @@ class TestOchronaReporter:
 
     def test_generate_json_file(self):
         conf = MockConfig("JSON", f"{dir_path}/test_data/output")
+        result = MockDependencySet()
+        vuln = Vulnerability("fake", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
+        result._confirmed_vulnerabilities = [vuln]
         reporter = OchronaReporter(None, conf)
         reporter.generate_report(
             f"{dir_path}/test_data/fail/requirements.txt",
-            {"confirmed_vulnerabilities": [{"name": "fake"}]},
+            result,
             0,
             1,
         )
@@ -94,27 +156,20 @@ class TestOchronaReporter:
     def test_generate_empty_xml_stdout(self, capsys):
         conf = MockConfig("XML", None)
         reporter = OchronaReporter(None, conf)
-        reporter.generate_report("fake", {"flat_list": []}, 0, 1)
+        reporter.generate_report("fake", MockDependencySet(), 0, 1)
         captured = capsys.readouterr()
         assert '<testsuite tests="0">' in captured.out
 
     def test_generate_xml_stdout(self, capsys):
         conf = MockConfig("XML", None)
+        result = MockDependencySet()
+        vuln = Vulnerability("fake", "123", "", "", "", "", "", "fake finding", "", "", "", "8.4", "fake", "", "", "", "")
+        result._confirmed_vulnerabilities = [vuln]
+        result._flat_list = ["fake"]
         reporter = OchronaReporter(None, conf)
         reporter.generate_report(
             "fake",
-            {
-                "flat_list": ["fake"],
-                "confirmed_vulnerabilities": [
-                    {
-                        "found_version": "fake",
-                        "description": "fake finding",
-                        "cve_id": "123",
-                        "name": "fake",
-                        "ochrona_severity_score": 8.4,
-                    }
-                ],
-            },
+            result,
             0,
             1,
         )
@@ -129,7 +184,7 @@ class TestOchronaReporter:
         conf = MockConfig("XML", f"{dir_path}/test_data/output")
         reporter = OchronaReporter(None, conf)
         reporter.generate_report(
-            f"{dir_path}/test_data/fail/requirements.txt", {"flat_list": []}, 0, 1
+            f"{dir_path}/test_data/fail/requirements.txt", MockDependencySet(), 0, 1
         )
         with open(
             f"{dir_path}/test_data/output/1_requirements.txt_results.xml", "r"
@@ -141,15 +196,14 @@ class TestOchronaReporter:
 
     def test_generate_xml_file(self):
         conf = MockConfig("XML", f"{dir_path}/test_data/output")
+        result = MockDependencySet()
+        vuln = Vulnerability("fake", "123", "", "", "", "", "", "fake finding", "", "", "", "8.4", "fake", "", "", "", "")
+        result._confirmed_vulnerabilities = [vuln]
+        result._flat_list = ["fake"]
         reporter = OchronaReporter(None, conf)
         reporter.generate_report(
             f"{dir_path}/test_data/fail/requirements.txt",
-            {
-                "flat_list": ["fake"],
-                "confirmed_vulnerabilities": [
-                    {"found_version": "fake", "description": "fake finding"}
-                ],
-            },
+            result,
             0,
             1,
         )

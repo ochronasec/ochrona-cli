@@ -10,42 +10,62 @@ class TestConfig:
     Component tests for config module.
     """
 
-    def test_config_init(self):
-        conf = OchronaConfig(api_key="fake", report_type="BASIC")
-        assert conf.api_key == "fake"
+    def test_config_init_known_report(self):
+        conf = OchronaConfig(report_type="BASIC")
         assert conf.report_type == "BASIC"
 
-    def test_config_init_alert_parsing(self):
-        test_email = "test@ohrona.dev"
+    def test_config_valid_poilcy(self):
         conf = OchronaConfig(
-            api_key="fake",
             report_type="BASIC",
-            alert_config='{"alerting_addresses": "test@ohrona.dev", "alerting_rules": "not:boto3"}',
+            policies=[{"policy_type": "package_name", "allow_list": ["allowed"]}]
         )
-        assert conf.api_key == "fake"
-        assert conf.report_type == "BASIC"
-        assert conf.alert_config.get("alerting_addresses") == test_email
-        assert conf.alert_config.get("alerting_rules") == "not:boto3"
+        valid = conf._validate()
+        assert valid[0] is True
+        assert valid[1] is None
+        assert len(conf.policies) == 1
+        assert conf.policies[0].get("policy_type") == "package_name"
 
-    def test_config__validate_invalid_email(self):
-        test_email = "test@abc"
-        with pytest.raises(SystemExit):
+    def test_config_init_unknown_report(self):
+        fake = "FAKE"
+        with pytest.raises(SystemExit) as excinfo:
             conf = OchronaConfig(
-                api_key="fake",
-                report_type="BASIC",
-                alert_config='{"alerting_addresses": "test@abc", "alerting_rules": "not:boto3"}',
+                report_type=fake
             )
             valid = conf._validate()
-            assert valid[0] is False
-            assert valid[1] == f"Invalid email address {test_email} found in config"
-
-    def test_config__validate_missing_alert_email(self):
-        with pytest.raises(SystemExit):
+        assert str(excinfo.value) == f"Unknown report type specified in {fake}"
+    
+    def test_config_init_invalid_policy_type(self):
+        with pytest.raises(SystemExit) as excinfo:
             conf = OchronaConfig(
-                api_key="fake",
                 report_type="BASIC",
-                alert_config='{"alerting_rules": "not:boto3"}',
+                policies=[{"policy_type": "Fake", "allow_list": ["allowed"]}]
             )
             valid = conf._validate()
-            assert valid[0] is True
-            assert valid[1] == "Missing alerting_addresses in DADA alert config"
+        assert str(excinfo.value) == "'Fake' is not a supported policy type (package_name, license_type)"
+    
+    def test_config_init_invalid_policy_param_dict(self):
+        with pytest.raises(SystemExit) as excinfo:
+            conf = OchronaConfig(
+                report_type="BASIC",
+                policies={"policy_type": "Fake", "allow_list": ["allowed"]}
+            )
+            valid = conf._validate()
+        assert str(excinfo.value) == "'policies' must be an array"
+    
+    def test_config_init_invalid_policy_param_list_str(self):
+        with pytest.raises(SystemExit) as excinfo:
+            conf = OchronaConfig(
+                report_type="BASIC",
+                policies=["fake"]
+            )
+            valid = conf._validate()
+        assert str(excinfo.value) == "'policies' entries must be objects"
+
+    def test_config_init_invalid_policy_field(self):
+        with pytest.raises(SystemExit) as excinfo:
+            conf = OchronaConfig(
+                report_type="BASIC",
+                policies=[{"policy_type": "package_name", "unknown": "unknown"}]
+            )
+            valid = conf._validate()
+        assert str(excinfo.value) == "'package_name' contains an invalid field"

@@ -15,9 +15,19 @@ except TypeError:
     with open("README.md") as readme_file:
         readme = readme_file.read()
 
-requirements = ["click>=7.1.2", "pyyaml>=5.4.1", "requests>=2.25.0", "toml>=0.10.2"]
+requirements = [
+    "click>=7.1.2",
+    "pyyaml>=5.4.1",
+    "requests>=2.25.0",
+    "toml>=0.10.2",
+    "python-dateutil>=2.8.1",
+    "tarsafe>=0.0.3",
+    "packaging>=20.4",
+    "requests-cache>=0.5.2",
+    "appdirs>=1.4.4",
+]
 
-test_requirements = ["pytest>=6.1.2", "pytest-vcr>=1.0.2"]
+test_requirements = ["pytest>=6.1.2"]
 
 setup(
     name="ochrona",
@@ -28,10 +38,26 @@ setup(
     author=author,
     author_email=email,
     url="https://github.com/ochronasec/ochrona-cli",
-    packages=["ochrona","ochrona.parsers"],
+    packages=[
+        "ochrona",
+        "ochrona.cli",
+        "ochrona.client",
+        "ochrona.config",
+        "ochrona.db",
+        "ochrona.eval",
+        "ochrona.eval.policy",
+        "ochrona.eval.vuln",
+        "ochrona.file",
+        "ochrona.importer",
+        "ochrona.log",
+        "ochrona.model",
+        "ochrona.parser",
+        "ochrona.reporter",
+        "ochrona.utils",
+    ],
     package_dir={"ochrona": "ochrona"},
     entry_points={"console_scripts": ["ochrona=ochrona.cli:run"]},
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     include_package_data=True,
     install_requires=requirements,
     license=license_,
