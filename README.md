@@ -25,7 +25,7 @@
       - [Single dependency via stdin](#single-dependency-via-stdin)
       - [Multi-dependency via stdin](#multi-dependency-via-stdin)
     + [Docker Support](#docker-support)
-      - [Dockerized Ochrona passing api key](#dockerized-ochrona-passing-api-key)
+      - [Dockerized Ochrona](#dockerized-ochrona)
       - [Dockerized Ochrona with environment variables](#dockerized-ochrona-with-environment-variables)
 - [Output Formats](#output-formats)
     + [Basic](#basic)
@@ -145,7 +145,7 @@ $ ochrona --exit --report_type XML --output ./output
 ```
 
 ### Safe Import Mode
-In this mode ochrona acts as a safe wrapper around standard pip installs to ensure that a package and it's dependencies are safe before installing. This action preemptively checks a package against the Ochrona API and only imports if no vulnerabilities are found. It can be used with a base package (i.e. `requests`), or with a package pinned to an exact version (i.e. `requests==2.21.0`). It also supports importing a `requirements.txt` style, the pip equivalent of `pip install -r <file>`. 
+In this mode ochrona acts as a safe wrapper around standard pip installs to ensure that a package and it's dependencies are safe before installing. This action preemptively checks a package and only imports if no vulnerabilities are found. It can be used with a base package (i.e. `requests`), or with a package pinned to an exact version (i.e. `requests==2.21.0`). It also supports importing a `requirements.txt` style, the pip equivalent of `pip install -r <file>`. 
 ```
 $ ochrona --install <package_name>|<requirements.txt>
 ```
@@ -169,13 +169,13 @@ $ cat requirements.txt | ochrona
 ### Docker Support
 Ochrona can be run via Docker. This is useful for the paranoid who may worry that an installed module could have modified the Python package namespace and allow malicious packages to bypass Ochrona's security checks. We've added this support in response to [CVE-2020-5252](https://mulch.dev/blog/CVE-2020-5252-python-safety-vuln/) which was disclosed prior to Ochrona and affects several other similar tools. 
 
-#### Dockerized Ochrona passing api key
+#### Dockerized Ochrona
 ```
-$ pip freeze | docker run -i --rm ochrona/ochrona ochrona --api_key <API_KEY>
+$ pip freeze | docker run -i --rm ochrona/ochrona ochrona
 ```
 #### Dockerized Ochrona with environment variables
 ```
-$ pip freeze | docker run -i -e OCHRONA_API_KEY=$OCHRONA_API_KEY --rm ochrona/ochrona ochrona
+$ pip freeze | docker run -i -e OCHRONA_IGNORED_VULNS=requests --rm ochrona/ochrona ochrona
 ```
 
 # Output Formats
