@@ -1,9 +1,12 @@
 [<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_logo.png" width="500"/></p>](https://ochrona.dev)
 
-[![Ochrona](https://img.shields.io/badge/secured_by-ochrona-blue)](https://ochrona.dev)
-[![PyPI](https://img.shields.io/pypi/v/ochrona)](https://pypi.org/project/ochrona/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![codecov](https://codecov.io/gh/ochronasec/ochrona-cli/branch/master/graph/badge.svg?token=uWNZiXnXto)](https://codecov.io/gh/ochronasec/ochrona-cli)
+[![Ochrona](https://img.shields.io/badge/secured_by-ochrona-blue?style=flat-square)](https://ochrona.dev)
+[![PyPI](https://img.shields.io/pypi/v/ochrona?color=blue&style=flat-square)](https://pypi.org/project/ochrona/)
+[![Versions](https://img.shields.io/pypi/pyversions/ochrona?color=blue&logo=python&logoColor=white&style=flat-square)](https://pypi.org/project/ochrona/)
+[![License](https://img.shields.io/pypi/l/ochrona?color=blue&label=License&style=flat-square)](https://pypi.org/project/ochrona/)
+[![Downloads](https://img.shields.io/pypi/dm/ochrona?color=blue&label=Downloads&style=flat-square)](https://pypi.org/project/ochrona/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
+[![codecov](https://codecov.io/gh/ochronasec/ochrona-cli/branch/master/graph/badge.svg?token=uWNZiXnXto?style=flat-square)](https://codecov.io/gh/ochronasec/ochrona-cli)
 
 - [Overview](#overview)
     + [Supported file types](#supported-file-types)
