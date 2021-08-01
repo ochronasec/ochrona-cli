@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## 1.0.0
 - Operating model changed from API based to local analysis
 - Added support for policy checks
 - Removed support for project and DADA configuration
