@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.2
+- Avoid errors when processing dependency specifications with invalid characters
+
 ## 1.0.1
 - Fixed bug where vuln processing could fail if version was unspecified
 

@@ -28,3 +28,10 @@ class TestDependencySet:
         dependency_set = DependencySet([dependency1])
         assert len(dependency_set.flat_list) == 1
         assert dependency_set.flat_list[0] == "requests==2.26.1"
+
+    @mock.patch("ochrona.model.dependency.pypi_fetch")
+    def test_flatten_list_invalid_package_version(self, fetch):
+        dependency1 = Dependency("package.fake=='2.4'")
+        dependency_set = DependencySet([dependency1])
+        assert len(dependency_set.flat_list) == 1
+        assert dependency_set.flat_list[0] == "package.fake==2.4"
