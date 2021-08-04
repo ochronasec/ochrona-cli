@@ -151,6 +151,10 @@ class Dependency:
         return self._full
 
     @property
+    def license_type(self) -> str:
+        return self._license_type
+
+    @property
     def name(self) -> str:
         return self._name
 
