@@ -46,11 +46,7 @@ def evaluate(vulns, required_packages) -> List[Vulnerability]:
                                 f"{versions['operator']}{versions['version_value']}"
                             )
                     # Find latest version and requirement operator
-                    dependency_version = (
-                        package_details["version"]
-                        if "version" in package_details
-                        else ""
-                    )
+                    dependency_version = package_details.get("version", "")
 
                     # Evaluate
                     if "-" in [s.version for s in vuln_specifiers]:  # type: ignore

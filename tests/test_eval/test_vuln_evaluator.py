@@ -271,6 +271,50 @@ class TestEvaluator:
         ]
         self.evaluator_harness(package_list, potential_vulns, 1, "package_a==1.0.1")
 
+    def test_evaluate_confirmed_match_any_version_unspecified_no_version_provided(self):
+        """
+        Tests evaluation with no contained match
+        """
+        package_list = ["package_a", "package_b==1.0.0"]
+        potential_vulns = [
+            {
+                "name": "package_a",
+                "affected_versions": [{"version_value": "-", "operator": "="}],
+                "owner": "python-requests",
+                "repo_url": "http://package_a.com",
+                "references": [
+                    "https://usn.ubuntu.com/3790-2/",
+                ],
+                "cwe_id": "CWE-255",
+                "impact": {
+                    "a": "HIGH",
+                    "ac": "LOW",
+                    "pr": "NONE",
+                    "c": "HIGH",
+                    "vector_string": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "i": "HIGH",
+                    "impact_score": "5.9",
+                    "cvss3_severity": "CRITICAL",
+                    "cvss2_severity": "MEDIUM",
+                    "s": "UNCHANGED",
+                    "ui": "NONE",
+                    "cvss2_score": "5.0",
+                    "av": "NETWORK",
+                    "exploitability_score": "3.9",
+                    "cvss3_score": "9.8",
+                },
+                "description": "Package_a",
+                "language": "python",
+                "ochrona_severity_score": "9.8",
+                "repository_summary": "Package A",
+                "license": "MIT",
+                "latest_version": "2.0.0",
+                "cve_id": "CVE-2018-18074",
+                "publish_date": "2018-10-09T17:29Z",
+            }
+        ]
+        self.evaluator_harness(package_list, potential_vulns, 1, "package_a")
+
     def test_evaluate_confirmed_match_non_semvar(self):
         """
         Tests evaluation with no contained match
