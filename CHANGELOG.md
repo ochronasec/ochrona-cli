@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.1
+- Fixed bug where vuln processing could fail if version was unspecified
+
 ## 1.0.0
 - Operating model changed from API based to local analysis
 - Added support for policy checks

@@ -20,7 +20,7 @@ requests_cache.install_cache("db_cache", expire_after=expire_after)
 RELEASES_URL = (
     "https://api.github.com/repos/ochronasec/ochrona_python_vulnerabilities/releases"
 )
-VULN_PATTERN = "\.\/vulns\/({})\-[A-Z\-0-9]+\.json"
+VULN_PATTERN = "\.\/vulns\/({})[\-A-Z\-0-9]*\.json"
 
 
 class VulnDB:

@@ -89,6 +89,26 @@ class TestCli:
         )
         assert result.exit_code == 0
 
+    def test_cli_pass_stdin_no_version(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "requests",
+            ],
+        )
+        assert result.exit_code == 0
+
+    def test_cli_fail_stdin_no_version(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "easyinstall",
+            ],
+        )
+        assert result.exit_code == -1
+
     def test_cli_pass_fail_ignore_package(self):
         runner = CliRunner()
         result = runner.invoke(
