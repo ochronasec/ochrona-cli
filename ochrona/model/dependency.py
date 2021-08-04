@@ -42,13 +42,13 @@ class Dependency:
             self._name = parts[0]
             self._parse_version(parts[1])
             self._operator = re.sub("[a-zA-Z0-9.-]", "", self._raw)  # TODO fix
-        self._full = self._provided_or_most_recent() or self._raw
         (
-            self.latest_version,
-            self.license_type,
-            self.latest_update,
-            self.release_count,
+            self._latest_version,
+            self._license_type,
+            self._latest_update,
+            self._release_count,
         ) = self._pypi_details()
+        self._full = self._provided_or_most_recent() or self._raw
 
     def _parse_version(self, version: str):
         v = Version(version)
@@ -136,7 +136,6 @@ class Dependency:
             Current version is pkg==1.2.4
             We should return pkg==1.2.4
         """
-
         if self._operator == ">=" and parse(self._version) <= parse(
             self._latest_version
         ):
