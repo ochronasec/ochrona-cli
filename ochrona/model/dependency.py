@@ -9,6 +9,7 @@ from ochrona.client import pypi_fetch
 from ochrona.const import LICENSE_MAP
 
 PEP_SUPPORTED_OPERATORS = r"==|>=|<=|!=|~=|<|>"
+INVALID_SPEC_CHARACTERS = r"\'|\"|\\|\/|\[|\]|\{|\}"
 
 
 class Dependency:
@@ -31,7 +32,7 @@ class Dependency:
     _is_reference: bool = False
 
     def __init__(self, dependency: str):
-        self._raw = dependency.split(",")[0]
+        self._raw = self._clean(dependency.split(",")[0])
         parts = re.split(PEP_SUPPORTED_OPERATORS, self._raw)
         if len(parts) == 1:
             if "txt" in parts[0] and "-r" in parts[0]:
@@ -145,6 +146,9 @@ class Dependency:
         ):
             return f"{self._name}=={self._latest_version}"
         return self._raw
+
+    def _clean(self, raw: str) -> str:
+        return re.sub(INVALID_SPEC_CHARACTERS, "", raw)
 
     @property
     def full(self) -> str:
