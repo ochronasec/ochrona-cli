@@ -11,6 +11,7 @@ from ochrona.const import LICENSE_MAP
 PEP_SUPPORTED_OPERATORS = r"==|>=|<=|!=|~=|<|>"
 INVALID_SPEC_CHARACTERS = r"\'|\"|\\|\/|\[|\]|\{|\}"
 
+
 class Dependency:
     """
     A python dependency object.
