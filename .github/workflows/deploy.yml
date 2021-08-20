@@ -30,8 +30,8 @@ jobs:
         python setup.py sdist bdist_wheel
 
     - name: version
-        run: echo "::set-output name=version::$(cat ochrona/__init__.py | grep -Eio '(\d{1,}\.\d{1,}\.\d{1,}[a0-9]*)')"
-        id: version
+      run: echo "::set-output name=version::$(cat ochrona/__init__.py | grep -Eio '(\d{1,}\.\d{1,}\.\d{1,}[a0-9]*)')"
+      id: version
 
     - name: Create Release
       id: create_release
