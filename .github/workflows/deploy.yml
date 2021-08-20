@@ -33,19 +33,13 @@ jobs:
       run: echo "::set-output name=version::$(cat ./ochrona/__init__.py | grep -Eio '([0-9]{1,}\.[0-9]{1,}\.[0-9]{1,}[a0-9]*)')"
       id: version
 
-    - name: variable
-      run: |
-        echo ${{ steps.version.outputs.version }}
-        echo "===="
-        cat ./ochrona/__init__.py | grep -Eio '([0-9]{1,}\.[0-9]{1,}\.[0-9]{1,}[a0-9]*)' 
-
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        tag_name: ${{ steps.version.outputs.version }}
+        tag_name: v${{ steps.version.outputs.version }}
         release_name:  v${{ steps.version.outputs.version }}
         draft: false
         prerelease: false
