@@ -5,10 +5,12 @@
 [![Versions](https://img.shields.io/pypi/pyversions/ochrona?color=blue&logo=python&logoColor=white&style=flat-square)](https://pypi.org/project/ochrona/)
 [![License](https://img.shields.io/pypi/l/ochrona?color=blue&label=License&style=flat-square)](https://pypi.org/project/ochrona/)
 [![Downloads](https://img.shields.io/pypi/dm/ochrona?color=blue&label=Downloads&style=flat-square)](https://pypi.org/project/ochrona/)
+[![Vuln DB Version](https://img.shields.io/github/v/release/ochronasec/ochrona_python_vulnerabilities.svg?style=flat-square&label=database)](https://github.com/ochronasec/ochrona_python_vulnerabilities)
+[![codecov](https://img.shields.io/codecov/c/github/ochronasec/ochrona-cli?color=blue&style=flat-square)](https://codecov.io/gh/ochronasec/ochrona-cli)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
-[![codecov](https://codecov.io/gh/ochronasec/ochrona-cli/branch/master/graph/badge.svg?token=uWNZiXnXto?style=flat-square)](https://codecov.io/gh/ochronasec/ochrona-cli)
 
 - [Overview](#overview)
+    + [Vulnerability Data](#vulnerability-data)
     + [Supported file types](#supported-file-types)
 - [Installation](#installation)
     + [via pip](#via-pip)
@@ -41,6 +43,9 @@
 Ochrona is a free solution for securing the dependencies used in Python projects. Ochrona also includes support for _policies_ which give you additional control over what aspects of your dependency usage you'd like to be alerted on.
 
 The Ochrona maintainers care deeply about Developer Experience (DX), if you have any feedback or run into issues please open an issue [here](https://github.com/ochronasec/ochrona-cli/issues).
+
+### Vulnerability Data
+Ochrona maintains its own database of vulnerabilities impacting Python packages. You're welcome to check out the database [here](https://github.com/ochronasec/ochrona_python_vulnerabilities). This database is updated frequently using data from NVD, Github, and other sources. Ochrona will update its local copy of the database if a new version exists.
 
 ### Supported file types
 - `*requirements*.txt`
@@ -132,7 +137,7 @@ Policy vioations are not the same as vulnerabilities, however they will cause Oc
 | Name | Description | Fields |
 |-|-|-|
 | `package_name` | Allows for checking whether the dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. | `allow_list`, `deny_list` | 
-| `license_type` | Allows for checking whether the licenses of dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. | `allow_list`, `deny_list` | 
+| `license_type` | Allows for checking whether the licenses of dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. (SPDX)[https://spdx.org/licenses/] license ids should be used. | `allow_list`, `deny_list` | 
 
 # Usage Examples
 ### Default Mode
