@@ -38,7 +38,7 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
                 PolicyViolation(
                     policy_type="custom",
                     friendly_policy_type="Custom Policy",
-                    message=f"Policy defined as {policy} was not met.",
+                    message=f"Policy defined as '{policy}' was not met.",
                 )
             ]
     else:
@@ -49,7 +49,7 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
                 PolicyViolation(
                     policy_type="custom",
                     friendly_policy_type="Custom Policy",
-                    message=f"Policy defined as {policy} was not met.",
+                    message=f"Policy defined as '{policy}' was not met.",
                 )
             ]
 
@@ -57,14 +57,13 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
 def evaluate_condition(dependency_list, definition: Definition) -> bool:
     for dep in dependency_list:
         dependency_value = dep.__dict__.get(f"_reserved_{definition.field.value}")
-        print(_calculate_value(definition.value))
         if dependency_value is None:
             continue
         if definition.operator.id == Token.EQUAL:
-            if dependency_value != definition.value.value:
+            if not dependency_value == _calculate_value(definition.value):
                 return False
         elif definition.operator.id == Token.NEQUAL:
-            if dependency_value == definition.value.value:
+            if not dependency_value != _calculate_value(definition.value):
                 return False
         elif definition.operator.id == Token.SMALL:
             if not dependency_value < _calculate_value(definition.value):

@@ -135,7 +135,7 @@ There is an empty `.ochrona.yml` file included in the repo.
 # Policies
 Policies are a way to add additional check to your Python dependency usage. Policies can be defined using conditional and logical syntax. These generic policy definitions allow you to define unique, custom policies to fit your need, and they can be extensible as new fields and capabilities are added.
 
-Policy vioations are not the same as vulnerabilities, however they will cause Ochrona to emit a failure exit code and the output will include details about the policy violation.
+Policy vioations are not the same as vulnerabilities, however violations will cause Ochrona to emit a failure exit code and the output will include details about the policy violation.
 
 ## Policy Syntax
 At their most basic, policies are defined using conditional statements and logical operators. A conditional statement is structured as `<field><operator><value>`, for example, `license_type == MIT`. Whitespace is always ignored during policy evaluation.
