@@ -238,7 +238,7 @@ class TestPolicyEvaluator:
         """
         Test generic policy evaluation > pass
         """
-        past_days_10 = (datetime.now() - timedelta(10)).isoformat()
+        past_days_10 = (datetime.now() - timedelta(10)).isoformat() + "Z"
         package_list = MockDependencySet(
             [], [{"full": "fake==1.2.3", "license_type": "MIT", "latest_update": past_days_10}]
         )
@@ -249,7 +249,7 @@ class TestPolicyEvaluator:
         """
         Test generic policy evaluation > fail
         """
-        past_days_100 = (datetime.now() - timedelta(100)).isoformat()
+        past_days_100 = (datetime.now() - timedelta(100)).isoformat() + "Z"
         package_list = MockDependencySet(
             [], [{"full": "fake==1.2.3", "license_type": "MIT", "latest_update": past_days_100}]
         )
@@ -260,7 +260,7 @@ class TestPolicyEvaluator:
         """
         Test generic policy evaluation < pass
         """
-        past_days_100 = (datetime.now() - timedelta(100)).isoformat()
+        past_days_100 = (datetime.now() - timedelta(100)).isoformat() + "Z"
         package_list = MockDependencySet(
             [], [{"full": "fake==1.2.3", "license_type": "MIT", "latest_update": past_days_100}]
         )

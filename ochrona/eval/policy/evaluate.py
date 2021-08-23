@@ -122,7 +122,7 @@ def _lt_compare(left, right, field):
     if field == "latest_version":
         return Version(left) < Version(right)
     elif field == "latest_update":
-        return datetime.fromisoformat(left) < datetime.fromisoformat(right)
+        return _parse_pypi_timestamp(left) < datetime.fromisoformat(right)
     else:
         return float(left) < float(right)
 
@@ -131,7 +131,7 @@ def _lte_compare(left, right, field):
     if field == "latest_version":
         return Version(left) <= Version(right)
     elif field == "latest_update":
-        return datetime.fromisoformat(left) <= datetime.fromisoformat(right)
+        return _parse_pypi_timestamp(left) <= datetime.fromisoformat(right)
     else:
         return float(left) <= float(right)
 
@@ -140,7 +140,7 @@ def _gt_compare(left, right, field):
     if field == "latest_version":
         return Version(left) > Version(right)
     elif field == "latest_update":
-        return datetime.fromisoformat(left) > datetime.fromisoformat(right)
+        return _parse_pypi_timestamp(left) > datetime.fromisoformat(right)
     else:
         return float(left) > float(right)
 
@@ -149,6 +149,11 @@ def _gte_compare(left, right, field):
     if field == "latest_version":
         return Version(left) >= Version(right)
     elif field == "latest_update":
-        return datetime.fromisoformat(left) >= datetime.fromisoformat(right)
+        return _parse_pypi_timestamp(left) >= datetime.fromisoformat(right)
     else:
         return float(left) >= float(right)
+
+
+def _parse_pypi_timestamp(timestamp):
+    time_format = "%Y-%m-%dT%H:%M:%S.%fZ" if "." in timestamp else "%Y-%m-%dT%H:%M:%SZ"
+    return datetime.strptime(timestamp, time_format)
