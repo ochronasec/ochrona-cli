@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
 
+from packaging.specifiers import Version
+
 from ochrona.eval.policy.parser import parse
 from ochrona.eval.policy.models import TokenInstance, Definition
 from ochrona.eval.policy.tokens import Token
@@ -66,16 +68,32 @@ def evaluate_condition(dependency_list, definition: Definition) -> bool:
             if not dependency_value != _calculate_value(definition.value):
                 return False
         elif definition.operator.id == Token.SMALL:
-            if not dependency_value < _calculate_value(definition.value):
+            if not _lt_compare(
+                dependency_value,
+                _calculate_value(definition.value),
+                definition.field.value,
+            ):
                 return False
         elif definition.operator.id == Token.SMALLEQ:
-            if not dependency_value <= _calculate_value(definition.value):
+            if not _lte_compare(
+                dependency_value,
+                _calculate_value(definition.value),
+                definition.field.value,
+            ):
                 return False
         elif definition.operator.id == Token.LARGE:
-            if not dependency_value > _calculate_value(definition.value):
+            if not _gt_compare(
+                dependency_value,
+                _calculate_value(definition.value),
+                definition.field.value,
+            ):
                 return False
         elif definition.operator.id == Token.LARGEEQ:
-            if not dependency_value >= _calculate_value(definition.value):
+            if not _gte_compare(
+                dependency_value,
+                _calculate_value(definition.value),
+                definition.field.value,
+            ):
                 return False
         if definition.operator.id == Token.IN:
             if dependency_value not in [
@@ -98,3 +116,39 @@ def _calculate_value(value: TokenInstance):
         calculated_date = datetime.now() - timedelta(30)
         return calculated_date.isoformat()
     return value.value
+
+
+def _lt_compare(left, right, field):
+    if field == "latest_version":
+        return Version(left) < Version(right)
+    elif field == "latest_update":
+        return datetime.fromisoformat(left) < datetime.fromisoformat(right)
+    else:
+        return float(left) < float(right)
+
+
+def _lte_compare(left, right, field):
+    if field == "latest_version":
+        return Version(left) <= Version(right)
+    elif field == "latest_update":
+        return datetime.fromisoformat(left) <= datetime.fromisoformat(right)
+    else:
+        return float(left) <= float(right)
+
+
+def _gt_compare(left, right, field):
+    if field == "latest_version":
+        return Version(left) > Version(right)
+    elif field == "latest_update":
+        return datetime.fromisoformat(left) > datetime.fromisoformat(right)
+    else:
+        return float(left) > float(right)
+
+
+def _gte_compare(left, right, field):
+    if field == "latest_version":
+        return Version(left) >= Version(right)
+    elif field == "latest_update":
+        return datetime.fromisoformat(left) >= datetime.fromisoformat(right)
+    else:
+        return float(left) >= float(right)
