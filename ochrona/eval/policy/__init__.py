@@ -3,6 +3,7 @@ import ochrona.eval.policy.license_type
 
 from ochrona.const import PYTHON_LICENSE_TYPE_POLICY
 from ochrona.const import PYTHON_PACKAGE_NAME_POLICY
+from ochrona.eval.policy.evaluate import evaluate
 
 
 def policy_evaluate(dependencies, policies):
@@ -11,13 +12,20 @@ def policy_evaluate(dependencies, policies):
     """
     violations = []
     for policy in policies:
-        policy_type = policy.get("policy_type")
-        if policy_type == PYTHON_PACKAGE_NAME_POLICY:
-            violations += package_name.evaluate(
-                dependency_list=dependencies.flat_list, policy=policy
-            )
-        elif policy_type == PYTHON_LICENSE_TYPE_POLICY:
-            violations += license_type.evaluate(
+        # PENDING-DEPRECATION
+        # "legacy" policies will be removed in a future release
+        if isinstance(policy, dict):
+            policy_type = policy.get("policy_type")
+            if policy_type == PYTHON_PACKAGE_NAME_POLICY:
+                violations += package_name.evaluate(
+                    dependency_list=dependencies.flat_list, policy=policy
+                )
+            elif policy_type == PYTHON_LICENSE_TYPE_POLICY:
+                violations += license_type.evaluate(
+                    dependency_list=dependencies.dependencies, policy=policy
+                )
+        else:
+            violations += evaluate(
                 dependency_list=dependencies.dependencies, policy=policy
             )
     return violations

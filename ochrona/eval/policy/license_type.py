@@ -1,3 +1,5 @@
+# PENDING-DEPRECATION
+# "legacy" policies will be removed in a future release
 from typing import Any, Dict, List
 
 from ochrona.const import PYTHON_LICENSE_TYPE_POLICY
@@ -5,7 +7,9 @@ from ochrona.model.dependency import Dependency
 from ochrona.model.policy_violation import PolicyViolation
 
 
-def evaluate(dependency_list: List[Dependency], policy: Dict[str, Any]):
+def evaluate(
+    dependency_list: List[Dependency], policy: Dict[str, Any]
+) -> List[PolicyViolation]:
     """
     Evaluate python license dependencies
     """

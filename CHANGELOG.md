@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.1.0
+- Introduced new dynamic policies
+-- Existing policy types, `package_name` and `license_type` will now be known as `legacy` policies.
+-- New policy types can be defined as logical condition strings (i.e. `license_type IN MIT,ISC,Apache-2.0`)
+
 ## 1.0.2
 - Avoid errors when processing dependency specifications with invalid characters
 

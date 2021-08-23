@@ -12,6 +12,7 @@ import yaml
 from typing import Any, Dict, List, Optional, Tuple
 
 from ochrona.eval.policy import POLICY_SCHEMAS
+from ochrona.eval.policy.validator import validate
 
 
 class OchronaConfig:
@@ -162,22 +163,29 @@ class OchronaConfig:
         if not isinstance(self._policies, list):
             return (False, "'policies' must be an array")
         for policy in self._policies:
-            if not isinstance(policy, dict):
-                return (False, "'policies' entries must be objects")
-            if policy.get("policy_type") not in POLICY_SCHEMAS:
-                return (
-                    False,
-                    f"'{policy.get('policy_type')}' is not a supported policy type ({', '.join(POLICY_SCHEMAS.keys())})",
-                )
-            policy_keys = list(policy.keys())
-            for key in policy_keys:
-                if key != "policy_type" and key not in POLICY_SCHEMAS.get(
-                    policy.get("policy_type", {}), {}
-                ).get("fields"):
+            # PENDING-DEPRECATION
+            # "legacy" policies will be removed in a future release
+            if isinstance(policy, dict):
+                if policy.get("policy_type") not in POLICY_SCHEMAS:
                     return (
                         False,
-                        f"'{policy.get('policy_type')}' contains an invalid field",
+                        f"'{policy.get('policy_type')}' is not a supported policy type ({', '.join(POLICY_SCHEMAS.keys())})",
                     )
+                policy_keys = list(policy.keys())
+                for key in policy_keys:
+                    if key != "policy_type" and key not in POLICY_SCHEMAS.get(
+                        policy.get("policy_type", {}), {}
+                    ).get("fields"):
+                        return (
+                            False,
+                            f"'{policy.get('policy_type')}' contains an invalid field",
+                        )
+            elif isinstance(policy, str):
+                results = validate(policy)
+                if not results[0]:
+                    return results
+            else:
+                return (False, "'policies' entries must be objects or strings")
         return (True, None)
 
     @property

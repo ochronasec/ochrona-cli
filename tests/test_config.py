@@ -14,7 +14,7 @@ class TestConfig:
         conf = OchronaConfig(report_type="BASIC")
         assert conf.report_type == "BASIC"
 
-    def test_config_valid_poilcy(self):
+    def test_config_valid_legacy_poilcy(self):
         conf = OchronaConfig(
             report_type="BASIC",
             policies=[{"policy_type": "package_name", "allow_list": ["allowed"]}]
@@ -34,7 +34,7 @@ class TestConfig:
             valid = conf._validate()
         assert str(excinfo.value) == f"Unknown report type specified in {fake}"
     
-    def test_config_init_invalid_policy_type(self):
+    def test_config_init_invalid_legacy_policy_type(self):
         with pytest.raises(SystemExit) as excinfo:
             conf = OchronaConfig(
                 report_type="BASIC",
@@ -43,7 +43,7 @@ class TestConfig:
             valid = conf._validate()
         assert str(excinfo.value) == "'Fake' is not a supported policy type (package_name, license_type)"
     
-    def test_config_init_invalid_policy_param_dict(self):
+    def test_config_init_invalid_legacy_policy_param_dict(self):
         with pytest.raises(SystemExit) as excinfo:
             conf = OchronaConfig(
                 report_type="BASIC",
@@ -51,17 +51,8 @@ class TestConfig:
             )
             valid = conf._validate()
         assert str(excinfo.value) == "'policies' must be an array"
-    
-    def test_config_init_invalid_policy_param_list_str(self):
-        with pytest.raises(SystemExit) as excinfo:
-            conf = OchronaConfig(
-                report_type="BASIC",
-                policies=["fake"]
-            )
-            valid = conf._validate()
-        assert str(excinfo.value) == "'policies' entries must be objects"
 
-    def test_config_init_invalid_policy_field(self):
+    def test_config_init_invalid_legacy_policy_field(self):
         with pytest.raises(SystemExit) as excinfo:
             conf = OchronaConfig(
                 report_type="BASIC",
@@ -69,3 +60,31 @@ class TestConfig:
             )
             valid = conf._validate()
         assert str(excinfo.value) == "'package_name' contains an invalid field"
+
+    def test_config_init_invalid_policy(self):
+        with pytest.raises(SystemExit) as excinfo:
+            conf = OchronaConfig(
+                report_type="BASIC",
+                policies=["fake"]
+            )
+            valid = conf._validate()
+        assert str(excinfo.value) == "Policy could not be parsed or contains an invalid field."
+
+    def test_config_init_valid_policy(self):
+        conf = OchronaConfig(
+                report_type="BASIC",
+                policies=["license_type==MIT"]
+            )
+        valid = conf._validate()
+        assert valid[0] is True
+        assert valid[1] is None
+        assert len(conf.policies) == 1
+    
+    def test_config_init_invalid_policy_field(self):
+        with pytest.raises(SystemExit) as excinfo:
+            conf = OchronaConfig(
+                report_type="BASIC",
+                policies=["fake==fake"]
+            )
+            valid = conf._validate()
+        assert str(excinfo.value) == "Policy could not be parsed or contains an invalid field."
