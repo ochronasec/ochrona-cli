@@ -54,7 +54,7 @@ class OchronaReporter:
                 result.confirmed_vulnerabilities = []
             reports.append(self.generate_report(source, result, index, len(sources)))
         for result in results:
-            if result.confirmed_vulnerabilities:
+            if result.confirmed_vulnerabilities or result.policy_violations:
                 if not self._exit:
                     sys.exit(-1)
                 sys.exit(0)
@@ -74,7 +74,7 @@ class OchronaReporter:
         if self._report_type in ["BASIC", "FULL"]:
             BaseReport.print_report_number(index, total, self._config.color_output)
             BaseReport.print_report_source(source, self._config.color_output)
-            if not result.confirmed_vulnerabilities:
+            if not result.confirmed_vulnerabilities and not result.policy_violations:
                 BaseReport.print_no_vulns(self._config.color_output)
             else:
                 for finding in result.confirmed_vulnerabilities:
@@ -83,6 +83,8 @@ class OchronaReporter:
                     ) if self._config.report_type == "BASIC" else FullReport.print_vuln_finding(
                         finding, True, self._config.color_output
                     )
+                else:
+                    BaseReport.print_no_vulns(self._config.color_output)
                 for violation in result.policy_violations:
                     BasicReport.print_policy_violation(violation)
             BaseReport.print_new_line()

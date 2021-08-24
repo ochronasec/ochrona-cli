@@ -21,7 +21,14 @@
     + [via environment variables](#via-environment-variables)
     + [via .ochrona.yml](#via-ochronayml)
 - [Policies](#policies)
-    + [Policy Types](#policy-types)
+    + [Policy Syntax](#policy-syntax)
+      - [Allowed Fields](#allowed-fields)
+      - [Allowed Conditional Operators](#allowed-conditional-operators)
+      - [Allowed Logical Operators](#allowed-logical-operators)
+      - [Special Values](#special-values)
+      - [Policy Examples](#policy-examples)
+    + [Legacy Policies](#legacy-policies)
+      - [Legacy Policy Types](#legacy-policy-types)
 - [Usage Examples](#usage-examples)
     + [Default Mode](#default-mode)
     + [Standard error code with Junit XML reporting saved to file](#standard-error-code-with-junit-xml-reporting-saved-to-file)
@@ -109,7 +116,7 @@ There is an empty `.ochrona.yml` file included in the repo.
 | `ignore` | Ignore a CVE or package name | str | requests |
 | `include_dev` | Include develop dependencies from files that support dev/required dependencies [false] | bool | true |
 | `color_output` | Whether or not std out text should use color. Note: this is enabled by default when running in a non-Windows environment [true] | bool | false |
-| `policies` | Policies are a way of defining additional checks against your dependencies. See [here](#policies) for more details | dict | [details](#policies) |
+| `policies` | Policies are a way of defining additional checks against your dependencies. See [here](#policies) for more details | array | [details](#policies) |
 
 **Example**:
 ```
@@ -122,18 +129,64 @@ There is an empty `.ochrona.yml` file included in the repo.
 # include_dev: false
 # color_output: false
 # policies:
-#  - policy_type: license_type
-#    deny_list: APSL,GPL-PA,JSON
+#  - license_type NIN APSL,GPL-PA,JSON
 ```
 
 # Policies
-Policies are a way to add additional check to your Python dependency usage. A policy is defined using its name and one or more conditions which are evaluated at scan time.
+Policies are a way to add additional check to your Python dependency usage. Policies can be defined using conditional and logical syntax. These generic policy definitions allow you to define unique, custom policies to fit your need, and they can be extensible as new fields and capabilities are added.
+
+Policy vioations are not the same as vulnerabilities, however violations will cause Ochrona to emit a failure exit code and the output will include details about the policy violation.
+
+## Policy Syntax
+At their most basic, policies are defined using conditional statements and logical operators. A conditional statement is structured as `<field><operator><value>`, for example, `license_type == MIT`. Whitespace is always ignored during policy evaluation.
+
+### Allowed Fields
+| Name | Description |
+|-|-|
+| `name` | The name of a package. |
+| `license_type` | An (SPDX)[https://spdx.org/licenses/] license type for a package. |
+| `latest_version` | The most recent version of a package. |
+| `latest_update` | The timestamp for when a package was last updated. ISO-8601 Format `YYYY-MM-DDTHH:MM-SS.ffffffZ` |
+| `release_count` | The number of releases a package has on Pypi. |
+
+### Allowed Conditional Operators
+| Operator | Description |
+|-|-|
+| `==` | An equals operator for comparing exact string matches. |
+| `!=` | A NOT equals operators for non-matching strings. |
+| `<` | Less than, for comparing numerical or string values. |
+| `<=` | Less than or equal to. |
+| `>` | Greater than, for comparing numerical or string values. |
+| `>=` | Greater than or equal to. |
+| `IN` | For checking whether a value exists within a set. |
+| `NIN` | For checking that a value does not exist within a set. |
+
+### Allowed Logical Operators
+| Operator | Description |
+|-|-|
+| `AND` | For checking that all conditions are true. |
+| `OR` | For checking that at least one condition is true. |
+
+### Special Values
+| Value | Description |
+|-|-|
+| `NOW-N` | Shorthand for an ISO 8601 formatted date in the past. `N` will be an integer number of days. |
+
+### Policy Examples
+```
+# Policy to check that a license type is in my aproved list
+license_type IN MIT,ISC,Apache-2.0
+
+# Policy to check that all packages have been updated this year
+latest_update >= NOW-365
+```
+
+## Legacy Policies
+Legacy policies can also be defined using their name and one or more conditions which are evaluated at scan time. Legacy policies will be removed in a future release and you are encouraged to use generic policies for all new policies.
 
 For example, the `license_type` policy allows you to be alerted if one of your dependency's open-source license is not part of your "Allow List" or if it uses a license from your "Deny List".
 
-Policy vioations are not the same as vulnerabilities, however they will cause Ochrona to emit a failure exit code and the output will include details about the policy violation.
-
-## Policy Types
+### Legacy Policy Types
 | Name | Description | Fields |
 |-|-|-|
 | `package_name` | Allows for checking whether the dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. | `allow_list`, `deny_list` | 

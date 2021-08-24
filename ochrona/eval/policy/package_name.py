@@ -1,3 +1,5 @@
+# PENDING-DEPRECATION
+# "legacy" policies will be removed in a future release
 from ochrona.const import PYTHON_PACKAGE_NAME_POLICY
 from ochrona.model.policy_violation import PolicyViolation
 from ochrona.utils import parse_version_requirements

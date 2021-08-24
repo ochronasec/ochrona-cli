@@ -15,20 +15,22 @@ INVALID_SPEC_CHARACTERS = r"\'|\"|\\|\/|\[|\]|\{|\}"
 class Dependency:
     """
     A python dependency object.
+
+    Internal variables with `_reserved_` prefix are used for policy evaluation.
     """
 
     _raw: str = ""
-    _name: str = ""
+    _reserved_name: str = ""
     _version: str = ""
     _version_major: str = ""
     _version_minor: str = ""
     _version_release: str = ""
     _operator: str = ""
     _full: str = ""
-    _latest_version: str = ""
-    _license_type: str = ""
-    _latest_update: str = ""
-    _release_count: str = ""
+    _reserved_latest_version: str = ""
+    _reserved_license_type: str = ""
+    _reserved_latest_update: str = ""
+    _reserved_release_count: str = ""
     _is_reference: bool = False
 
     def __init__(self, dependency: str):
@@ -38,16 +40,16 @@ class Dependency:
             if "txt" in parts[0] and "-r" in parts[0]:
                 self.is_reference = True
                 return
-            self._name = parts[0]
+            self._reserved_name = parts[0]
         elif len(parts) > 1:
-            self._name = parts[0]
+            self._reserved_name = parts[0]
             self._parse_version(parts[1])
             self._operator = re.sub("[a-zA-Z0-9.-]", "", self._raw)  # TODO fix
         (
-            self._latest_version,
-            self._license_type,
-            self._latest_update,
-            self._release_count,
+            self._reserved_latest_version,
+            self._reserved_license_type,
+            self._reserved_latest_update,
+            self._reserved_release_count,
         ) = self._pypi_details()
         self._full = self._provided_or_most_recent() or self._raw
 
@@ -69,7 +71,7 @@ class Dependency:
         """
         Calls to pypi to resolve transitive dependencies.
         """
-        json_value = pypi_fetch(self._name)
+        json_value = pypi_fetch(self._reserved_name)
         if json_value:
             latest_version = self._parse_latest_version(json_value)
             license_value = self._get_license(json_value)
@@ -138,13 +140,15 @@ class Dependency:
             We should return pkg==1.2.4
         """
         if self._operator == ">=" and parse(self._version) <= parse(
-            self._latest_version
+            self._reserved_latest_version
         ):
-            return f"{self._name}=={self._latest_version}"
+            return f"{self._reserved_name}=={self._reserved_latest_version}"
         elif (
-            self._operator == "" and self._version == "" and self._latest_version != ""
+            self._operator == ""
+            and self._version == ""
+            and self._reserved_latest_version != ""
         ):
-            return f"{self._name}=={self._latest_version}"
+            return f"{self._reserved_name}=={self._reserved_latest_version}"
         return self._raw
 
     def _clean(self, raw: str) -> str:
@@ -156,11 +160,11 @@ class Dependency:
 
     @property
     def license_type(self) -> str:
-        return self._license_type
+        return self._reserved_license_type
 
     @property
     def name(self) -> str:
-        return self._name
+        return self._reserved_name
 
     @property
     def version(self) -> str:
