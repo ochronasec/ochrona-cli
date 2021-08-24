@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 
 from packaging.specifiers import Version
 
@@ -22,9 +22,14 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
     parsed = parse(policy)
     boolean_list = []
     logical_list = []
+    possible_violating_packages: List[str] = []
     for element in parsed:
         if isinstance(element, Definition):
-            boolean_list.append(EVAL_DICT[evaluate_condition(dependency_list, element)])
+            evaluated = evaluate_condition(dependency_list, element)
+            boolean_list.append(EVAL_DICT[evaluated[0]])
+            if not evaluated[0]:
+                # Record package name/version if False
+                possible_violating_packages.append(evaluated[1])
         elif isinstance(element, TokenInstance):
             boolean_list.append(EVAL_DICT[element.id])
     for i in range(len(boolean_list)):
@@ -39,8 +44,8 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
             return [
                 PolicyViolation(
                     policy_type="custom",
-                    friendly_policy_type="Custom Policy",
-                    message=f"Policy defined as '{policy}' was not met.",
+                    friendly_policy_type=f"Definition: {policy}",
+                    message=f"Policiy violated by {','.join(possible_violating_packages)}",
                 )
             ]
     else:
@@ -50,64 +55,64 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
             return [
                 PolicyViolation(
                     policy_type="custom",
-                    friendly_policy_type="Custom Policy",
-                    message=f"Policy defined as '{policy}' was not met.",
+                    friendly_policy_type=f"Definition: {policy}",
+                    message=f"Policiy violated by {','.join(possible_violating_packages)}",
                 )
             ]
 
 
-def evaluate_condition(dependency_list, definition: Definition) -> bool:
+def evaluate_condition(dependency_list, definition: Definition) -> Tuple[bool, str]:
     for dep in dependency_list:
         dependency_value = dep.__dict__.get(f"_reserved_{definition.field.value}")
         if dependency_value is None:
             continue
         if definition.operator.id == Token.EQUAL:
             if not dependency_value == _calculate_value(definition.value):
-                return False
+                return (False, dep.full)
         elif definition.operator.id == Token.NEQUAL:
             if not dependency_value != _calculate_value(definition.value):
-                return False
+                return (False, dep.full)
         elif definition.operator.id == Token.SMALL:
             if not _lt_compare(
                 dependency_value,
                 _calculate_value(definition.value),
                 definition.field.value,
             ):
-                return False
+                return (False, dep.full)
         elif definition.operator.id == Token.SMALLEQ:
             if not _lte_compare(
                 dependency_value,
                 _calculate_value(definition.value),
                 definition.field.value,
             ):
-                return False
+                return (False, dep.full)
         elif definition.operator.id == Token.LARGE:
             if not _gt_compare(
                 dependency_value,
                 _calculate_value(definition.value),
                 definition.field.value,
             ):
-                return False
+                return (False, dep.full)
         elif definition.operator.id == Token.LARGEEQ:
             if not _gte_compare(
                 dependency_value,
                 _calculate_value(definition.value),
                 definition.field.value,
             ):
-                return False
+                return (False, dep.full)
         if definition.operator.id == Token.IN:
             if dependency_value not in [
                 val.strip() for val in definition.value.value.split(",")
             ]:
-                return False
+                return (False, dep.full)
         elif definition.operator.id == Token.NIN:
             if dependency_value in [
                 val.strip() for val in definition.value.value.split(",")
             ]:
-                return False
+                return (False, dep.full)
         else:
             continue
-    return True
+    return (True, "")
 
 
 def _calculate_value(value: TokenInstance):
