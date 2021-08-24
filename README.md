@@ -144,7 +144,7 @@ At their most basic, policies are defined using conditional statements and logic
 | Name | Description |
 |-|-|
 | `name` | The name of a package. |
-| `license_type` | An (SPDX)[https://spdx.org/licenses/] license type for a package. |
+| `license_type` | An [SPDX](https://spdx.org/licenses/) license type for a package. |
 | `latest_version` | The most recent version of a package. |
 | `latest_update` | The timestamp for when a package was last updated. ISO-8601 Format `YYYY-MM-DDTHH:MM-SS.ffffffZ` |
 | `release_count` | The number of releases a package has on Pypi. |
