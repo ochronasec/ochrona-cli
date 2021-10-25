@@ -102,7 +102,8 @@ poetry add -D ochrona
 | OCHRONA_IGNORED_VULNS | `--ignore`        |
 
 ### via .ochrona.yml
-There is an empty `.ochrona.yml` file included in the repo. 
+There is an empty `.ochrona.yml` file included in the repo.
+
 | Key | Description | Type | Example |
 |-|-|-|-|
 | `dir` | Directory to recursively search for dependencies files to scan [.] | path | /User/me/my_project |
@@ -189,13 +190,13 @@ For example, the `license_type` policy allows you to be alerted if one of your d
 ### Legacy Policy Types
 | Name | Description | Fields |
 |-|-|-|
-| `package_name` | Allows for checking whether the dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. | `allow_list`, `deny_list` | 
-| `license_type` | Allows for checking whether the licenses of dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. (SPDX)[https://spdx.org/licenses/] license ids should be used. | `allow_list`, `deny_list` | 
+| `package_name` | Allows for checking whether the dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. | `allow_list`, `deny_list` |
+| `license_type` | Allows for checking whether the licenses of dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. [SPDX](https://spdx.org/licenses/) license ids should be used. | `allow_list`, `deny_list` |
 
 # Usage Examples
 ### Default Mode
 ```
-$ ochrona 
+$ ochrona
 ```
 This will search for any supported dependency files recursively from the run location. It will output rules in the `BASIC`
 format to stdout. The program will exit with an error exit code if any confirmed vulnerabilities are found.
@@ -206,7 +207,7 @@ $ ochrona --exit --report_type XML --output ./output
 ```
 
 ### Safe Import Mode
-In this mode ochrona acts as a safe wrapper around standard pip installs to ensure that a package and it's dependencies are safe before installing. This action preemptively checks a package and only imports if no vulnerabilities are found. It can be used with a base package (i.e. `requests`), or with a package pinned to an exact version (i.e. `requests==2.21.0`). It also supports importing a `requirements.txt` style, the pip equivalent of `pip install -r <file>`. 
+In this mode ochrona acts as a safe wrapper around standard pip installs to ensure that a package and it's dependencies are safe before installing. This action preemptively checks a package and only imports if no vulnerabilities are found. It can be used with a base package (i.e. `requests`), or with a package pinned to an exact version (i.e. `requests==2.21.0`). It also supports importing a `requirements.txt` style, the pip equivalent of `pip install -r <file>`.
 ```
 $ ochrona --install <package_name>|<requirements.txt>
 ```
@@ -228,7 +229,7 @@ $ cat requirements.txt | ochrona
 ```
 
 ### Docker Support
-Ochrona can be run via Docker. This is useful for the paranoid who may worry that an installed module could have modified the Python package namespace and allow malicious packages to bypass Ochrona's security checks. We've added this support in response to [CVE-2020-5252](https://mulch.dev/blog/CVE-2020-5252-python-safety-vuln/) which was disclosed prior to Ochrona and affects several other similar tools. 
+Ochrona can be run via Docker. This is useful for the paranoid who may worry that an installed module could have modified the Python package namespace and allow malicious packages to bypass Ochrona's security checks. We've added this support in response to [CVE-2020-5252](https://mulch.dev/blog/CVE-2020-5252-python-safety-vuln/) which was disclosed prior to Ochrona and affects several other similar tools.
 
 #### Dockerized Ochrona
 ```
