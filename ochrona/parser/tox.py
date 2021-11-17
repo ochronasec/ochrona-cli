@@ -1,6 +1,6 @@
 from configparser import ConfigParser, NoOptionError
 from io import StringIO
-from typing import List
+from typing import Dict, List, Union
 
 from ochrona.const import TOX_LINKED_REQUIREMENTS, INVALID_TOX_LINES, TOX_INI
 from ochrona.parser.requirements import RequirementsFile
@@ -8,7 +8,7 @@ from ochrona.parser.requirements import RequirementsFile
 
 class ToxFile:
     @staticmethod
-    def parse(file_path: str) -> List[str]:
+    def parse(file_path: str) -> List[Dict[str, Union[str, List[str]]]]:
         """
         Parses a tox.ini into a list of requirements.
 
@@ -30,11 +30,11 @@ class ToxFile:
                         elif not any([line.startswith(i) for i in INVALID_TOX_LINES]):
                             if ":" in line:
                                 # requirement is specified with an environment
-                                dependencies.append(line.split(":")[-1].strip())
+                                dependencies.append({"version": line.split(":")[-1].strip(), "hashes": []})
                             else:
                                 if line != "":
                                     # plain requirement
-                                    dependencies.append(line)
+                                    dependencies.append({"version": line, "hashes": []})
                         else:
                             pass  # did not find valid line to parse
                 except NoOptionError:

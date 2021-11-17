@@ -1,12 +1,12 @@
 import json
-from typing import List
+from typing import Dict, List, Union
 
 from ochrona.exceptions import OchronaFileException
 
 
 class Pipfile:
     @staticmethod
-    def parse(file_path: str, include_dev: bool = False) -> List[str]:
+    def parse(file_path: str, include_dev: bool = False) -> List[Dict[str, Union[str, List[str]]]]:
         """
         Parses a Pipfile.lock into a list of requirements.
 
@@ -19,10 +19,12 @@ class Pipfile:
                 data = json.load(pipfile)
                 if "default" in data:
                     for name, value in data["default"].items():
-                        dependencies.append(f"{name}{value['version']}")
+                        dependency = {"version": f"{name}{value['version']}", "hashes": [h for h in value["hashes"]]}
+                        dependencies.append(dependency)
                 if "develop" in data and include_dev:
                     for name, value in data["develop"].items():
-                        dependencies.append(f"{name}{value['version']}")
+                        dependency = {"version": f"{name}{value['version']}", "hashes": [h for h in value["hashes"]]}
+                        dependencies.append(dependency)
             return dependencies
         except OSError as ex:
             raise OchronaFileException(f"OS error when parsing {file_path}") from ex

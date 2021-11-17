@@ -59,6 +59,7 @@ setup(
     entry_points={"console_scripts": ["ochrona=ochrona.cli:run"]},
     python_requires=">=3.7",
     include_package_data=True,
+    package_data={'ochrona': ['ochrona/schema/spdx_modified.json']},
     install_requires=requirements,
     license=license_,
     zip_safe=False,

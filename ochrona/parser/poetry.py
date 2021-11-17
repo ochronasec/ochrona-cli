@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List, Union
 
 import toml
 from ochrona.exceptions import OchronaFileException
@@ -6,7 +6,7 @@ from ochrona.exceptions import OchronaFileException
 
 class PoetryFile:
     @staticmethod
-    def parse(file_path: str, include_dev: bool = False) -> List[str]:
+    def parse(file_path: str, include_dev: bool = False) -> List[Dict[str, Union[str, List[str]]]]:
         """
         Parses a poetry.lock file into a list of requirements.
 
@@ -19,9 +19,9 @@ class PoetryFile:
                 parsed = toml.load(poetry_lock)
                 for pkg in parsed.get("package", []):
                     if pkg.get("category") == "main":
-                        dependencies.append(f"{pkg.get('name')}=={pkg.get('version')}")
+                        dependencies.append({"version": f"{pkg.get('name')}=={pkg.get('version')}", "hashes": []})
                     elif pkg.get("category") == "dev" and include_dev:
-                        dependencies.append(f"{pkg.get('name')}=={pkg.get('version')}")
+                        dependencies.append({"version": f"{pkg.get('name')}=={pkg.get('version')}", "hashes": []})
             return dependencies
         except OSError as ex:
             raise OchronaFileException(f"OS error when parsing {file_path}") from ex

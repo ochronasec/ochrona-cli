@@ -1,11 +1,11 @@
-from typing import List
+from typing import Dict, List, Union
 
 from ochrona.exceptions import OchronaFileException
 
 
 class ConstraintsFile:
     @staticmethod
-    def parse(file_path: str) -> List[str]:
+    def parse(file_path: str) -> List[Dict[str, Union[str, List[str]]]]:
         """
         Parses a constraints.txt style file into a list of requirements.
 
@@ -14,6 +14,6 @@ class ConstraintsFile:
         """
         try:
             with open(file_path) as rfile:
-                return [line.rstrip("\n") for line in rfile]
+                return [{"version": line.rstrip("\n"), "hashes": []} for line in rfile]
         except OSError as ex:
             raise OchronaFileException(f"OS error when parsing {file_path}") from ex

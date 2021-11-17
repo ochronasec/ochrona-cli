@@ -38,7 +38,7 @@ class TestEval:
         assert res.policy_violations == []
 
     def test_resolve_no_vulns(self):
-        res = e.resolve(dependencies=["fake=9.9.9"], logger=MockLogger())
+        res = e.resolve(dependencies=[{"version": "fake=9.9.9"}], logger=MockLogger())
         assert isinstance(res, DependencySet)
         assert len(res.dependencies) == 1
         assert res.flat_list == ["fake=9.9.9"]
@@ -46,7 +46,7 @@ class TestEval:
         assert res.policy_violations == []
 
     def test_resolve_vuln_found(self):
-        res = e.resolve(dependencies=["requests==2.19.0"], logger=MockLogger())
+        res = e.resolve(dependencies=[{"version": "requests==2.19.0"}], logger=MockLogger())
         assert isinstance(res, DependencySet)
         assert len(res.dependencies) == 1
         assert res.flat_list == ["requests==2.19.0"]
@@ -54,11 +54,20 @@ class TestEval:
         assert res.confirmed_vulnerabilities[0].cve_id == "CVE-2018-18074"
         assert res.policy_violations == []
     
-    def test_resolve_policy_violation(self):
-        res = e.resolve(dependencies=["fake=9.9.9"], policies=[{"policy_type": "package_name", "allow_list": "urllib3"}], logger=MockLogger())
+    def test_resolve_policy_violation_legacy(self):
+        res = e.resolve(dependencies=[{"version": "fake=9.9.9"}], policies=[{"policy_type": "package_name", "allow_list": "urllib3"}], logger=MockLogger())
         assert isinstance(res, DependencySet)
         assert len(res.dependencies) == 1
         assert res.flat_list == ["fake=9.9.9"]
         assert res.confirmed_vulnerabilities == []
         assert len(res.policy_violations) == 1
         assert res.policy_violations[0].message == "'fake' not in list of allowed packages. (from fake=9.9.9)"
+
+    def test_resolve_policy_violation(self):
+        res = e.resolve(dependencies=[{"version": "fake=9.9.9"}], policies=["name IN requests,click,pytest"], logger=MockLogger())
+        assert isinstance(res, DependencySet)
+        assert len(res.dependencies) == 1
+        assert res.flat_list == ["fake=9.9.9"]
+        assert res.confirmed_vulnerabilities == []
+        assert len(res.policy_violations) == 1
+        assert res.policy_violations[0].message == "Policiy violated by fake=9.9.9"
