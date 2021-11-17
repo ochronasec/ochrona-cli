@@ -30,7 +30,12 @@ class ToxFile:
                         elif not any([line.startswith(i) for i in INVALID_TOX_LINES]):
                             if ":" in line:
                                 # requirement is specified with an environment
-                                dependencies.append({"version": line.split(":")[-1].strip(), "hashes": []})
+                                dependencies.append(
+                                    {
+                                        "version": line.split(":")[-1].strip(),
+                                        "hashes": [],
+                                    }
+                                )
                             else:
                                 if line != "":
                                     # plain requirement

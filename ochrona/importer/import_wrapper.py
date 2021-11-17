@@ -69,7 +69,9 @@ class SafeImport:
                 )
             parts = package.get("version").split(EQUALS_SPECIFIER)
             if len(parts) == 1:
-                package["version"] = self._get_most_recent_version(package=package.get("version"))
+                package["version"] = self._get_most_recent_version(
+                    package=package.get("version")
+                )
             vuln_results = resolve(dependencies=[package], logger=self._logger)
         elif isinstance(package, list):
             vuln_results = resolve(dependencies=package, logger=self._logger)

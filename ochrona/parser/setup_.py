@@ -7,7 +7,9 @@ from ochrona.exceptions import OchronaFileException
 
 class SetupFile:
     @staticmethod
-    def parse(file_path: str, include_dev: bool = False) -> List[Dict[str, Union[str, List[str]]]]:
+    def parse(
+        file_path: str, include_dev: bool = False
+    ) -> List[Dict[str, Union[str, List[str]]]]:
         """
         Parses a setup.py into a list of requirements.
 

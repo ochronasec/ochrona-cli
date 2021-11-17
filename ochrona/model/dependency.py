@@ -12,9 +12,10 @@ from ochrona.client import pypi_fetch
 PEP_SUPPORTED_OPERATORS = r"==|>=|<=|!=|~=|<|>"
 INVALID_SPEC_CHARACTERS = r"\'|\"|\\|\/|\[|\]|\{|\}"
 
-# License data from SPDX with additional Aliases added to map back 
+# License data from SPDX with additional Aliases added to map back
 # Non-complaint license names to SPDX specification License IDs
 LICENSE_DATA = json.loads(pkgutil.get_data(__name__, "../schema/spdx_modified.json"))
+
 
 class Dependency:
     """

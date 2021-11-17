@@ -6,7 +6,9 @@ from ochrona.exceptions import OchronaFileException
 
 class Pipfile:
     @staticmethod
-    def parse(file_path: str, include_dev: bool = False) -> List[Dict[str, Union[str, List[str]]]]:
+    def parse(
+        file_path: str, include_dev: bool = False
+    ) -> List[Dict[str, Union[str, List[str]]]]:
         """
         Parses a Pipfile.lock into a list of requirements.
 
@@ -19,11 +21,17 @@ class Pipfile:
                 data = json.load(pipfile)
                 if "default" in data:
                     for name, value in data["default"].items():
-                        dependency = {"version": f"{name}{value['version']}", "hashes": [h for h in value["hashes"]]}
+                        dependency = {
+                            "version": f"{name}{value['version']}",
+                            "hashes": [h for h in value["hashes"]],
+                        }
                         dependencies.append(dependency)
                 if "develop" in data and include_dev:
                     for name, value in data["develop"].items():
-                        dependency = {"version": f"{name}{value['version']}", "hashes": [h for h in value["hashes"]]}
+                        dependency = {
+                            "version": f"{name}{value['version']}",
+                            "hashes": [h for h in value["hashes"]],
+                        }
                         dependencies.append(dependency)
             return dependencies
         except OSError as ex:
