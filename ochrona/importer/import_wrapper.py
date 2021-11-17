@@ -54,7 +54,9 @@ class SafeImport:
                     f"Import of {package} aborted due to detected vulnerabilities."
                 )
 
-    def _check_package(self, package: Union[str, list]) -> bool:
+    def _check_package(
+        self, package: Union[Dict[str, Any], List[Dict[str, Any]]]
+    ) -> bool:
         """
         Calls the analysis API endpoint with a package to see if a package is safe.
 
@@ -63,14 +65,14 @@ class SafeImport:
         """
         vuln_results: DependencySet
         if isinstance(package, dict):
-            if any(spec in package.get("version") for spec in INVALID_SPECIFIERS):
+            if any(spec in package.get("version", "") for spec in INVALID_SPECIFIERS):
                 raise OchronaImportException(
                     f"An invalid specifier was found in {package.get('version')}, either specify the package without a version or pin to a single version using `name==version`."
                 )
-            parts = package.get("version").split(EQUALS_SPECIFIER)
+            parts = package.get("version", "").split(EQUALS_SPECIFIER)
             if len(parts) == 1:
                 package["version"] = self._get_most_recent_version(
-                    package=package.get("version")
+                    package=package.get("version", "")
                 )
             vuln_results = resolve(dependencies=[package], logger=self._logger)
         elif isinstance(package, list):

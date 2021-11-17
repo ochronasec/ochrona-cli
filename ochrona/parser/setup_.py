@@ -1,6 +1,6 @@
 import ast
 
-from typing import Dict, List, Union
+from typing import Dict, List, Sequence
 
 from ochrona.exceptions import OchronaFileException
 
@@ -9,7 +9,7 @@ class SetupFile:
     @staticmethod
     def parse(
         file_path: str, include_dev: bool = False
-    ) -> List[Dict[str, Union[str, List[str]]]]:
+    ) -> List[Dict[str, Sequence[str]]]:
         """
         Parses a setup.py into a list of requirements.
 

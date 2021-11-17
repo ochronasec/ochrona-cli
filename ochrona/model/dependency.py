@@ -5,7 +5,7 @@ import re
 
 from packaging.specifiers import Version
 from packaging.version import parse
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Union, Sequence, Tuple
 
 from ochrona.client import pypi_fetch
 
@@ -14,7 +14,7 @@ INVALID_SPEC_CHARACTERS = r"\'|\"|\\|\/|\[|\]|\{|\}"
 
 # License data from SPDX with additional Aliases added to map back
 # Non-complaint license names to SPDX specification License IDs
-LICENSE_DATA = json.loads(pkgutil.get_data(__name__, "../schema/spdx_modified.json"))
+LICENSE_DATA = json.loads(pkgutil.get_data(__name__, "../schema/spdx_modified.json"))  # type: ignore[arg-type]
 
 
 class Dependency:
@@ -39,8 +39,10 @@ class Dependency:
     _specified_hashes: Dict[str, List[str]] = {}
     _purl: str = ""
 
-    def __init__(self, dependency: str):
-        self._raw = self._clean(dependency.get("version").split(",")[0])
+    def __init__(self, dependency: Dict[str, Union[str, List[str]]]):
+        version = dependency.get("version")
+        if version is not None and isinstance(version, str):
+            self._raw = self._clean(version.split(",")[0])
         parts = re.split(PEP_SUPPORTED_OPERATORS, self._raw)
         if len(parts) == 1:
             if "txt" in parts[0] and "-r" in parts[0]:
@@ -59,7 +61,9 @@ class Dependency:
         ) = self._pypi_details()
         self._full = self._provided_or_most_recent() or self._raw
         self._purl = f"pkg:pypi/{self._reserved_name}@{self._version}"
-        self._parse_hashes(hash_list=dependency.get("hashes", []))
+        hashes = dependency.get("hashes", [])
+        if isinstance(hashes, List):
+            self._parse_hashes(hash_list=hashes)
 
     def _parse_version(self, version: str):
         v = Version(version)
@@ -138,7 +142,7 @@ class Dependency:
         return "Unknown"
 
     def _parse_hashes(self, hash_list: List[str]):
-        hash_dict = {}
+        hash_dict: Dict[str, List[str]] = {}
         for h in hash_list:
             parts = h.split(":")
             if parts[0] in hash_dict:

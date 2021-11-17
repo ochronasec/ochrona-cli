@@ -1,6 +1,6 @@
 from configparser import ConfigParser, NoOptionError
 from io import StringIO
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Sequence
 
 from ochrona.const import TOX_LINKED_REQUIREMENTS, INVALID_TOX_LINES, TOX_INI
 from ochrona.parser.requirements import RequirementsFile
@@ -8,7 +8,7 @@ from ochrona.parser.requirements import RequirementsFile
 
 class ToxFile:
     @staticmethod
-    def parse(file_path: str) -> List[Dict[str, Union[str, List[str]]]]:
+    def parse(file_path: str) -> List[Dict[str, Union[str, Sequence[str]]]]:
         """
         Parses a tox.ini into a list of requirements.
 

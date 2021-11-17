@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Sequence
 
 from ochrona.const import INVALID_REQUIREMENTS_LINES
 from ochrona.exceptions import OchronaFileException
@@ -6,7 +6,7 @@ from ochrona.exceptions import OchronaFileException
 
 class RequirementsFile:
     @staticmethod
-    def parse(file_path: str) -> List[Dict[str, Union[str, List[str]]]]:
+    def parse(file_path: str) -> List[Dict[str, Union[str, Sequence[str]]]]:
         """
         Parses a requirements.txt style file into a list of requirements.
 

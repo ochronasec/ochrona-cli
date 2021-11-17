@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Dict, List, Sequence
 
 import toml
 from ochrona.exceptions import OchronaFileException
@@ -8,7 +8,7 @@ class PoetryFile:
     @staticmethod
     def parse(
         file_path: str, include_dev: bool = False
-    ) -> List[Dict[str, Union[str, List[str]]]]:
+    ) -> List[Dict[str, Sequence[str]]]:
         """
         Parses a poetry.lock file into a list of requirements.
 
