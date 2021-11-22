@@ -191,3 +191,11 @@ class Dependency:
     @property
     def version(self) -> str:
         return self._version
+
+    @property
+    def purl(self) -> str:
+        return self._purl
+
+    @property
+    def hashes(self) -> Dict[str, List[str]]:
+        return self._specified_hashes

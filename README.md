@@ -117,6 +117,8 @@ There is an empty `.ochrona.yml` file included in the repo.
 | `include_dev` | Include develop dependencies from files that support dev/required dependencies [false] | bool | true |
 | `color_output` | Whether or not std out text should use color. Note: this is enabled by default when running in a non-Windows environment [true] | bool | false |
 | `policies` | Policies are a way of defining additional checks against your dependencies. See [here](#policies) for more details | array | [details](#policies) |
+| `sbom` | SBOM will only be generated if this argument is supplied. See [here](#sbom) for more details [false] | bool | false |
+| `sbom_format` | Whether the generated SBOM should be a JSON or XML file. [JSON] | str | JSON |
 
 **Example**:
 ```
@@ -130,6 +132,8 @@ There is an empty `.ochrona.yml` file included in the repo.
 # color_output: false
 # policies:
 #  - license_type NIN APSL,GPL-PA,JSON
+# sbom: true
+# sbom_format: JSON
 ```
 
 # Policies
@@ -191,6 +195,11 @@ For example, the `license_type` policy allows you to be alerted if one of your d
 |-|-|-|
 | `package_name` | Allows for checking whether the dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. | `allow_list`, `deny_list` | 
 | `license_type` | Allows for checking whether the licenses of dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. (SPDX)[https://spdx.org/licenses/] license ids should be used. | `allow_list`, `deny_list` | 
+
+# SBOM
+Software Bill-of-Materials (SBOM) are a list of the components used to build a piece of software. They aim to make the delivery and composition of software components more transparent. These documents can be useful for understanding software supply chains and ensuring license complaince. 
+
+Ochrona has opted to support (CycloneDX)[https://cyclonedx.org/] as our SBOM standard of choice. CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security contexts and supply chain component analysis. CycloneDX is developed and support by (OWASP)[https://owasp.org/www-project-cyclonedx/].
 
 # Usage Examples
 ### Default Mode
