@@ -146,7 +146,7 @@ def run(
                     # can't leave empty otherwise result counts are off
                     results.append(DependencySet())
                 # Generate SBOM
-                if config.sbom:
+                if config.sbom and config.report_location:
                     generate_sbom(
                         dependencies=payload.get("dependencies", []),
                         location=config.report_location,
@@ -161,7 +161,7 @@ def run(
                     # can't leave empty otherwise result counts are off
                     results.append(DependencySet())
                 # Generate SBOM
-                if config.sbom:
+                if config.sbom and config.report_location:
                     generate_sbom(
                         dependencies=payload.get("dependencies", []),
                         location=config.report_location,

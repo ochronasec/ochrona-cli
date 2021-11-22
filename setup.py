@@ -53,6 +53,8 @@ setup(
         "ochrona.model",
         "ochrona.parser",
         "ochrona.reporter",
+        "ochrona.sbom",
+        "ochrona.sbom.specs",
         "ochrona.utils",
     ],
     package_dir={"ochrona": "ochrona"},

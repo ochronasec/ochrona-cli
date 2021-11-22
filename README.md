@@ -94,6 +94,8 @@ poetry add -D ochrona
 | `--exit`         | Exit with Code 0 regardless of vulnerability findings. [False]            | bool | True                                                                       |
 | `--ignore`       | Ignore a CVE or package                                                   | str  | requests                                                                   |
 | `--include_dev`  | Include develop dependencies from Pipfile.lock [False]                    | bool | True                                                                       |
+| `--sbom`         | Must be provided, along with `--output` to generate an SBOM [False]       | bool | True                                                                       |
+| `--sbom_format`  | Whether the generated SBOM should be a JSON or XML file. [JSON]           | str  | JSON                                                                       |
 
 ### via environment variables
 | Variable Name         | Corresponding Arg |
@@ -117,7 +119,7 @@ There is an empty `.ochrona.yml` file included in the repo.
 | `include_dev` | Include develop dependencies from files that support dev/required dependencies [false] | bool | true |
 | `color_output` | Whether or not std out text should use color. Note: this is enabled by default when running in a non-Windows environment [true] | bool | false |
 | `policies` | Policies are a way of defining additional checks against your dependencies. See [here](#policies) for more details | array | [details](#policies) |
-| `sbom` | SBOM will only be generated if this argument is supplied. See [here](#sbom) for more details [false] | bool | false |
+| `sbom` | SBOM will only be generated if this argument is supplied. `report_location` also must be specified to generate an SBOM. See [here](#sbom) for more details about SBOMs [false] | bool | false |
 | `sbom_format` | Whether the generated SBOM should be a JSON or XML file. [JSON] | str | JSON |
 
 **Example**:
