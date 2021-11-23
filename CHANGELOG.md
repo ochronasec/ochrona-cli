@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.2.0
+- Include (CycloneDX)[https://cyclonedx.org/] software bill of materials (SBOM) generation support
+- Use SPDX official license list for dependency license IDs
+- Include (Package URL i.e. purl)[https://github.com/package-url/purl-spec] in Dependency model
+- Include discovered package hashes in Dependency model
+
 ## 1.1.0
 - Introduced new dynamic policies
 -- Existing policy types, `package_name` and `license_type` will now be known as `legacy` policies.

@@ -26,6 +26,7 @@ from ochrona.importer import SafeImport
 from ochrona.log import OchronaLogger
 from ochrona.model.dependency_set import DependencySet
 from ochrona.reporter import OchronaReporter
+from ochrona.sbom import generate_sbom
 
 
 def get_direct(ctx, param, value):
@@ -72,6 +73,12 @@ def get_direct(ctx, param, value):
     is_flag=True,
 )
 @click.option("--install", help="A safe wrapper for pip --install")
+@click.option("--sbom", help=f"Enable SBOM generation", default=False, is_flag=True)
+@click.option(
+    "--sbom_format",
+    help=f"SBOM File format. Options ({OchronaConfig.SBOM_FORMAT_OPTIONS}",
+    default="JSON",
+)
 def run(
     direct: Optional[str],
     dir: Optional[str],
@@ -85,6 +92,8 @@ def run(
     ignore: Optional[str],
     include_dev: bool,
     install: Optional[str],
+    sbom: bool,
+    sbom_format: Optional[str],
 ):
     config = OchronaConfig(
         dir=dir,
@@ -97,6 +106,8 @@ def run(
         exit=exit,
         ignore=ignore,
         include_dev=include_dev,
+        sbom=sbom,
+        sbom_format=sbom_format,
     )
     log = OchronaLogger(config=config)
     if install:
@@ -134,6 +145,13 @@ def run(
                 else:
                     # can't leave empty otherwise result counts are off
                     results.append(DependencySet())
+                # Generate SBOM
+                if config.sbom and config.report_location:
+                    generate_sbom(
+                        dependencies=payload.get("dependencies", []),
+                        location=config.report_location,
+                        format=config.sbom_format,
+                    )
             if direct is not None:
                 # use piped input directly and treat as PEP-508 format
                 payload = parse_direct_to_payload(log, direct, config)
@@ -142,6 +160,13 @@ def run(
                 else:
                     # can't leave empty otherwise result counts are off
                     results.append(DependencySet())
+                # Generate SBOM
+                if config.sbom and config.report_location:
+                    generate_sbom(
+                        dependencies=payload.get("dependencies", []),
+                        location=config.report_location,
+                        format=config.sbom_format,
+                    )
             if results == []:
                 log.warn(f"No dependencies found in {files}")
             reporter.report_collector(files, results)

@@ -33,10 +33,11 @@ class OchronaConfig:
     _include_dev: bool = False
     _color_output: bool = True
     _policies: List[Dict[str, Any]] = []
+    _sbom: bool = False
+    _sbom_format: Optional[str] = None
 
     REPORT_OPTIONS: List[str] = ["BASIC", "FULL", "JSON", "XML"]
-
-    ALERT_ADDRESS_PATTERN: str = r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$"
+    SBOM_FORMAT_OPTIONS: List[str] = ["JSON", "XML"]
 
     def __init__(self, **kwargs):
         self.get_config(**kwargs)
@@ -63,7 +64,7 @@ class OchronaConfig:
         self._dir = kwargs.get("dir")
         self._exclude_dir = kwargs.get("exclude_dir")
         self._file = kwargs.get("file")
-        self._report_type = kwargs.get("report_type")
+        self._report_type = kwargs.get("report_type").upper()
         location = kwargs.get("report_location")
         if location == ".":
             self._report_location = os.getcwd()
@@ -73,6 +74,8 @@ class OchronaConfig:
         self._ignore = kwargs.get("ignore")
         self._include_dev = kwargs.get("include_dev", False)
         self._policies = kwargs.get("policies", [])
+        self._sbom = kwargs.get("sbom", False)
+        self._sbom_format = kwargs.get("sbom_format", "JSON").upper()
 
         # check runtime environment
         sys_type = platform.system()
@@ -115,18 +118,12 @@ class OchronaConfig:
                     self._exclude_dir = yaml_loaded.get(
                         "exclude_dir", self._exclude_dir
                     )
-                    self._file = (
-                        yaml_loaded["file"] if "file" in yaml_loaded else self._file
-                    )
-                    self._report_type = (
-                        yaml_loaded["report_type"]
-                        if "report_type" in yaml_loaded
-                        else self._report_type
-                    )
-                    self._report_location = (
-                        yaml_loaded["report_location"]
-                        if "report_location" in yaml_loaded
-                        else self._report_location
+                    self._file = yaml_loaded.get("file", self._file)
+                    self._report_type = yaml_loaded.get(
+                        "report_type", self._report_type
+                    ).upper()
+                    self._report_location = yaml_loaded.get(
+                        "report_location", self._report_location
                     )
                     self._exit = yaml_loaded.get("exit", self._exit)
                     self._ignore = yaml_loaded.get("ignore", self._ignore)
@@ -137,6 +134,11 @@ class OchronaConfig:
                         "color_output", self._color_output
                     )
                     self._policies = yaml_loaded.get("policies")
+                    self._sbom = yaml_loaded.get("sbom", self._sbom)
+                    self._sbom_format = yaml_loaded.get(
+                        "sbom_format", self._sbom_format
+                    ).upper()
+
         except IOError:
             pass
 
@@ -145,9 +147,17 @@ class OchronaConfig:
         Validates all required values are present.
         """
         if self._report_type not in self.REPORT_OPTIONS:
-            return (False, f"Unknown report type specified in {self._report_type}")
+            return (
+                False,
+                f"Unknown report type specified as {self._report_type}, allowed: {self.REPORT_OPTIONS}",
+            )
         if len(self._policies) > 0:
             return self._validate_policies()
+        if self._sbom_format not in self.SBOM_FORMAT_OPTIONS:
+            return (
+                False,
+                f"Unknown sbom format specified as {self._sbom_format}, allowed: {self.SBOM_FORMAT_OPTIONS}",
+            )
         return (True, None)
 
     def _detect_runtime_attributes(self):
@@ -235,3 +245,11 @@ class OchronaConfig:
     @property
     def policies(self):
         return self._policies
+
+    @property
+    def sbom(self):
+        return self._sbom
+
+    @property
+    def sbom_format(self):
+        return self._sbom_format

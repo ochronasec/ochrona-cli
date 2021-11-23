@@ -149,7 +149,7 @@ def parse_to_payload(
         dependencies = parsers.constraints.parse(file_path=file_path)
     else:
         dependencies = parsers.requirements.parse(file_path=file_path)
-    logger.debug(f"Discovered dependencies: {dependencies}")
+    logger.debug(f"Discovered dependencies: {[d.get('version') for d in dependencies]}")
     return {"dependencies": dependencies, "policies": config.policies, "logger": logger}
 
 

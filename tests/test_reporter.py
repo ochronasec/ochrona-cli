@@ -51,42 +51,6 @@ class MockDependencySet:
     def flat_list(self):
         return self._flat_list
 
-# class MockVulnerability:
-#     def __init__(self, name, found_version=None, description=None, cve_id=None, ochrona_severity_score=None):
-#         self._name = name
-#         self._found_version = found_version
-#         self._description = description
-#         self._cve_id = cve_id
-#         self._ochrona_severity_score = ochrona_severity_score
-
-#     @property
-#     def name(self):
-#         return self._name
-
-#     @property
-#     def found_version(self):
-#         return self._found_version
-
-#     @property
-#     def description(self):
-#         return self._description
-
-#     @property
-#     def cve_id(self):
-#         return self._cve_id
-
-#     @property
-#     def ochrona_severity_score(self):
-#         return self._ochrona_severity_score
-
-#     def asdict(self):
-#         return {
-#             "name": self.name,
-#             "found_version": self.found_version,
-#             "description": self.description,
-#             "cve_id": self.cve_id,
-#             "ochrona_severity_score": self.ochrona_severity_score
-#         }
 
 class TestOchronaReporter:
     def test_generate_empty_json_stdout(self, capsys):

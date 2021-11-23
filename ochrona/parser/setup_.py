@@ -1,13 +1,15 @@
 import ast
 
-from typing import List
+from typing import Dict, List, Sequence
 
 from ochrona.exceptions import OchronaFileException
 
 
 class SetupFile:
     @staticmethod
-    def parse(file_path: str, include_dev: bool = False) -> List[str]:
+    def parse(
+        file_path: str, include_dev: bool = False
+    ) -> List[Dict[str, Sequence[str]]]:
         """
         Parses a setup.py into a list of requirements.
 
@@ -29,11 +31,11 @@ class SetupFile:
                             for kw in body.value.keywords:  # type: ignore[attr-defined]
                                 if kw.arg == "install_requires":
                                     dependencies += [
-                                        SetupFile.clean(arg.s) for arg in kw.value.elts  # type: ignore
+                                        {"version": SetupFile.clean(arg.s), "hashes": []} for arg in kw.value.elts  # type: ignore
                                     ]
                                 elif kw.arg == "tests_require" and include_dev:
                                     dependencies += [
-                                        SetupFile.clean(arg.s) for arg in kw.value.elts  # type: ignore
+                                        {"version": SetupFile.clean(arg.s), "hashes": []} for arg in kw.value.elts  # type: ignore
                                     ]
             return dependencies
         except OSError as ex:

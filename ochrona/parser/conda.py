@@ -1,12 +1,12 @@
 import yaml
-from typing import List
+from typing import Dict, List, Union
 
 from ochrona.exceptions import OchronaFileException
 
 
 class CondaFile:
     @staticmethod
-    def parse(file_path: str) -> List[str]:
+    def parse(file_path: str) -> List[Dict[str, Union[str, List[str]]]]:
         """
         Parses a conda.yml into a list of requirements.
         NOTE: This currently only returns pip-based dependencies.
@@ -27,7 +27,7 @@ class CondaFile:
                     for line in data.get("dependencies", []):
                         if isinstance(line, dict) and "pip" in line:
                             for _, req in enumerate(line.get("pip", {})):
-                                dependencies.append(req)
+                                dependencies.append({"version": req, "hashes": []})
                         else:
                             # Non-pip specified dependencies
                             continue

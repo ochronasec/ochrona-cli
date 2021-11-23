@@ -1,4 +1,5 @@
 import os
+import json
 from unittest import mock
 import pytest
 
@@ -38,12 +39,19 @@ class TestCli:
         assert help_result.exit_code == 0
         assert "--help" in help_result.output
 
-    def test_cli_config_failure(self):
+    def test_cli_config_failure_report_type(self):
         runner = CliRunner()
         result = runner.invoke(
             cli.run, ["--report_type", "FAKE"]
         )
-        assert f"Unknown report type specified in FAKE" in result.output
+        assert "Unknown report type specified as FAKE, allowed: ['BASIC', 'FULL', 'JSON', 'XML']" in result.output
+
+    def test_cli_config_failure_sbom_format(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run, ["--sbom_format", "FAKE"]
+        )
+        assert "Unknown sbom format specified as FAKE, allowed: ['JSON', 'XML']" in result.output
 
     def test_cli_pass_single_requirements(self):
         runner = CliRunner()
@@ -67,6 +75,25 @@ class TestCli:
             ],
         )
         assert result.exit_code == 0
+    
+    def test_cli_pass_single_file_with_sbom(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "--file",
+                f"{dir_path}/test_data/pipfile/Pipfile.lock",
+                "--output",
+                f"{dir_path}/test_data/output",
+                "--sbom",
+                "--debug"
+            ],
+        )
+        assert result.exit_code == 0
+        with open(f"{dir_path}/test_data/output/bom.json") as f:
+            j = json.load(f)
+            assert len(j.get("components")) == 5
+        os.remove(f"{dir_path}/test_data/output/bom.json")
 
     def test_cli_pass_empty_requirements(self):
         runner = CliRunner()
@@ -78,6 +105,23 @@ class TestCli:
             ],
         )
         assert result.exit_code == 0
+
+    def test_cli_pass_stdin_with_sbom(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            cli.run,
+            [
+                "requests==2.22.0",
+                "--output",
+                f"{dir_path}/test_data/output",
+                "--sbom",
+            ],
+        )
+        assert result.exit_code == 0
+        with open(f"{dir_path}/test_data/output/bom.json") as f:
+            j = json.load(f)
+            assert len(j.get("components")) == 1
+        os.remove(f"{dir_path}/test_data/output/bom.json")
 
     def test_cli_pass_stdin(self):
         runner = CliRunner()

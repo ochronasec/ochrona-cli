@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List, Union, Sequence
 
 from ochrona.const import INVALID_REQUIREMENTS_LINES
 from ochrona.exceptions import OchronaFileException
@@ -6,7 +6,7 @@ from ochrona.exceptions import OchronaFileException
 
 class RequirementsFile:
     @staticmethod
-    def parse(file_path: str) -> List[str]:
+    def parse(file_path: str) -> List[Dict[str, Union[str, Sequence[str]]]]:
         """
         Parses a requirements.txt style file into a list of requirements.
 
@@ -17,7 +17,7 @@ class RequirementsFile:
             with open(file_path) as rfile:
                 deps = [line.rstrip("\n") for line in rfile]
                 return [
-                    RequirementsFile.clean_dependency(dep)
+                    {"version": RequirementsFile.clean_dependency(dep), "hashes": []}
                     for dep in deps
                     if not any(
                         [dep.strip().startswith(s) for s in INVALID_REQUIREMENTS_LINES]
@@ -27,7 +27,7 @@ class RequirementsFile:
             raise OchronaFileException(f"OS error when parsing {file_path}") from ex
 
     @staticmethod
-    def direct_parse(direct: str) -> List[str]:
+    def direct_parse(direct: str) -> List[Dict[str, Union[str, List[str]]]]:
         """
         Parses a requirements.txt style string into a list of requirements.
 
@@ -37,7 +37,7 @@ class RequirementsFile:
         try:
             deps = direct.split("\n")
             return [
-                RequirementsFile.clean_dependency(dep)
+                {"version": RequirementsFile.clean_dependency(dep), "hashes": []}
                 for dep in deps
                 if not any(
                     [dep.strip().startswith(s) for s in INVALID_REQUIREMENTS_LINES]

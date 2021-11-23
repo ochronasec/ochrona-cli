@@ -1,15 +1,20 @@
 import dateutil.parser
+import json
+import pkgutil
 import re
 
 from packaging.specifiers import Version
 from packaging.version import parse
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Union, Sequence, Tuple
 
 from ochrona.client import pypi_fetch
-from ochrona.const import LICENSE_MAP
 
 PEP_SUPPORTED_OPERATORS = r"==|>=|<=|!=|~=|<|>"
 INVALID_SPEC_CHARACTERS = r"\'|\"|\\|\/|\[|\]|\{|\}"
+
+# License data from SPDX with additional Aliases added to map back
+# Non-complaint license names to SPDX specification License IDs
+LICENSE_DATA = json.loads(pkgutil.get_data(__name__, "../schema/spdx_modified.json"))  # type: ignore[arg-type]
 
 
 class Dependency:
@@ -31,10 +36,13 @@ class Dependency:
     _reserved_license_type: str = ""
     _reserved_latest_update: str = ""
     _reserved_release_count: str = ""
-    _is_reference: bool = False
+    _specified_hashes: Dict[str, List[str]] = {}
+    _purl: str = ""
 
-    def __init__(self, dependency: str):
-        self._raw = self._clean(dependency.split(",")[0])
+    def __init__(self, dependency: Dict[str, Union[str, List[str]]]):
+        version = dependency.get("version")
+        if version is not None and isinstance(version, str):
+            self._raw = self._clean(version.split(",")[0])
         parts = re.split(PEP_SUPPORTED_OPERATORS, self._raw)
         if len(parts) == 1:
             if "txt" in parts[0] and "-r" in parts[0]:
@@ -52,6 +60,10 @@ class Dependency:
             self._reserved_release_count,
         ) = self._pypi_details()
         self._full = self._provided_or_most_recent() or self._raw
+        self._purl = f"pkg:pypi/{self._reserved_name}@{self._version}"
+        hashes = dependency.get("hashes", [])
+        if isinstance(hashes, List):
+            self._parse_hashes(hash_list=hashes)
 
     def _parse_version(self, version: str):
         v = Version(version)
@@ -123,11 +135,21 @@ class Dependency:
     def _get_license(self, resp: Dict[str, Any]) -> str:
         raw_license = resp.get("info", {}).get("license", None)
         if raw_license is not None:
-            for ltype, matches in LICENSE_MAP.items():
-                if raw_license in matches:
-                    return ltype
+            for ltype in LICENSE_DATA.get("licenses"):
+                if raw_license in ltype.get("aliases"):
+                    return ltype.get("licenseId")
             return raw_license
         return "Unknown"
+
+    def _parse_hashes(self, hash_list: List[str]):
+        hash_dict: Dict[str, List[str]] = {}
+        for h in hash_list:
+            parts = h.split(":")
+            if parts[0] in hash_dict:
+                hash_dict[parts[0]].append(parts[1])
+            else:
+                hash_dict[parts[0]] = [parts[1]]
+        self._specified_hashes = hash_dict
 
     def _provided_or_most_recent(self) -> str:
         """
@@ -169,3 +191,11 @@ class Dependency:
     @property
     def version(self) -> str:
         return self._version
+
+    @property
+    def purl(self) -> str:
+        return self._purl
+
+    @property
+    def hashes(self) -> Dict[str, List[str]]:
+        return self._specified_hashes
