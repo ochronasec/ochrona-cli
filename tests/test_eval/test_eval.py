@@ -70,4 +70,4 @@ class TestEval:
         assert res.flat_list == ["fake=9.9.9"]
         assert res.confirmed_vulnerabilities == []
         assert len(res.policy_violations) == 1
-        assert res.policy_violations[0].message == "Policiy violated by fake=9.9.9"
+        assert res.policy_violations[0].message == "Policy violated by fake=9.9.9"
