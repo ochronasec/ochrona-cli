@@ -45,7 +45,7 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
                 PolicyViolation(
                     policy_type="custom",
                     friendly_policy_type=f"Definition: {policy}",
-                    message=f"Policiy violated by {','.join(possible_violating_packages)}",
+                    message=f"Policy violated by {','.join(possible_violating_packages)}",
                 )
             ]
     else:
@@ -56,7 +56,7 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
                 PolicyViolation(
                     policy_type="custom",
                     friendly_policy_type=f"Definition: {policy}",
-                    message=f"Policiy violated by {','.join(possible_violating_packages)}",
+                    message=f"Policy violated by {','.join(possible_violating_packages)}",
                 )
             ]
 
