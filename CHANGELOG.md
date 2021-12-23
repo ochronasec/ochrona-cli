@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.1
+- Fix policy typo
+
 ## 1.2.0
 - Include (CycloneDX)[https://cyclonedx.org/] software bill of materials (SBOM) generation support
 - Use SPDX official license list for dependency license IDs
