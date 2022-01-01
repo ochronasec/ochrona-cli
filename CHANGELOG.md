@@ -1,5 +1,10 @@
 # Change Log
 
+## Unreleased
+- Remove support for legacy policies
+- Refactored Policy evaluation
+- Add support for Vulnerability expression evaluation with new `vulnerable_version_expression` field in vulnerability definition. This should support more concise and flexible definitions for new vulnerability records.
+
 ## 1.2.1
 - Fix policy typo
 

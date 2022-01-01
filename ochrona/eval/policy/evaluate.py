@@ -3,9 +3,9 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from packaging.specifiers import Version
 
-from ochrona.eval.policy.parser import parse
-from ochrona.eval.policy.models import TokenInstance, Definition
-from ochrona.eval.policy.tokens import Token
+from ochrona.eval.parser import parse
+from ochrona.eval.models import TokenInstance, Definition
+from ochrona.eval.tokens import Token
 from ochrona.model.dependency import Dependency
 from ochrona.model.policy_violation import PolicyViolation
 
@@ -27,8 +27,8 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
         if isinstance(element, Definition):
             evaluated = evaluate_condition(dependency_list, element)
             boolean_list.append(EVAL_DICT[evaluated[0]])
-            if not evaluated[0]:
-                # Record package name/version if False
+            if evaluated[0]:
+                # Record package name/version if True
                 possible_violating_packages.append(evaluated[1])
         elif isinstance(element, TokenInstance):
             boolean_list.append(EVAL_DICT[element.id])
@@ -39,8 +39,6 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
             )
     if len(logical_list) > 0:
         if all(logical_list) or all(boolean_list):
-            return []
-        else:
             return [
                 PolicyViolation(
                     policy_type="custom",
@@ -48,10 +46,10 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
                     message=f"Policy violated by {','.join(possible_violating_packages)}",
                 )
             ]
+        else:
+            return []
     else:
         if all(boolean_list):
-            return []
-        else:
             return [
                 PolicyViolation(
                     policy_type="custom",
@@ -59,6 +57,8 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
                     message=f"Policy violated by {','.join(possible_violating_packages)}",
                 )
             ]
+        else:
+            return []
 
 
 def evaluate_condition(dependency_list, definition: Definition) -> Tuple[bool, str]:
@@ -67,52 +67,55 @@ def evaluate_condition(dependency_list, definition: Definition) -> Tuple[bool, s
         if dependency_value is None:
             continue
         if definition.operator.id == Token.EQUAL:
-            if not dependency_value == _calculate_value(definition.value):
-                return (False, dep.full)
+            if (
+                not dependency_value == _calculate_value(definition.value)
+                or definition.value.id == Token.ANY
+            ):
+                return (True, dep.full)
         elif definition.operator.id == Token.NEQUAL:
             if not dependency_value != _calculate_value(definition.value):
-                return (False, dep.full)
+                return (True, dep.full)
         elif definition.operator.id == Token.SMALL:
             if not _lt_compare(
                 dependency_value,
                 _calculate_value(definition.value),
                 definition.field.value,
             ):
-                return (False, dep.full)
+                return (True, dep.full)
         elif definition.operator.id == Token.SMALLEQ:
             if not _lte_compare(
                 dependency_value,
                 _calculate_value(definition.value),
                 definition.field.value,
             ):
-                return (False, dep.full)
+                return (True, dep.full)
         elif definition.operator.id == Token.LARGE:
             if not _gt_compare(
                 dependency_value,
                 _calculate_value(definition.value),
                 definition.field.value,
             ):
-                return (False, dep.full)
+                return (True, dep.full)
         elif definition.operator.id == Token.LARGEEQ:
             if not _gte_compare(
                 dependency_value,
                 _calculate_value(definition.value),
                 definition.field.value,
             ):
-                return (False, dep.full)
-        if definition.operator.id == Token.IN:
+                return (True, dep.full)
+        elif definition.operator.id == Token.IN:
             if dependency_value not in [
                 val.strip() for val in definition.value.value.split(",")
             ]:
-                return (False, dep.full)
+                return (True, dep.full)
         elif definition.operator.id == Token.NIN:
             if dependency_value in [
                 val.strip() for val in definition.value.value.split(",")
             ]:
-                return (False, dep.full)
+                return (True, dep.full)
         else:
             continue
-    return (True, "")
+    return (False, "")
 
 
 def _calculate_value(value: TokenInstance):

@@ -21,16 +21,17 @@ class Token(TokenEnum):
     # conditional operators
     EQUAL = re.compile(r"\=\=")
     NEQUAL = re.compile(r"!\=")
-    SMALL = re.compile(r"<")
     SMALLEQ = re.compile(r"<\=")
-    LARGE = re.compile(r">")
+    SMALL = re.compile(r"<")
     LARGEEQ = re.compile(r">\=")
+    LARGE = re.compile(r">")
     IN = re.compile(r"IN")
     NIN = re.compile(r"NIN")
     # special values
     DAYS = re.compile(r"NOW-[0-9]")
     # data types
     WHITESPACE = re.compile(r"(\t|\n|\s|\r)+")
+    ANY = re.compile(r"\*")
     STRING = re.compile(r"[_a-zA-Z0-9\.\-\,\:]*")
 
 

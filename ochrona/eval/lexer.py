@@ -1,7 +1,7 @@
 from typing import Generator
 
-from ochrona.eval.policy.models import TokenInstance
-from ochrona.eval.policy.tokens import Token
+from ochrona.eval.models import TokenInstance
+from ochrona.eval.tokens import Token
 
 
 def lexer(data: str) -> Generator[TokenInstance, str, None]:

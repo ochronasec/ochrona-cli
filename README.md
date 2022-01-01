@@ -178,6 +178,7 @@ At their most basic, policies are defined using conditional statements and logic
 | Value | Description |
 |-|-|
 | `NOW-N` | Shorthand for an ISO 8601 formatted date in the past. `N` will be an integer number of days. |
+| `*` | Match ANY value, only works with `==` operator. |
 
 ### Policy Examples
 ```
@@ -187,17 +188,6 @@ license_type IN MIT,ISC,Apache-2.0
 # Policy to check that all packages have been updated this year
 latest_update >= NOW-365
 ```
-
-## Legacy Policies
-Legacy policies can also be defined using their name and one or more conditions which are evaluated at scan time. Legacy policies will be removed in a future release and you are encouraged to use generic policies for all new policies.
-
-For example, the `license_type` policy allows you to be alerted if one of your dependency's open-source license is not part of your "Allow List" or if it uses a license from your "Deny List".
-
-### Legacy Policy Types
-| Name | Description | Fields |
-|-|-|-|
-| `package_name` | Allows for checking whether the dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. | `allow_list`, `deny_list` |
-| `license_type` | Allows for checking whether the licenses of dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. [SPDX](https://spdx.org/licenses/) license ids should be used. | `allow_list`, `deny_list` |
 
 # SBOM
 Software Bill-of-Materials (SBOM) are a list of the components used to build a piece of software. They aim to make the delivery and composition of software components more transparent. These documents can be useful for understanding software supply chains and ensuring license complaince. 

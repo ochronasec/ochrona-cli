@@ -67,7 +67,7 @@ class TestOchronaReporter:
     def test_generate_json_stdout(self, capsys):
         conf = MockConfig("JSON", None)
         result = MockDependencySet()
-        vuln = Vulnerability("fake", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
+        vuln = Vulnerability("fake", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
         result._confirmed_vulnerabilities = [vuln]
         reporter = OchronaReporter(None, conf)
         reporter.generate_report(
@@ -97,7 +97,7 @@ class TestOchronaReporter:
     def test_generate_json_file(self):
         conf = MockConfig("JSON", f"{dir_path}/test_data/output")
         result = MockDependencySet()
-        vuln = Vulnerability("fake", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
+        vuln = Vulnerability("fake", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
         result._confirmed_vulnerabilities = [vuln]
         reporter = OchronaReporter(None, conf)
         reporter.generate_report(
@@ -127,7 +127,7 @@ class TestOchronaReporter:
     def test_generate_xml_stdout(self, capsys):
         conf = MockConfig("XML", None)
         result = MockDependencySet()
-        vuln = Vulnerability("fake", "123", "", "", "", "", "", "fake finding", "", "", "", "8.4", "fake", "", "", "", "")
+        vuln = Vulnerability("fake", "123", "", "", "", "", "", "fake finding", "", "", "", "8.4", "fake", "", "", "", "", "")
         result._confirmed_vulnerabilities = [vuln]
         result._flat_list = ["fake"]
         reporter = OchronaReporter(None, conf)
@@ -161,7 +161,7 @@ class TestOchronaReporter:
     def test_generate_xml_file(self):
         conf = MockConfig("XML", f"{dir_path}/test_data/output")
         result = MockDependencySet()
-        vuln = Vulnerability("fake", "123", "", "", "", "", "", "fake finding", "", "", "", "8.4", "fake", "", "", "", "")
+        vuln = Vulnerability("fake", "123", "", "", "", "", "", "fake finding", "", "", "", "8.4", "fake", "", "", "", "", "")
         result._confirmed_vulnerabilities = [vuln]
         result._flat_list = ["fake"]
         reporter = OchronaReporter(None, conf)

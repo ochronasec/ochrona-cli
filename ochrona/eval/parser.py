@@ -1,12 +1,12 @@
 from typing import List, Optional, Tuple, Union
 
-from ochrona.eval.policy.lexer import lexer
-from ochrona.eval.policy.models import Definition, TokenInstance
-from ochrona.eval.policy.tokens import Token, CONDITIONAL_OPERATORS, LOGICAL_OPERATORS
+from ochrona.eval.lexer import lexer
+from ochrona.eval.models import Definition, TokenInstance
+from ochrona.eval.tokens import Token, CONDITIONAL_OPERATORS, LOGICAL_OPERATORS
 
 
-def parse(policy: str) -> List[Union[TokenInstance, Definition]]:
-    lexed = list(lexer(policy))
+def parse(expression_string: str) -> List[Union[TokenInstance, Definition]]:
+    lexed = list(lexer(expression_string))
     # Remove whitespace
     lexed = [t for t in lexed if t.id != Token.WHITESPACE]
     # Parse
@@ -20,9 +20,9 @@ def parse(policy: str) -> List[Union[TokenInstance, Definition]]:
     return parsed
 
 
-def validate(policy: str) -> Tuple[bool, Optional[str]]:
+def validate(expression_string: str) -> Tuple[bool, Optional[str]]:
     try:
-        parsed = parse(policy)
+        parsed = parse(expression_string)
         if (
             isinstance(parsed, list)
             and all(
