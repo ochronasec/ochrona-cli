@@ -10,11 +10,12 @@ dir_path = os.path.dirname(os.path.abspath(__file__))
 
 
 class MockConfig:
-    def __init__(self, report_type, location, exit_=False, ignore=None):
+    def __init__(self, report_type, location, exit_=False, ignore=None, color_output=False):
         self._report_type = report_type
         self._location = location
         self._exit = exit_
         self._ignore = ignore
+        self._color_output = color_output
 
     @property
     def report_type(self):
@@ -31,6 +32,10 @@ class MockConfig:
     @property
     def ignore(self):
         return self._ignore
+
+    @property
+    def color_output(self):
+        return self._color_output
 
 
 class MockDependencySet:
@@ -61,7 +66,7 @@ class TestOchronaReporter:
         reporter = OchronaReporter(None, conf)
         reporter.generate_report("fake", MockDependencySet(), 0, 1)
         captured = capsys.readouterr()
-        assert "Source: fake" in captured.out
+        assert "File: fake" in captured.out
         assert '"findings": []' in captured.out
 
     def test_generate_json_stdout(self, capsys):
@@ -74,7 +79,7 @@ class TestOchronaReporter:
             "fake", result, 0, 1
         )
         captured = capsys.readouterr()
-        assert "Source: fake" in captured.out
+        assert "File: fake" in captured.out
         assert '"name": "fake"' in captured.out
 
     def test_generate_empty_json_file(self):

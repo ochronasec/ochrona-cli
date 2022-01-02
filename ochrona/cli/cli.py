@@ -9,6 +9,7 @@ import json
 import sys
 
 import click
+from rich.progress import track
 from typing import Optional
 
 from ochrona.config import OchronaConfig
@@ -138,7 +139,14 @@ def run(
 
         try:
             results = []
-            for file_ in files:
+            for file_ in track(
+                files,
+                description=f"[blue]Processing {len(files)} Files...[/]",
+                total=len(files),
+                style="white",
+                complete_style="blue",
+                finished_style="blue",
+            ):
                 payload = parse_to_payload(log, file_, config)
                 if payload.get("dependencies") != []:
                     results.append(resolve(**payload))
@@ -168,7 +176,7 @@ def run(
                         format=config.sbom_format,
                     )
             if results == []:
-                log.warn(f"No dependencies found in {files}")
+                log.warn(f"No dependencies found in [bold]{files}[/bold]")
             reporter.report_collector(files, results)
         except OchronaException as ex:
             OchronaLogger.static_error(ex)

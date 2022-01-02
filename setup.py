@@ -25,6 +25,7 @@ requirements = [
     "packaging>=20.4",
     "requests-cache>=0.5.2",
     "appdirs>=1.4.4",
+    "rich>=10.16.1"
 ]
 
 test_requirements = ["pytest>=6.1.2"]

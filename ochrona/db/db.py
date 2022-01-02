@@ -55,7 +55,7 @@ class VulnDB:
             version = pathlib.Path(files[0]).name.replace(".tar.gz", "")
             self.latest_version = version
             self.latest_db_path = f"{self.user_app_dir}/{self.latest_version}.tar.gz"
-            self._logger.debug(f"DB instance found: {version}")
+            self._logger.debug(f"DB instance found: [bold]{version}[/bold]")
 
     def _download_latest_db(self):
         releases = requests.get(RELEASES_URL).json()
@@ -72,7 +72,7 @@ class VulnDB:
             sorted_releases[0].get("assets")[0].get("name").replace(".tar.gz", "")
         )
         self.latest_db_path = f"{self.user_app_dir}/{self.latest_version}.tar.gz"
-        self._logger.debug(f"DB upgraded to {self.latest_version}")
+        self._logger.debug(f"DB upgraded to [bold]{self.latest_version}[/bold]")
 
     def _create_user_app_dir(self):
         os.makedirs(self.user_app_dir, exist_ok=True)
@@ -98,7 +98,7 @@ class VulnDB:
             for vuln_path in potential_vuln_paths:
                 potential_vulns.append(json.loads(tar.extractfile(vuln_path).read()))
         self._logger.debug(
-            f"Found {len(potential_vulns)} vulnerabilities potentially affecting package: {name}"
+            f"Found [bold {'yellow' if len(potential_vulns) > 0 else ''}]{len(potential_vulns)}[/bold {'yellow' if len(potential_vulns) > 0 else ''}] vulnerabilities potentially affecting package: [bold]{name}[/bold]"
         )
         return potential_vulns
 
