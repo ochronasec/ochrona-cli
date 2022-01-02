@@ -41,7 +41,10 @@ def evaluate(
                     vulnerable_version_expression = vulnerability.get(
                         "vulnerable_version_expression"
                     )
-                    if vulnerable_version_expression and vulnerable_version_expression != "":
+                    if (
+                        vulnerable_version_expression
+                        and vulnerable_version_expression != ""
+                    ):
                         # Utilize vulnerable_version_expression expression
                         results += _evaluate(vulnerability, package_details)
                     else:
@@ -101,7 +104,9 @@ def evaluate(
         raise Exception("evaluate exception") from ex
 
 
-def _evaluate(vulnerability: Dict[str, Any], package_details: Dict[str, str]) -> List[Vulnerability]:
+def _evaluate(
+    vulnerability: Dict[str, Any], package_details: Dict[str, str]
+) -> List[Vulnerability]:
     version_expression = vulnerability.get("vulnerable_version_expression", "")
     parsed = parse(version_expression)
     dependency_version = package_details.get("version", "")
@@ -142,7 +147,9 @@ def _evaluate(vulnerability: Dict[str, Any], package_details: Dict[str, str]) ->
             return []
 
 
-def _evaluate_condition(dependency_value: Optional[str], definition: Definition) -> bool:
+def _evaluate_condition(
+    dependency_value: Optional[str], definition: Definition
+) -> bool:
     if dependency_value is None:
         return False
     if definition.operator.id == Token.EQUAL:

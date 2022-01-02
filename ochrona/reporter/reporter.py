@@ -16,6 +16,9 @@ from typing import Any, Dict, List, Optional
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
+from rich import box, print
+from rich.table import Table
+
 from ochrona.config import OchronaConfig
 from ochrona.log import OchronaLogger
 from ochrona.model.confirmed_vulnerability import Vulnerability
@@ -71,35 +74,38 @@ class OchronaReporter:
         :param total: int - the total number of file results
         :return:
         """
-        if self._report_type in ["BASIC", "FULL"]:
+        if self._report_type == "BASIC":
             BaseReport.print_report_number(index, total, self._config.color_output)
-            BaseReport.print_report_source(source, self._config.color_output)
-            if not result.confirmed_vulnerabilities and not result.policy_violations:
-                BaseReport.print_no_vulns(self._config.color_output)
-            else:
-                for finding in result.confirmed_vulnerabilities:
-                    BasicReport.print_vuln_finding(
-                        finding, True, self._config.color_output
-                    ) if self._config.report_type == "BASIC" else FullReport.print_vuln_finding(
-                        finding, True, self._config.color_output
-                    )
-                else:
-                    BaseReport.print_no_vulns(self._config.color_output)
-                for violation in result.policy_violations:
-                    BasicReport.print_policy_violation(violation)
-            BaseReport.print_new_line()
+            BasicReport.print_findings(
+                vulnerabilities=result.confirmed_vulnerabilities,
+                violations=result.policy_violations,
+                source=source,
+                color=self._config.color_output,
+            )
+        elif self._report_type == "FULL":
+            BaseReport.print_report_number(index, total, self._config.color_output)
+            FullReport().print_findings(
+                vulnerabilities=result.confirmed_vulnerabilities,
+                violations=result.policy_violations,
+                source=source,
+                color=self._config.color_output,
+            )
         elif self._report_type == "JSON":
             report = result.confirmed_vulnerabilities
             violations = result.policy_violations
 
             if report or violations:
                 if not self._report_location:
+                    BaseReport.print_report_number(
+                        index, total, self._config.color_output
+                    )
                     JSONReport.display_report(report, violations, source, total, index)
                 else:
                     JSONReport.save_report_to_file(
                         report, violations, self._report_location, source, index
                     )
             elif (not report and not violations) and not self._report_location:
+                BaseReport.print_report_number(index, total, self._config.color_output)
                 JSONReport.display_report(report, violations, source, total, index)
             else:
                 JSONReport.save_report_to_file(
@@ -108,6 +114,7 @@ class OchronaReporter:
 
         elif self._report_type == "XML":
             if not self._report_location:
+                BaseReport.print_report_number(index, total, self._config.color_output)
                 XMLReport.display_report(result, source, total, index)
             else:
                 XMLReport.save_report_to_file(
@@ -129,46 +136,22 @@ class OchronaReporter:
 
 
 class BaseReport:
-    INFO = "\033[94m"
-    PASS = "\033[92m"
-    WARNING = "\033[93m"
-    ERROR = "\033[91m"
-    ENDC = "\033[0m"
-    NEWLINE = "\n"
-    NO = ""
+    INFO = "[blue]"
+    ENDC = "[/]"
+    NO = "default"
 
     @staticmethod
     def print_report_number(index: int, total: int, color: bool = True):
         print(
-            f"{BaseReport.INFO if color else BaseReport.NO}Report {index + 1} of {total}{BaseReport.ENDC if color else BaseReport.NO}"
+            f"{os.linesep}{BaseReport.INFO if color else BaseReport.NO}Report {index + 1} of {total}{BaseReport.ENDC if color else BaseReport.NO}"
         )
-
-    @staticmethod
-    def print_new_line():
-        print(BaseReport.NEWLINE)
 
     @staticmethod
     def print_report_source(source: str, color: bool = True):
-        term_size = shutil.get_terminal_size((100, 20))
-        print(
-            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * (term_size.columns-2)}╡{BaseReport.ENDC if color else BaseReport.NO}"
-        )
-        print(
-            f"{BaseReport.INFO if color else BaseReport.NO}| Source: {source}{BaseReport.ENDC if color else BaseReport.NO}"
-        )
-        print(
-            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * (term_size.columns-2)}╡{BaseReport.ENDC if color else BaseReport.NO}"
-        )
-
-    @staticmethod
-    def print_no_vulns(color: bool = True):
-        term_size = shutil.get_terminal_size((100, 20))
-        print(
-            f"{BaseReport.INFO if color else BaseReport.NO}|{BaseReport.PASS if color else BaseReport.NO} ✅  No Vulnerabilities detected{BaseReport.ENDC if color else BaseReport.NO}"
-        )
-        print(
-            f"{BaseReport.INFO if color else BaseReport.NO}╞{'=' * (term_size.columns-2)}╡{BaseReport.ENDC if color else BaseReport.NO}"
-        )
+        if color:
+            print(f"[bold white italics]File: {source}[/]")
+        else:
+            print(f"Analysis: {source}")
 
 
 class BasicReport(BaseReport):
@@ -180,67 +163,56 @@ class BasicReport(BaseReport):
     """
 
     @staticmethod
-    def print_vuln_finding(finding: Vulnerability, confirmed: bool, color: bool = True):
+    def print_findings(
+        vulnerabilities: List[Vulnerability],
+        violations: List[PolicyViolation],
+        source: str,
+        color: bool = True,
+    ):
         term_size = shutil.get_terminal_size((100, 20))
-
-        INFO = BaseReport.INFO if color else BaseReport.NO
-        ERROR = BaseReport.ERROR if color else BaseReport.NO
-        WARNING = BaseReport.WARNING if color else BaseReport.NO
-        ENDC = BaseReport.ENDC if color else BaseReport.NO
-        ROW_BREAK = f"{INFO}╞{'-' * (term_size.columns-2)}╡{ENDC}"
-        LINE_BREAK = f"{INFO}╞{'=' * (term_size.columns-2)}╡{ENDC}"
-
-        if confirmed:
-            print(f"{INFO}|{ERROR} ⚠️  Vulnerability Detected!{ENDC}")
-            print(ROW_BREAK)
-            print(f"{INFO}| Package -- {finding.name}{ENDC}")
-            print(ROW_BREAK)
-            print(f"{INFO}| Installed Version -- {finding.found_version}{ENDC}")
-            print(ROW_BREAK)
-            print(f"{INFO}| CVE -- {finding.cve_id}{ENDC}")
-            print(ROW_BREAK)
-            print(f"{INFO}| Severity -- {finding.ochrona_severity_score} {ENDC}")
-            print(ROW_BREAK)
-            if len(finding.affected_versions) > 0:
-                affected_versions = ", ".join(
-                    [
-                        f"{f.get('operator')}{f.get('version_value')}"  # type: ignore
-                        for f in finding.affected_versions
-                    ]
-                )
-                print(
-                    textwrap.fill(
-                        f"{INFO}| Affected Versions -- \n| {affected_versions}{ENDC}",
-                        (term_size.columns - 2),
-                        replace_whitespace=False,
-                        initial_indent="",
-                        subsequent_indent="| ",
+        print(f"[bold white italics]File: {source}[/]")
+        table = Table(
+            box=box.ROUNDED, header_style="bold white", min_width=term_size.columns
+        )
+        table.add_column(
+            header="Vulnerability Check", style="blue bold", justify="right", width=30
+        )
+        table.add_column(
+            header=f"{'[bold red]:cross_mark: {} Vulnerabilities Detected![/]'.format(len(vulnerabilities)) if len(vulnerabilities) > 0 else '[bold green]:white_heavy_check_mark: No Vulnerabilities Detected![/]'}",
+            style="blue",
+            width=term_size.columns - 30,
+        )
+        if len(vulnerabilities) > 0:
+            for finding in vulnerabilities:
+                table.add_row("Package Name", finding.name)
+                table.add_row("Installed Version", finding.found_version)
+                table.add_row("CVE/Vuln ID", finding.cve_id)
+                table.add_row("Severity", f"{finding.ochrona_severity_score}")
+                if len(finding.affected_versions) > 0:
+                    affected_versions = os.linesep.join(
+                        [
+                            f"{f.get('operator', '')}{f.get('version_value', '')}"  # type: ignore
+                            for f in finding.affected_versions
+                        ]
                     )
-                )
-            else:
-                print(
-                    f"{INFO}| Affected Versions -- {finding.vulnerable_version_expression} {ENDC}"
-                )
-            print(ROW_BREAK)
-            print(LINE_BREAK)
-
-    @staticmethod
-    def print_policy_violation(violation: PolicyViolation, color: bool = True):
-        term_size = shutil.get_terminal_size((100, 20))
-
-        INFO = BaseReport.INFO if color else BaseReport.NO
-        ERROR = BaseReport.ERROR if color else BaseReport.NO
-        WARNING = BaseReport.WARNING if color else BaseReport.NO
-        ENDC = BaseReport.ENDC if color else BaseReport.NO
-        ROW_BREAK = f"{INFO}╞{'-' * (term_size.columns-2)}╡{ENDC}"
-        LINE_BREAK = f"{INFO}╞{'=' * (term_size.columns-2)}╡{ENDC}"
-
-        print(f"{INFO}|{ERROR} ⚠️  Policy Violation!{ENDC}")
-        print(ROW_BREAK)
-        print(f"{INFO}| Policy: {violation.friendly_policy_type}{ENDC}")
-        print(f"{INFO}| {violation.message}{ENDC}")
-        print(ROW_BREAK)
-        print(LINE_BREAK)
+                    table.add_row(
+                        "Affect Versions", affected_versions, end_section=True
+                    )
+                else:
+                    table.add_row(
+                        "Affect Versions",
+                        finding.vulnerable_version_expression.replace("version", ""),  # type: ignore
+                        end_section=True,
+                    )
+        table.add_row("", "")
+        table.add_row(
+            "[bold white] Policy Check[/]",
+            f"{'[bold red]:cross_mark: {} Policy Violations Found![/]'.format(len(violations)) if len(violations) > 0 else '[bold green]:white_heavy_check_mark: No Policy Violations Found![/]'}",
+        )
+        for violation in violations:
+            table.add_row("Policy", violation.friendly_policy_type)
+            table.add_row("Violation", violation.message)
+        print(table)
 
 
 class FullReport(BaseReport):
@@ -253,74 +225,61 @@ class FullReport(BaseReport):
     """
 
     @staticmethod
-    def print_vuln_finding(finding: Vulnerability, confirmed: bool, color: bool = True):
+    def print_findings(
+        vulnerabilities: List[Vulnerability],
+        violations: List[PolicyViolation],
+        source: str,
+        color: bool = True,
+    ):
         term_size = shutil.get_terminal_size((100, 20))
-        INFO = BaseReport.INFO if color else BaseReport.NO
-        ERROR = BaseReport.ERROR if color else BaseReport.NO
-        WARNING = BaseReport.WARNING if color else BaseReport.NO
-        ENDC = BaseReport.ENDC if color else BaseReport.NO
-        ROW_BREAK = f"{INFO}╞{'-' * (term_size.columns-2)}╡{ENDC}"
-        LINE_BREAK = f"{INFO}╞{'=' * (term_size.columns-2)}╡{ENDC}"
-
-        if confirmed:
-            print(f"{INFO}|{ERROR} ⚠️  Vulnerability Detected!{ENDC}")
-            print(ROW_BREAK)
-            print(f"{INFO}| Package -- {finding.name}{ENDC}")
-            print(ROW_BREAK)
-            print(f"{INFO}| Installed Version -- {finding.found_version}{ENDC}")
-            print(ROW_BREAK)
-
-            print(
-                textwrap.fill(
-                    f"{INFO}| Reason -- {finding.reason}{ENDC}",
-                    (term_size.columns - 2),
-                    initial_indent="",
-                    subsequent_indent="| ",
-                )
-            )
-            print(ROW_BREAK)
-            print(f"{INFO}| CVE -- {finding.cve_id}{ENDC}")
-            print(ROW_BREAK)
-            print(f"{INFO}| Vulnerability Publish Date -- {finding.publish_date}{ENDC}")
-            print(ROW_BREAK)
-            print(f"{INFO}| Severity -- {finding.ochrona_severity_score} {ENDC}")
-            print(ROW_BREAK)
-            print(
-                textwrap.fill(
-                    f"{INFO}| Description -- {finding.description}{ENDC}",
-                    (term_size.columns - 2),
-                    initial_indent="",
-                    subsequent_indent="| ",
-                )
-            )
-            print(ROW_BREAK)
-            print(f"{INFO}| License -- {finding.license} {ENDC}")
-            print(ROW_BREAK)
-            if len(finding.affected_versions) > 0:
-                affected_versions = ", ".join(
-                    [
-                        f"{f.get('operator')}{f.get('version_value')}"  # type: ignore
-                        for f in finding.affected_versions
-                    ]
-                )
-                print(
-                    textwrap.fill(
-                        f"{INFO}| Affected Version(s) -- \n| {affected_versions}{ENDC}",
-                        (term_size.columns - 2),
-                        replace_whitespace=False,
-                        initial_indent="",
-                        subsequent_indent="| ",
+        print(f"[bold white italics]File: {source}[/]")
+        table = Table(
+            box=box.ROUNDED, header_style="bold white", min_width=term_size.columns
+        )
+        table.add_column(
+            header="Vulnerability Check", style="blue bold", justify="right", width=30
+        )
+        table.add_column(
+            header=f"{'[bold red]:cross_mark: {} Vulnerabilities Detected![/]'.format(len(vulnerabilities)) if len(vulnerabilities) > 0 else '[bold green]:white_heavy_check_mark: No Vulnerabilities Detected![/]'}",
+            style="blue",
+            width=term_size.columns - 30,
+        )
+        if len(vulnerabilities) > 0:
+            for finding in vulnerabilities:
+                table.add_row("Package Name", finding.name)
+                table.add_row("Installed Version", finding.found_version)
+                table.add_row("Reason", finding.reason)
+                table.add_row("CVE/Vuln ID", finding.cve_id)
+                table.add_row("Vulnerability Publish Date", finding.publish_date)
+                table.add_row("Severity", f"{finding.ochrona_severity_score}")
+                table.add_row("Description", finding.description)
+                if len(finding.affected_versions) > 0:
+                    affected_versions = os.linesep.join(
+                        [
+                            f"{f.get('operator', '')}{f.get('version_value', '')}"  # type: ignore
+                            for f in finding.affected_versions
+                        ]
                     )
+                    table.add_row("Affect Versions", affected_versions)
+                else:
+                    table.add_row(
+                        "Affect Versions",
+                        finding.vulnerable_version_expression.replace("version", ""),  # type: ignore
+                    )
+                table.add_row("License", finding.license)
+                references = os.linesep.join(
+                    [f"[magenta underline]{ref}[/]" for ref in finding.references]
                 )
-            else:
-                print(
-                    f"{INFO}| Affected Versions -- {finding.vulnerable_version_expression} {ENDC}"
-                )
-            print(ROW_BREAK)
-            references = "".join([f"\n| - {ref}" for ref in finding.references])
-            print(f"{INFO}| References -- {references}{ENDC}")
-            print(LINE_BREAK)
-            print(LINE_BREAK)
+                table.add_row("References", references, end_section=True)
+        table.add_row("", "")
+        table.add_row(
+            "[bold white] Policy Check[/]",
+            f"{'[bold red]:cross_mark: {} Policy Violations Found![/]'.format(len(violations)) if len(violations) > 0 else '[bold green]:white_heavy_check_mark: No Policy Violations Found![/]'}",
+        )
+        for violation in violations:
+            table.add_row("Policy", violation.friendly_policy_type)
+            table.add_row("Violation", violation.message)
+        print(table)
 
 
 class JSONReport(BaseReport):
@@ -339,7 +298,6 @@ class JSONReport(BaseReport):
         total: int,
         index: int,
     ):
-        BaseReport.print_report_number(index, total)
         BaseReport.print_report_source(source)
         print(JSONReport.generate_report_body(result, violations, source))
 
@@ -386,7 +344,6 @@ class XMLReport(BaseReport):
 
     @staticmethod
     def display_report(result: DependencySet, source: str, total: int, index: int):
-        BaseReport.print_report_number(index, total)
         BaseReport.print_report_source(source)
         print(XMLReport.generate_report_body(result, source))
 
