@@ -201,21 +201,26 @@ class BasicReport(BaseReport):
             print(ROW_BREAK)
             print(f"{INFO}| Severity -- {finding.ochrona_severity_score} {ENDC}")
             print(ROW_BREAK)
-            affected_versions = ", ".join(
-                [
-                    f"{f.get('operator')}{f.get('version_value')}"  # type: ignore
-                    for f in finding.affected_versions
-                ]
-            )
-            print(
-                textwrap.fill(
-                    f"{INFO}| Affected Versions -- \n| {affected_versions}{ENDC}",
-                    (term_size.columns - 2),
-                    replace_whitespace=False,
-                    initial_indent="",
-                    subsequent_indent="| ",
+            if len(finding.affected_versions) > 0:
+                affected_versions = ", ".join(
+                    [
+                        f"{f.get('operator')}{f.get('version_value')}"  # type: ignore
+                        for f in finding.affected_versions
+                    ]
                 )
-            )
+                print(
+                    textwrap.fill(
+                        f"{INFO}| Affected Versions -- \n| {affected_versions}{ENDC}",
+                        (term_size.columns - 2),
+                        replace_whitespace=False,
+                        initial_indent="",
+                        subsequent_indent="| ",
+                    )
+                )
+            else:
+                print(
+                    f"{INFO}| Affected Versions -- {finding.vulnerable_version_expression} {ENDC}"
+                )
             print(ROW_BREAK)
             print(LINE_BREAK)
 
@@ -291,21 +296,26 @@ class FullReport(BaseReport):
             print(ROW_BREAK)
             print(f"{INFO}| License -- {finding.license} {ENDC}")
             print(ROW_BREAK)
-            affected_versions = ", ".join(
-                [
-                    f"{f.get('operator')}{f.get('version_value')}"  # type: ignore
-                    for f in finding.affected_versions
-                ]
-            )
-            print(
-                textwrap.fill(
-                    f"{INFO}| Affected Version(s) -- \n| {affected_versions}{ENDC}",
-                    (term_size.columns - 2),
-                    replace_whitespace=False,
-                    initial_indent="",
-                    subsequent_indent="| ",
+            if len(finding.affected_versions) > 0:
+                affected_versions = ", ".join(
+                    [
+                        f"{f.get('operator')}{f.get('version_value')}"  # type: ignore
+                        for f in finding.affected_versions
+                    ]
                 )
-            )
+                print(
+                    textwrap.fill(
+                        f"{INFO}| Affected Version(s) -- \n| {affected_versions}{ENDC}",
+                        (term_size.columns - 2),
+                        replace_whitespace=False,
+                        initial_indent="",
+                        subsequent_indent="| ",
+                    )
+                )
+            else:
+                print(
+                    f"{INFO}| Affected Versions -- {finding.vulnerable_version_expression} {ENDC}"
+                )
             print(ROW_BREAK)
             references = "".join([f"\n| - {ref}" for ref in finding.references])
             print(f"{INFO}| References -- {references}{ENDC}")

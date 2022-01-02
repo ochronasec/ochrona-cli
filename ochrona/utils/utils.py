@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 
-def parse_version_requirements(packages: str) -> Dict[str, Dict[str, str]]:
+def parse_version_requirements(packages: List[str]) -> Dict[str, Dict[str, str]]:
     """
     Parses a list of requirements in the format <package_name><PEP_OPERATOR><SEM_VER>
     into a dictionary with the format.
