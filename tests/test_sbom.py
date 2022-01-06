@@ -44,6 +44,6 @@ class TestSBOMCycloneDX:
         root = tree.getroot()
         assert root.attrib.get("version") == "1"
         assert root[1][0][0].text == "requests"
-        assert root[1][0][3][0].text == "11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4"
-        assert root[1][0][4][0][0].text == "Apache-2.0"
+        assert root[1][0][4][0].text == "11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4"
+        assert root[1][0][5][0][0].text == "Apache-2.0"
         os.remove(f"{dir_path}/test_data/output/bom.xml")

@@ -21,7 +21,7 @@ class TestConfig:
                 report_type=fake
             )
             valid = conf._validate()
-        assert str(excinfo.value) == f"Unknown report type specified as {fake}, allowed: ['BASIC', 'FULL', 'JSON', 'XML']"
+        assert str(excinfo.value) == f"Unknown report type specified as {fake}, allowed: ['BASIC', 'FULL', 'JSON', 'XML', 'HTML']"
 
     def test_config_init_invalid_policy(self):
         with pytest.raises(SystemExit) as excinfo:
