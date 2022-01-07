@@ -35,7 +35,7 @@ class OchronaConfig:
     _sbom: bool = False
     _sbom_format: Optional[str] = None
 
-    REPORT_OPTIONS: List[str] = ["BASIC", "FULL", "JSON", "XML"]
+    REPORT_OPTIONS: List[str] = ["BASIC", "FULL", "JSON", "XML", "HTML"]
     SBOM_FORMAT_OPTIONS: List[str] = ["JSON", "XML"]
 
     def __init__(self, **kwargs):

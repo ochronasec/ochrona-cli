@@ -39,10 +39,11 @@ class MockConfig:
 
 
 class MockDependencySet:
-    def __init__(self, confirmed_vulnerabilities=[], policy_violations=[], flat_list=[]):
+    def __init__(self, confirmed_vulnerabilities=[], policy_violations=[], flat_list=[], dependencies=[]):
         self._confirmed_vulnerabilities = confirmed_vulnerabilities
         self._policy_violations = policy_violations
         self._flat_list = flat_list
+        self._dependencies = dependencies
 
     @property
     def confirmed_vulnerabilities(self):
@@ -55,6 +56,10 @@ class MockDependencySet:
     @property
     def flat_list(self):
         return self._flat_list
+    
+    @property
+    def dependencies(self):
+        return self._dependencies
 
 
 class TestOchronaReporter:
@@ -183,3 +188,23 @@ class TestOchronaReporter:
             for entry in output.getroot():
                 assert entry.get("tests") == "1", "expected 1 finding"
         os.remove(f"{dir_path}/test_data/output/1_requirements.txt_results.xml")
+
+    def test_generate_html_file(self):
+        conf = MockConfig("HTML", f"{dir_path}/test_data/output")
+        result = MockDependencySet()
+        vuln = Vulnerability("fake", "123", "", "", "", "", "", "fake finding", "", "", "", "8.4", "fake", "", "", "", "", "")
+        result._confirmed_vulnerabilities = [vuln]
+        result._flat_list = ["fake"]
+        reporter = OchronaReporter(None, conf)
+        reporter.generate_report(
+            f"{dir_path}/test_data/fail/requirements.txt",
+            result,
+            0,
+            1,
+        )
+        with open(
+            f"{dir_path}/test_data/output/ochrona_results.html", "r"
+        ) as out:
+            output = out.read()
+            assert f"{dir_path}/test_data/fail/requirements.txt" in output
+        os.remove(f"{dir_path}/test_data/output/ochrona_results.html")

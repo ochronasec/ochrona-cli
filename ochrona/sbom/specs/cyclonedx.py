@@ -44,6 +44,7 @@ class CycloneDX:
                 "name": dep.name,
                 "version": dep.version,
                 "purl": dep.purl,
+                "description": dep.summary,
                 "hashes": [],
                 "licenses": [{"license": {"id": dep.license_type}}],
             }
@@ -58,6 +59,13 @@ class CycloneDX:
     def xml(self, location: str):
         """
         Writes CycloneDX XML to location
+        """
+        with open(f"{location}/bom.xml", "w") as f:
+            f.write(self.to_xml_string())
+
+    def to_xml_string(self) -> str:
+        """
+        Generates CycloneDX XML string
         """
         bom = ET.Element("bom")
         bom.set("version", "1")
@@ -84,6 +92,8 @@ class CycloneDX:
             cversion.text = dep.version
             purl = ET.SubElement(component, "purl")
             purl.text = dep.purl
+            description = ET.SubElement(component, "description")
+            description.text = dep.summary
             hashes_list = ET.SubElement(component, "hashes")
             for alg, hashes in dep.hashes.items():
                 for hash_entry in hashes:
@@ -95,5 +105,4 @@ class CycloneDX:
             lid = ET.SubElement(lic, "id")
             lid.text = dep.license_type
 
-        with open(f"{location}/bom.xml", "w") as f:
-            f.write(minidom.parseString(ET.tostring(bom)).toprettyxml(indent="   "))
+        return minidom.parseString(ET.tostring(bom)).toprettyxml(indent="   ")
