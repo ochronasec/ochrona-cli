@@ -14,7 +14,7 @@ from ochrona.model.policy_violation import PolicyViolation
 from ochrona.sbom.specs.cyclonedx import CycloneDX
 
 
-JINJA_TEMPLATE = pkgutil.get_data(__name__, "../../schema/report.html.jinja").decode("utf-8")  # type: ignore[arg-type]
+JINJA_TEMPLATE = pkgutil.get_data(__name__, "../../schema/report.html.jinja").decode("utf-8")  # type: ignore
 
 
 class HTMLReport(BaseReport):
