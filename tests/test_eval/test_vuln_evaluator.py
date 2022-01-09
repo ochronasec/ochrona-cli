@@ -326,6 +326,46 @@ class TestEvaluator:
         potential_vulns = [v]
         self.evaluator_harness(package_list, potential_vulns, 0)
 
+    def test_evaluate_expression_between_true(self):
+        """
+        Tests evaluation with expression
+        """
+        package_list = ["package_a==1.0.3", "package_b==1.0.0"]
+        v = potential_vulnerability
+        v["vulnerable_version_expression"] = "version >= 1.0.0 AND version < 1.5.3"
+        potential_vulns = [v]
+        self.evaluator_harness(package_list, potential_vulns, 1)
+
+    def test_evaluate_expression_between_false(self):
+        """
+        Tests evaluation with expression
+        """
+        package_list = ["package_a==1.5.4", "package_b==1.0.0"]
+        v = potential_vulnerability
+        v["vulnerable_version_expression"] = "version >= 1.0.0 AND version < 1.5.3"
+        potential_vulns = [v]
+        self.evaluator_harness(package_list, potential_vulns, 0)
+
+    def test_evaluate_expression_brackets_true(self):
+        """
+        Tests evaluation with expression
+        """
+        package_list = ["package_a==1.5.2", "package_b==1.0.0"]
+        v = potential_vulnerability
+        v["vulnerable_version_expression"] = "(version >= 1.0.0 AND version < 1.5.3) OR (version >= 2.0.0 AND version < 2.3.3)"
+        potential_vulns = [v]
+        self.evaluator_harness(package_list, potential_vulns, 1)
+
+    def test_evaluate_expression_brackets_false(self):
+        """
+        Tests evaluation with expression
+        """
+        package_list = ["package_a==1.5.2", "package_b==1.0.0"]
+        v = potential_vulnerability
+        v["vulnerable_version_expression"] = "(version >= 1.0.0 AND version < 1.5.3) AND (version >= 2.0.0 AND version < 2.3.3)"
+        potential_vulns = [v]
+        self.evaluator_harness(package_list, potential_vulns, 0)
+
     @staticmethod
     def evaluator_harness(
         package_list,

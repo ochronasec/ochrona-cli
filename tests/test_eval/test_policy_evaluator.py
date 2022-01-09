@@ -171,6 +171,26 @@ class TestPolicyEvaluator:
         policies = ["license_type==Apache-2.0 OR license_type==ISC"]
         self.policy_evaluator_harness(package_list, policies, 1)
 
+    def test_generic_policy_evaluation_equals_brackets_pass(self):
+        """
+        Test generic policy evaluation with brackets
+        """
+        package_list = MockDependencySet(
+            [], [{"full": "fake==1.2.3", "license_type": "MIT", "latest_version": "3.0.1"}]
+        )
+        policies = ["(license_type==Apache-2.0 OR license_type==MIT) AND latest_version < 10.0.0"]
+        self.policy_evaluator_harness(package_list, policies, 0)
+
+    def test_generic_policy_evaluation_equals_brackets_fail(self):
+        """
+        Test generic policy evaluation with brackets
+        """
+        package_list = MockDependencySet(
+            [], [{"full": "fake==1.2.3", "license_type": "MIT", "latest_version": "3.0.1"}]
+        )
+        policies = ["(license_type==Apache-2.0 OR license_type==ISC) AND latest_version < 10.0.0"]
+        self.policy_evaluator_harness(package_list, policies, 0)
+
     @staticmethod
     def policy_evaluator_harness(package_list, policies, expected_violation_count):
         """

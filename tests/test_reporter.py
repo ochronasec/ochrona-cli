@@ -5,6 +5,7 @@ import pytest
 
 from ochrona.reporter import OchronaReporter
 from ochrona.model.confirmed_vulnerability import Vulnerability
+from ochrona.model.policy_violation import PolicyViolation
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -173,6 +174,8 @@ class TestOchronaReporter:
         result = MockDependencySet()
         vuln = Vulnerability("fake", "123", "", "", "", "", "", "fake finding", "", "", "", "8.4", "fake", "", "", "", "", "")
         result._confirmed_vulnerabilities = [vuln]
+        pv = PolicyViolation("custom", "Definition: license_type == MIT", "Policy violated by fake")
+        result._policy_violations = [pv]
         result._flat_list = ["fake"]
         reporter = OchronaReporter(None, conf)
         reporter.generate_report(

@@ -164,20 +164,24 @@ At their most basic, policies are defined using conditional statements and logic
 | `<=` | Less than or equal to. |
 | `>` | Greater than, for comparing numerical or string values. |
 | `>=` | Greater than or equal to. |
-| `IN` | For checking whether a value exists within a set. |
-| `NIN` | For checking that a value does not exist within a set. |
+| `IN` | For checking whether a value exists within a set. Values used with `IN` should be comma separated. |
+| `NIN` | For checking that a value does not exist within a set. Values used with `NIN` should be comma separated. |
 
 ### Allowed Logical Operators
 | Operator | Description |
 |-|-|
-| `AND` | For checking that all conditions are true. |
-| `OR` | For checking that at least one condition is true. |
+| `AND` | For checking that both adjacent conditions are true. |
+| `OR` | For checking that at least one adjacent condition is true. |
 
 ### Special Values
 | Value | Description |
 |-|-|
 | `NOW-N` | Shorthand for an ISO 8601 formatted date in the past. `N` will be an integer number of days. |
 | `*` | Match ANY value, only works with `==` operator. |
+
+### Precedence
+Policies allow the usage of `(` and `)` to indicate evaluation precedence and grouping. 
+Example ```(license_type==Apache-2.0 OR license_type==MIT) AND latest_update < NOW-30```
 
 ### Policy Examples
 ```
@@ -241,19 +245,23 @@ $ pip freeze | docker run -i -e OCHRONA_IGNORED_VULNS=requests --rm ochrona/ochr
 ```
 
 # Output Formats
-Ochrona supports several built in output options include a `BASIC` and `FULL` plaintext reports, as well as a Junit style `XML` report or a `JSON` style report for incorporating with other tools.
+Ochrona supports several built in output options include a `BASIC` and `FULL` plaintext reports, a Junit style `XML` report, a `JSON` style report for incorporating with other tools, and and `HTML` summarized report.
 
 ### Basic
-[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_basic.png"/></p>](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_BASIC.png"/></p>](https://ochrona.dev)
 
 ### Full
-[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_full.png"/></p>](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_FULL.png"/></p>](https://ochrona.dev)
 
 ### XML (Junit)
-[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_xml.png"/></p>](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_XML.png"/></p>](https://ochrona.dev)
 
 ### JSON
-[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_json.png"/></p>](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_JSON.png"/></p>](https://ochrona.dev)
+
+### HTML
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_HTML.png"/></p>](https://ochrona.dev)
+
 
 
 # Represent!

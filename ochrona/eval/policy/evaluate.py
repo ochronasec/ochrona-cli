@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from packaging.specifiers import Version
 
@@ -20,23 +20,9 @@ EVAL_DICT: Dict[Any, Any] = {
 
 def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViolation]:
     parsed = parse(policy)
-    boolean_list = []
-    logical_list = []
-    possible_violating_packages: List[str] = []
-    for element in parsed:
-        if isinstance(element, Definition):
-            evaluated = evaluate_condition(dependency_list, element)
-            boolean_list.append(EVAL_DICT[evaluated[0]])
-            if evaluated[0]:
-                # Record package name/version if True
-                possible_violating_packages.append(evaluated[1])
-        elif isinstance(element, TokenInstance):
-            boolean_list.append(EVAL_DICT[element.id])
-    for i in range(len(boolean_list)):
-        if not isinstance(boolean_list[i], bool):
-            logical_list.append(
-                boolean_list[i](boolean_list[i - 1], boolean_list[i + 1])
-            )
+    boolean_list, logical_list, possible_violating_packages = _inner_evaluate(
+        parsed, dependency_list
+    )
     if len(logical_list) > 0:
         if all(logical_list) or all(boolean_list):
             return [
@@ -61,7 +47,53 @@ def evaluate(dependency_list: List[Dependency], policy: str) -> List[PolicyViola
             return []
 
 
-def evaluate_condition(dependency_list, definition: Definition) -> Tuple[bool, str]:
+def _inner_evaluate(
+    parsed: List[Union[TokenInstance, Definition]], dependency_list: List[Dependency]
+) -> Tuple[List[bool], List[Any], List[str]]:
+    boolean_list = []
+    logical_list = []
+    possible_violating_packages = []
+
+    it = iter(enumerate(parsed))
+    for i, element in it:
+        if isinstance(element, TokenInstance):
+            # TODO - this recursive logic for processing bracketed compound expressions is ugly and complicated
+            if element.id == Token.LBRACKET:
+                # find next closing bracket
+                for j in range(i, len(parsed)):
+                    if (
+                        isinstance(parsed[j], TokenInstance)
+                        and parsed[j].id == Token.RBRACKET  # type: ignore[union-attr]
+                    ):
+                        (
+                            tmp_boolean_list,
+                            tmp_logical_list,
+                            tmp_possible_violating_packages,
+                        ) = _inner_evaluate(parsed[i + 1 : j], dependency_list)
+                        # Compress the logical list output of the nested result into the boolean list of its parent
+                        boolean_list += tmp_logical_list
+                        possible_violating_packages += tmp_possible_violating_packages
+                        # skip past the already processed block
+                        for _ in range(i, j):
+                            next(it)
+                        break
+            else:
+                boolean_list.append(EVAL_DICT[element.id])
+        elif isinstance(element, Definition):
+            evaluated = _evaluate_condition(dependency_list, element)
+            boolean_list.append(EVAL_DICT[evaluated[0]])
+            if evaluated[0]:
+                # Record package name/version if True
+                possible_violating_packages.append(evaluated[1])
+    for i in range(len(boolean_list)):
+        if not isinstance(boolean_list[i], bool) and len(boolean_list) > 2:
+            logical_list.append(
+                boolean_list[i](boolean_list[i - 1], boolean_list[i + 1])
+            )
+    return (boolean_list, logical_list, possible_violating_packages)
+
+
+def _evaluate_condition(dependency_list, definition: Definition) -> Tuple[bool, str]:
     for dep in dependency_list:
         dependency_value = dep.__dict__.get(f"_reserved_{definition.field.value}")
         if dependency_value is None:
