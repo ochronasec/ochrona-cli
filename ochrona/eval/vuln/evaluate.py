@@ -147,7 +147,7 @@ def _inner_evaluate(
                 for j in range(i, len(parsed)):
                     if (
                         isinstance(parsed[j], TokenInstance)
-                        and parsed[j].id == Token.RBRACKET # type: ignore[union-attr]
+                        and parsed[j].id == Token.RBRACKET  # type: ignore[union-attr]
                     ):
                         tmp_boolean_list, tmp_logical_list = _inner_evaluate(
                             parsed[i + 1 : j], dependency_version
