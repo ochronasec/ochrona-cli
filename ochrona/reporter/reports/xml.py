@@ -18,7 +18,7 @@ class XMLReport(BaseReport):
     This report can be logged to stdout
     """
 
-    VIOLATION_PACKAGE_PATTERN = r"^.*\.\s+\(from (.*)\)$"
+    VIOLATION_PACKAGE_PATTERN = r"^Policy violated by (.*)$"
 
     @staticmethod
     def generate(
@@ -85,7 +85,7 @@ class XMLReport(BaseReport):
             for violation in result.policy_violations:
                 violating_package = re.search(  # type: ignore
                     XMLReport.VIOLATION_PACKAGE_PATTERN, violation.message
-                ).groups(1)[0]
+                ).groups(0)[0]
                 case = list(
                     filter(
                         lambda x: x.get("name") == violating_package

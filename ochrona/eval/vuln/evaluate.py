@@ -1,6 +1,6 @@
 from packaging.specifiers import SpecifierSet, Version
 from packaging.version import InvalidVersion
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ochrona.eval.parser import parse
 from ochrona.eval.models import TokenInstance, Definition
@@ -110,21 +110,7 @@ def _evaluate(
     version_expression = vulnerability.get("vulnerable_version_expression", "")
     parsed = parse(version_expression)
     dependency_version = package_details.get("version", "")
-    boolean_list = []
-    logical_list = []
-    possible_violating_packages: List[str] = []
-    for element in parsed:
-        if isinstance(element, Definition):
-            evaluated = _evaluate_condition(dependency_version, element)
-            boolean_list.append(EVAL_DICT[evaluated])
-        elif isinstance(element, TokenInstance):
-            boolean_list.append(EVAL_DICT[element.id])
-
-    for i in range(len(boolean_list)):
-        if not isinstance(boolean_list[i], bool):
-            logical_list.append(
-                boolean_list[i](boolean_list[i - 1], boolean_list[i + 1])
-            )
+    boolean_list, logical_list = _inner_evaluate(parsed, dependency_version)
     if len(logical_list) > 0:
         if all(logical_list) or all(boolean_list):
             vulnerability[
@@ -145,6 +131,45 @@ def _evaluate(
             return [Vulnerability(**vulnerability)]
         else:
             return []
+
+
+def _inner_evaluate(
+    parsed: List[Union[TokenInstance, Definition]], dependency_version: str
+) -> Tuple[List[bool], List[Any]]:
+    boolean_list = []
+    logical_list = []
+    it = iter(enumerate(parsed))
+    for i, element in it:
+        if isinstance(element, TokenInstance):
+            # TODO - this recursive logic for processing bracketed compound expressions is ugly and complicated
+            if element.id == Token.LBRACKET:
+                # find next closing bracket
+                for j in range(i, len(parsed)):
+                    if (
+                        isinstance(parsed[j], TokenInstance)
+                        and parsed[j].id == Token.RBRACKET # type: ignore[union-attr]
+                    ):
+                        tmp_boolean_list, tmp_logical_list = _inner_evaluate(
+                            parsed[i + 1 : j], dependency_version
+                        )
+                        # Compress the logical list output of the nested result into the boolean list of its parent
+                        boolean_list += tmp_logical_list
+                        # skip past the already processed block
+                        for _ in range(i, j):
+                            next(it)
+                        break
+            else:
+                boolean_list.append(EVAL_DICT[element.id])
+        elif isinstance(element, Definition):
+            evaluated = _evaluate_condition(dependency_version, element)
+            boolean_list.append(EVAL_DICT[evaluated])
+
+    for i in range(len(boolean_list)):
+        if not isinstance(boolean_list[i], bool) and len(boolean_list) > 2:
+            logical_list.append(
+                boolean_list[i](boolean_list[i - 1], boolean_list[i + 1])
+            )
+    return (boolean_list, logical_list)
 
 
 def _evaluate_condition(

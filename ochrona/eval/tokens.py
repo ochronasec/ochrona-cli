@@ -18,6 +18,9 @@ class Token(TokenEnum):
     # logical operators
     AND = re.compile(r"AND")
     OR = re.compile(r"OR")
+    # precedence operators
+    LBRACKET = re.compile(r"\(")
+    RBRACKET = re.compile(r"\)")
     # conditional operators
     EQUAL = re.compile(r"\=\=")
     NEQUAL = re.compile(r"!\=")

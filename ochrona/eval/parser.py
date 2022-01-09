@@ -14,9 +14,10 @@ def parse(expression_string: str) -> List[Union[TokenInstance, Definition]]:
     for i in range(len(lexed)):
         if lexed[i].id in LOGICAL_OPERATORS:
             parsed.append(lexed[i])
-        else:
-            if lexed[i].id in CONDITIONAL_OPERATORS:
-                parsed.append(Definition(lexed[i - 1], lexed[i], lexed[i + 1]))
+        elif lexed[i].id in CONDITIONAL_OPERATORS:
+            parsed.append(Definition(lexed[i - 1], lexed[i], lexed[i + 1]))
+        elif lexed[i].id == Token.LBRACKET or lexed[i].id == Token.RBRACKET:
+            parsed.append(lexed[i])
     return parsed
 
 

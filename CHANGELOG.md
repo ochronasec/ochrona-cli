@@ -3,7 +3,11 @@
 ## Unreleased
 - Remove support for legacy policies
 - Refactored Policy evaluation
-- Add support for Vulnerability expression evaluation with new `vulnerable_version_expression` field in vulnerability definition. This should support more concise and flexible definitions for new vulnerability records.
+- Added support for Vulnerability expression evaluation with new `vulnerable_version_expression` field in vulnerability definition. This should support more concise and flexible definitions for new vulnerability records.
+- Added support for polciy expression grouping with precedence
+- Added a new HTML report option
+- Added an additional `description` field to SBOM formats
+- Greatly improved UI presentation with (Rich)[https://github.com/Textualize/rich]
 
 ## 1.2.1
 - Fix policy typo
