@@ -70,46 +70,20 @@ class OchronaReporter:
         :param total: int - the total number of file results
         :return:
         """
-        if self._report_type == "BASIC":
-            BasicReport.generate(
-                result=result,
-                config=self._config,
-                source=source,
-                total=total,
-                index=index,
-            )
-        elif self._report_type == "FULL":
-            FullReport().generate(
-                result=result,
-                config=self._config,
-                source=source,
-                total=total,
-                index=index,
-            )
-        elif self._report_type == "JSON":
-            JSONReport.generate(
-                result=result,
-                config=self._config,
-                source=source,
-                total=total,
-                index=index,
-            )
-        elif self._report_type == "XML":
-            XMLReport.generate(
-                result=result,
-                config=self._config,
-                source=source,
-                total=total,
-                index=index,
-            )
-        elif self._report_type == "HTML":
-            HTMLReport.generate(
-                result=result,
-                config=self._config,
-                source=source,
-                total=total,
-                index=index,
-            )
+        report_dict = {
+            "BASIC": BasicReport.generate,
+            "FULL": FullReport.generate,
+            "JSON": JSONReport.generate,
+            "XML": XMLReport.generate,
+            "HTML": HTMLReport.generate,
+        }
+        report_dict[self._report_type](
+            result=result,
+            config=self._config,
+            source=source,
+            total=total,
+            index=index,
+        )
 
     def _filter_ignored_vuln(self, confirmed_vuln: Vulnerability) -> bool:
         """
