@@ -56,6 +56,8 @@ setup(
         "ochrona.parser",
         "ochrona.reporter",
         "ochrona.reporter.reports",
+        "ochrona.sast",
+        "ochrona.sast.plugins",
         "ochrona.sbom",
         "ochrona.sbom.specs",
         "ochrona.utils",

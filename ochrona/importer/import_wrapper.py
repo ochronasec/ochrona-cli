@@ -11,6 +11,7 @@ import sys
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ochrona.client import pypi_fetch
+from ochrona.config import OchronaConfig
 from ochrona.const import INVALID_SPECIFIERS, EQUALS_SPECIFIER
 from ochrona.eval.eval import resolve
 from ochrona.exceptions import OchronaImportException
@@ -21,8 +22,9 @@ from ochrona.log import OchronaLogger
 
 
 class SafeImport:
-    def __init__(self, logger: OchronaLogger):
+    def __init__(self, logger: OchronaLogger, config: OchronaConfig):
         self._logger = logger
+        self._config = config
 
     def install(self, package: str):
         """
@@ -74,9 +76,13 @@ class SafeImport:
                 package["version"] = self._get_most_recent_version(
                     package=package.get("version", "")
                 )
-            vuln_results = resolve(dependencies=[package], logger=self._logger)
+            vuln_results = resolve(
+                dependencies=[package], logger=self._logger, config=self._config
+            )
         elif isinstance(package, list):
-            vuln_results = resolve(dependencies=package, logger=self._logger)
+            vuln_results = resolve(
+                dependencies=package, logger=self._logger, config=self._config
+            )
         if len(vuln_results.confirmed_vulnerabilities) > 0:
             self._logger.info(
                 f"A full list of packages that would be installed, included dependencies: [bold]{os.linesep}{os.linesep.join([' --- ' + v for v in vuln_results.flat_list])}[/bold]"

@@ -96,6 +96,8 @@ class XMLReport(BaseReport):
                 failure = ET.SubElement(case, "failure")
                 failure.set("type", "policy_violations")
                 failure.text = violation.message
+        if len(result.sast_violations) > 0:
+            pass
         return minidom.parseString(ET.tostring(suites)).toprettyxml(indent="   ")
 
     @staticmethod

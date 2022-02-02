@@ -16,13 +16,27 @@ class MockLogger:
     def debug(self, msg):
         self._debug.append(msg)
 
+class MockConfig:
+
+    def __init__(self, enable_sast=False, policies=[]):
+        self._enable_sast = enable_sast
+        self._policies = policies
+
+    @property
+    def enable_sast(self):
+        return self._enable_sast
+
+    @property
+    def policies(self):
+        return self._policies
+
 class TestSBOMCycloneDX:
     """
     Unit tests for sbom:CycloneDX:json
     """
 
     def test_cyclonedx_json(self):
-        res = e.resolve(dependencies=[{"version": "requests==2.22.0", "hashes": ["sha256:11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4", "sha256:9cf5292fcd0f598c671cfc1e0d7d1a7f13bb8085e9a590f48c010551dc6c4b31"]}], logger=MockLogger())
+        res = e.resolve(dependencies=[{"version": "requests==2.22.0", "hashes": ["sha256:11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4", "sha256:9cf5292fcd0f598c671cfc1e0d7d1a7f13bb8085e9a590f48c010551dc6c4b31"]}], logger=MockLogger(), config=MockConfig())
         cyclone = CycloneDX(dependency_set=res)
         cyclone.json(f"{dir_path}/test_data/output")
 
@@ -36,7 +50,7 @@ class TestSBOMCycloneDX:
         os.remove(f"{dir_path}/test_data/output/bom.json")
 
     def test_cyclonedx_xml(self):
-        res = e.resolve(dependencies=[{"version": "requests==2.22.0", "hashes": ["sha256:11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4", "sha256:9cf5292fcd0f598c671cfc1e0d7d1a7f13bb8085e9a590f48c010551dc6c4b31"]}], logger=MockLogger())
+        res = e.resolve(dependencies=[{"version": "requests==2.22.0", "hashes": ["sha256:11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4", "sha256:9cf5292fcd0f598c671cfc1e0d7d1a7f13bb8085e9a590f48c010551dc6c4b31"]}], logger=MockLogger(), config=MockConfig())
         cyclone = CycloneDX(dependency_set=res)
         cyclone.xml(f"{dir_path}/test_data/output")
 

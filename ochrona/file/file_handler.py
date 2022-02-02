@@ -163,7 +163,7 @@ def parse_to_payload(
     logger.debug(
         f"Discovered dependencies: {os.linesep}{os.linesep.join([(' --- [bold]' + d.get('version') +'[/bold]') for d in dependencies])}"
     )
-    return {"dependencies": dependencies, "policies": config.policies, "logger": logger}
+    return {"dependencies": dependencies, "logger": logger, "config": config}
 
 
 def parse_direct_to_payload(
@@ -182,4 +182,4 @@ def parse_direct_to_payload(
     logger.debug(
         f"Discovered dependencies: {os.linesep}{os.linesep.join([(' --- [bold]' + d.get('version') +'[/bold]') for d in dependencies])}"
     )
-    return {"dependencies": dependencies, "policies": config.policies, "logger": logger}
+    return {"dependencies": dependencies, "logger": logger, "config": config}
