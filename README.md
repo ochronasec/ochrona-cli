@@ -28,6 +28,8 @@
       - [Special Values](#special-values)
       - [Policy Examples](#policy-examples)
 - [SBOM](#sbom)
+- [Static Analysis Beta](#static-analysis-beta)
+    + [SAST Checks](#sast-checks)
 - [Usage Examples](#usage-examples)
     + [Default Mode](#default-mode)
     + [Standard error code with Junit XML reporting saved to file](#standard-error-code-with-junit-xml-reporting-saved-to-file)
@@ -95,6 +97,8 @@ poetry add -D ochrona
 | `--include_dev`  | Include develop dependencies from Pipfile.lock [False]                    | bool | True                                                                       |
 | `--sbom`         | Must be provided, along with `--output` to generate an SBOM [False]       | bool | True                                                                       |
 | `--sbom_format`  | Whether the generated SBOM should be a JSON or XML file. [JSON]           | str  | JSON                                                                       |
+| `--enable_sast`  | Whether SAST checks should be run [False]                                 | bool | True                                                                       |
+| `--sast_id_exclude`  | Whether a SAST check should be ignored                                | str  | O001                                                                       |
 
 ### via environment variables
 | Variable Name         | Corresponding Arg |
@@ -115,12 +119,14 @@ There is an empty `.ochrona.yml` file included in the repo.
 | `report_type` | The report type that's desired [BASIC] | str | XML |
 | `report_location` | Location for report output [.] | path | /User/me/my_project/logs |
 | `exit` | Exit with Code 0 regardless of vulnerability findings [false] | bool | true |
-| `ignore` | Ignore a CVE or package name | str | requests |
+| `ignore` | Ignore a CVE or package name. Supports multiple values. | str | requests |
 | `include_dev` | Include develop dependencies from files that support dev/required dependencies [false] | bool | true |
 | `color_output` | Whether or not std out text should use color. Note: this is enabled by default when running in a non-Windows environment [true] | bool | false |
 | `policies` | Policies are a way of defining additional checks against your dependencies. See [here](#policies) for more details | array | [details](#policies) |
 | `sbom` | SBOM will only be generated if this argument is supplied. `report_location` also must be specified to generate an SBOM. See [here](#sbom) for more details about SBOMs [false] | bool | false |
 | `sbom_format` | Whether the generated SBOM should be a JSON or XML file. [JSON] | str | JSON |
+| `enable_sast` | Whether SAST checks should be run [False] | bool | true |
+| `sast_id_exclude` | Whether a SAST check should be ignored. See list of SAST IDs [here](#sast-checks). Supports multiple values. | str | O001 |
 
 **Example**:
 ```
@@ -129,13 +135,17 @@ There is an empty `.ochrona.yml` file included in the repo.
 # dir: .
 # report_type: JSON
 # report_location: .
-# ignore: requests
+# ignore: 
+# - requests
 # include_dev: false
 # color_output: false
 # policies:
 #  - license_type NIN APSL,GPL-PA,JSON
 # sbom: true
 # sbom_format: JSON
+# enable_sast: true
+# sast_id_exclude:
+#  - O001
 ```
 
 # Policies
@@ -196,6 +206,18 @@ latest_update >= NOW-365
 Software Bill-of-Materials (SBOM) are a list of the components used to build a piece of software. They aim to make the delivery and composition of software components more transparent. These documents can be useful for understanding software supply chains and ensuring license complaince. 
 
 Ochrona has opted to support (CycloneDX)[https://cyclonedx.org/] as our SBOM standard of choice. CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security contexts and supply chain component analysis. CycloneDX is developed and support by (OWASP)[https://owasp.org/www-project-cyclonedx/].
+
+To enable sbom generation, the `--sbom` arguement needs to be provided.
+
+# Static Analysis Beta
+Ochrona has introduced limited Static Application Security Testing (SAST) in version 2.0.0 as a beta feature. These check are run if the `--enable_sast` argument is provided. It will run recursively against all `.py` files found in the current working directory. 
+
+## SAST Checks
+| ID | Description |
+|-|-|
+| `O001` | `Checks for use of "exec" from the Standard Library.`|
+| `O002` | `Checks for use of "eval" from the Standard Library.`|
+
 
 # Usage Examples
 ### Default Mode

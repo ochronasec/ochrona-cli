@@ -37,17 +37,31 @@ class JSONReport(BaseReport):
         if report or violations:
             if not config.report_location:
                 JSONReport.print_report_number(index, total, config.color_output)
-                JSONReport.display_report(report, violations, sast_violations,source, total, index)
+                JSONReport.display_report(
+                    report, violations, sast_violations, source, total, index
+                )
             else:
                 JSONReport.save_report_to_file(
-                    report, violations, sast_violations, config.report_location, source, index
+                    report,
+                    violations,
+                    sast_violations,
+                    config.report_location,
+                    source,
+                    index,
                 )
         elif (not report and not violations) and not config.report_location:
             JSONReport.print_report_number(index, total, config.color_output)
-            JSONReport.display_report(report, violations, sast_violations, source, total, index)
+            JSONReport.display_report(
+                report, violations, sast_violations, source, total, index
+            )
         else:
             JSONReport.save_report_to_file(
-                report, violations, sast_violations, config.report_location, source, index
+                report,
+                violations,
+                sast_violations,
+                config.report_location,
+                source,
+                index,
             )
 
     @staticmethod
@@ -60,7 +74,9 @@ class JSONReport(BaseReport):
         index: int,
     ):
         JSONReport.print_report_source(source)
-        print(JSONReport.generate_report_body(result, violations, sast_violations, source))
+        print(
+            JSONReport.generate_report_body(result, violations, sast_violations, source)
+        )
 
     @staticmethod
     def save_report_to_file(
@@ -73,12 +89,19 @@ class JSONReport(BaseReport):
     ):
         file_path = JSONReport.generate_report_filename(location, source, index)
         with open(file_path, "w") as f:
-            f.write(JSONReport.generate_report_body(result, violations, sast_violations, source))
+            f.write(
+                JSONReport.generate_report_body(
+                    result, violations, sast_violations, source
+                )
+            )
         print(f"Saved output to {file_path}")
 
     @staticmethod
     def generate_report_body(
-        result: List[Vulnerability], violations: List[PolicyViolation], sast_violations: List[SASTViolation], source: str
+        result: List[Vulnerability],
+        violations: List[PolicyViolation],
+        sast_violations: List[SASTViolation],
+        source: str,
     ) -> str:
         report = {
             "meta": {
@@ -87,7 +110,7 @@ class JSONReport(BaseReport):
             },
             "findings": [asdict(r) for r in result],
             "violations": [asdict(v) for v in violations],
-            "sast_violations": [asdict(v) for v in sast_violations],
+            "sast_violations": [v.todict() for v in sast_violations],
         }
         return json.dumps(report, indent=4)
 

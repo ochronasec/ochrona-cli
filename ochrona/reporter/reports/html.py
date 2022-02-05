@@ -72,6 +72,7 @@ class HTMLReport(BaseReport):
             "dependencies": result.dependencies,
             "vulnerabilities": result.confirmed_vulnerabilities,
             "policy_violations": policies,
+            "sast_violations": result.sast_violations,
             "sbom": escape(spec.to_xml_string()),
         }
         j2_template = Template(JINJA_TEMPLATE)

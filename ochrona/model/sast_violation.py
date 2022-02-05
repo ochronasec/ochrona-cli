@@ -10,3 +10,12 @@ class SASTViolation:
     id: str
     severity: str
     confidence: str
+
+    def todict(self):
+        return {
+            "message": self.message,
+            "location": self.location,
+            "id": self.id,
+            "severity": self.severity,
+            "confidence": self.confidence,
+        }

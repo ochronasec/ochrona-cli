@@ -25,25 +25,7 @@
                 left: 5px;
                 top: 5px;
             }
-            .dependencies {
-                margin: auto;
-                display: block;
-                text-align: center;
-                width: 90%;
-            }
-            .vulnerabilities {
-                margin: auto;
-                display: block;
-                text-align: center;
-                width: 90%;
-            }
-            .policies {
-                margin: auto;
-                display: block;
-                text-align: center;
-                width: 90%;
-            }
-            .sbom {
+            .dependencies, .vulnerabilities, .policies, .sast, .sbom {
                 margin: auto;
                 display: block;
                 text-align: center;
@@ -51,6 +33,11 @@
             }
             .pass {
                 color: green;
+                font-size: 16px;
+                font-weight: 600;
+            }
+            .fail {
+                color: red;
                 font-size: 16px;
                 font-weight: 600;
             }
@@ -127,8 +114,9 @@
             </table>
         </div></br>
         <div class="vulnerabilities">
-            <h3>Vulnerability Check</h3>
+            <h3>Vulnerability Checks</h3>
             {% if vulnerabilities %}
+                <p class="fail">❌ Dependency Vulnerabilities Found</p>
                 <table>
                     <tr>
                         <th></th>
@@ -156,8 +144,9 @@
             {% endif %}
         </div></br>
         <div class="policies">
-            <h3>Policy Check</h3>
+            <h3>Policy Checks</h3>
             {% if policy_violations %}
+                <p class="fail">❌ Policy Violations Found</p>
                 <table>
                     <tr>
                         <th>Policy Definition</th>
@@ -174,6 +163,32 @@
                 <p class="pass">✅ No Policy Violations Found</p>
             {% endif %}
         </div></br>
+        {% if sast_violations %}
+            <div class="sast">
+                <h3>Static Analysis Checks</h3>
+                {% if sast_violations %}
+                    <p class="fail">❌ SAST Violations Found</p>
+                    <table>
+                        <tr>
+                            <th>Location</th>
+                            <th>Severity</th>
+                            <th>Confidence</th>
+                            <th>Details</th>
+                        </tr>
+                        {% for sv in sast_violations %}
+                            <tr>
+                                <td> {{ sv.location }} </td>
+                                <td> {{ sv.severity }} </td>
+                                <td> {{ sv.confidence }} </td>
+                                <td> {{ sv.message }} </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% else %}
+                    <p class="pass">✅ No SAST Violations Found</p>
+                {% endif %}
+            </div></br>
+        {% endif %}
         <div class="sbom">
             <h3>Software Bill of Materials (SBOM)</h3>
             <small>Software Bill-of-Materials (SBOM) are a list of the components used to build a piece of software. They aim to make the delivery and composition of software components more transparent. These documents can be useful for understanding software supply chains and ensuring license complaince. Ochrona has opted to support <a href="https://cyclonedx.org/">CycloneDX</a> as our SBOM standard of choice. CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security contexts and supply chain component analysis. CycloneDX is developed and support by <a href="https://owasp.org/www-project-cyclonedx/">OWASP</a>.</small>

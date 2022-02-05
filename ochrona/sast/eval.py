@@ -22,8 +22,9 @@ def evaluate(config: OchronaConfig) -> List[SASTViolation]:
     active_plugins: List[BaseOchronaPlugin] = configure_plugins(config=config)
     evaluation_paths: List[pathlib.Path] = find_all_python_files(config=config)
     violations: List[SASTViolation] = []
-    print(f"Evaluating {len(active_plugins)} active plugins in {len(evaluation_paths)} files")
-    print(evaluation_paths)
+    print(
+        f"Evaluating {len(active_plugins)} active plugins in {len(evaluation_paths)} files"
+    )
     for path in evaluation_paths:
         violations += _evaluate_file(file_path=path, plugins=active_plugins)
     return violations
@@ -31,7 +32,6 @@ def evaluate(config: OchronaConfig) -> List[SASTViolation]:
 
 def configure_plugins(config: OchronaConfig):
     """ """
-    # TODO
     return [
         plugin
         for i, plugin in PLUGIN_DICT.items()

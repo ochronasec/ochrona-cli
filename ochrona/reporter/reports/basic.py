@@ -89,15 +89,19 @@ class BasicReport(BaseReport):
         for violation in violations:
             table.add_row("Policy", violation.friendly_policy_type)
             table.add_row("Violation", violation.message)
-        table.add_row("", "", end_section=True,)
+        table.add_row(
+            "",
+            "",
+            end_section=True,
+        )
         table.add_row(
             "[bold white] Static Code Analysis Results[/]",
             f"{'[bold red]:cross_mark: {} SAST Violations Found![/]'.format(len(sast_violations)) if len(sast_violations) > 0 else '[bold green]:white_heavy_check_mark: No SAST Violations Found![/]'}",
         )
-        for violation in sast_violations:
-            table.add_row("Plugin ID", violation.id)
-            table.add_row("Location", violation.location)
-            table.add_row("Violation", violation.message)
-            table.add_row("Confidence", violation.confidence)
-            table.add_row("Severity", violation.severity)
+        for sv in sast_violations:
+            table.add_row("Plugin ID", sv.id)
+            table.add_row("Location", sv.location)
+            table.add_row("Violation", sv.message)
+            table.add_row("Confidence", sv.confidence)
+            table.add_row("Severity", sv.severity)
         print(table)
