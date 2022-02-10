@@ -99,6 +99,7 @@ poetry add -D ochrona
 | `--sbom_format`  | Whether the generated SBOM should be a JSON or XML file. [JSON]           | str  | JSON                                                                       |
 | `--enable_sast`  | Whether SAST checks should be run [False]                                 | bool | True                                                                       |
 | `--sast_id_exclude`  | Whether a SAST check should be ignored                                | str  | O001                                                                       |
+| `--sast_dir`     | Which directory should SAST checks run against                            | path | /User/me/my_project/src                                                                        |
 
 ### via environment variables
 | Variable Name         | Corresponding Arg |
@@ -127,6 +128,7 @@ There is an empty `.ochrona.yml` file included in the repo.
 | `sbom_format` | Whether the generated SBOM should be a JSON or XML file. [JSON] | str | JSON |
 | `enable_sast` | Whether SAST checks should be run [False] | bool | true |
 | `sast_id_exclude` | Whether a SAST check should be ignored. See list of SAST IDs [here](#sast-checks). Supports multiple values. | str | O001 |
+| `sast_dir` | Which directory should SAST checks run against. [.] | path | /User/me/my_project/src |
 
 **Example**:
 ```
@@ -146,6 +148,7 @@ There is an empty `.ochrona.yml` file included in the repo.
 # enable_sast: true
 # sast_id_exclude:
 #  - O001
+# sast_dir: ./src
 ```
 
 # Policies
@@ -217,6 +220,13 @@ Ochrona has introduced limited Static Application Security Testing (SAST) in ver
 |-|-|
 | `O001` | `Checks for use of "exec" from the Standard Library.`|
 | `O002` | `Checks for use of "eval" from the Standard Library.`|
+| `O003` | `Checks for use of the "assert" keyword.`|
+| `O004` | `Checks for use of "tarfile.extractall" from the Standard Library.`|
+| `O005` | `Checks for use of "pickle.loads" from the Standard Library.`|
+| `O006` | `Checks for use of "xml.etree.ElementTree.parse" from the Standard Library.`|
+| `O101` | `Checks for use of "load" from PyYAML.`|
+| `O102` | `Checks for usage of Requests with verify=False.`|
+| `O103` | `Checks for usage of Flask with debug=True.`|
 
 
 # Usage Examples

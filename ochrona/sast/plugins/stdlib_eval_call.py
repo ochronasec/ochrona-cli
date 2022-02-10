@@ -20,7 +20,7 @@ class StdLibEvalCall(BaseOchronaPlugin):
         Check for eval within ast.Call
         """
         if isinstance(node, ast.Call):
-            if node.func.id == EVAL_PATTERN:
+            if isinstance(node.func, ast.Name) and node.func.id == EVAL_PATTERN:
                 self.violations.append(
                     SASTViolation(
                         node=node,

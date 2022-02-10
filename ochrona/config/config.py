@@ -36,6 +36,7 @@ class OchronaConfig:
     _sbom_format: Optional[str] = None
     _enable_sast: bool = False
     _sast_id_exclusion_list: List[str] = []
+    _sast_dir: Optional[str] = None
 
     REPORT_OPTIONS: List[str] = ["BASIC", "FULL", "JSON", "XML", "HTML"]
     SBOM_FORMAT_OPTIONS: List[str] = ["JSON", "XML"]
@@ -79,6 +80,7 @@ class OchronaConfig:
         self._sbom_format = kwargs.get("sbom_format", "JSON").upper()
         self._enable_sast = kwargs.get("enable_sast", False)
         self._sast_id_exclusion_list = kwargs.get("sast_id_exclude")
+        self._sast_dir = kwargs.get("sast_dir")
 
         # check runtime environment
         sys_type = platform.system()
@@ -156,6 +158,7 @@ class OchronaConfig:
                     self._sast_id_exclusion_list = yaml_loaded.get(
                         "sast_id_exclude", self._sast_id_exclusion_list
                     )
+                    self._sast_dir = yaml_loaded.get("sast_dir", self._sast_dir)
 
         except IOError:
             pass
@@ -262,3 +265,7 @@ class OchronaConfig:
     @property
     def sast_id_exclusion_list(self):
         return self._sast_id_exclusion_list
+
+    @property
+    def sast_dir(self):
+        return self._sast_dir

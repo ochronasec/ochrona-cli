@@ -20,7 +20,7 @@ class StdLibExecCall(BaseOchronaPlugin):
         Check for exec within ast.Call
         """
         if isinstance(node, ast.Call):
-            if node.func.id == EXEC_PATTERN:
+            if isinstance(node.func, ast.Name) and node.func.id == EXEC_PATTERN:
                 self.violations.append(
                     SASTViolation(
                         node=node,
