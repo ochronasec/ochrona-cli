@@ -11,7 +11,7 @@ class MockConfig:
         self._sast_id_exclusion_list = sast_id_exclusion_list
 
     @property
-    def dir(self):
+    def sast_dir(self):
         return self._dir
 
     @property
