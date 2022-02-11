@@ -40,9 +40,10 @@ class MockConfig:
 
 
 class MockDependencySet:
-    def __init__(self, confirmed_vulnerabilities=[], policy_violations=[], flat_list=[], dependencies=[]):
+    def __init__(self, confirmed_vulnerabilities=[], policy_violations=[], sast_violations=[], flat_list=[], dependencies=[]):
         self._confirmed_vulnerabilities = confirmed_vulnerabilities
         self._policy_violations = policy_violations
+        self._sast_violations = sast_violations
         self._flat_list = flat_list
         self._dependencies = dependencies
 
@@ -53,6 +54,10 @@ class MockDependencySet:
     @property
     def policy_violations(self):
         return self._policy_violations
+
+    @property
+    def sast_violations(self):
+        return self._sast_violations
 
     @property
     def flat_list(self):

@@ -96,6 +96,30 @@ class XMLReport(BaseReport):
                 failure = ET.SubElement(case, "failure")
                 failure.set("type", "policy_violations")
                 failure.text = violation.message
+        for violation in result.sast_violations:
+            exists = list(
+                filter(
+                    lambda x: x.get("id") == violation.id
+                    and x.get("classname") == "ochronaSASTCheck",
+                    list(suite.iter()),
+                )
+            )
+            if len(exists) > 0:
+                case = exists[0]
+                failure = ET.SubElement(case, "failure")
+                failure.set("type", "sast_violation")
+                failure.set("location", violation.location)
+                failure.set("severity", violation.severity)
+                failure.text = violation.message
+            else:
+                case = ET.SubElement(suite, "testcase")
+                case.set("classname", "ochronaSASTCheck")
+                case.set("id", violation.id)
+                failure = ET.SubElement(case, "failure")
+                failure.set("type", "sast_violation")
+                failure.set("location", violation.location)
+                failure.set("severity", violation.severity)
+                failure.text = violation.message
         return minidom.parseString(ET.tostring(suites)).toprettyxml(indent="   ")
 
     @staticmethod

@@ -34,6 +34,9 @@ class OchronaConfig:
     _policies: List[Dict[str, Any]] = []
     _sbom: bool = False
     _sbom_format: Optional[str] = None
+    _enable_sast: bool = False
+    _sast_id_exclusion_list: List[str] = []
+    _sast_dir: Optional[str] = None
 
     REPORT_OPTIONS: List[str] = ["BASIC", "FULL", "JSON", "XML", "HTML"]
     SBOM_FORMAT_OPTIONS: List[str] = ["JSON", "XML"]
@@ -75,6 +78,9 @@ class OchronaConfig:
         self._policies = kwargs.get("policies", [])
         self._sbom = kwargs.get("sbom", False)
         self._sbom_format = kwargs.get("sbom_format", "JSON").upper()
+        self._enable_sast = kwargs.get("enable_sast", False)
+        self._sast_id_exclusion_list = kwargs.get("sast_id_exclude")
+        self._sast_dir = kwargs.get("sast_dir")
 
         # check runtime environment
         sys_type = platform.system()
@@ -105,6 +111,15 @@ class OchronaConfig:
                 if isinstance(self._exclude_dir, str)
                 else self._exclude_dir
             )
+
+        if self._sast_id_exclusion_list:
+            self._sast_id_exclusion_list = (
+                self._sast_id_exclusion_list.split(",")
+                if isinstance(self._sast_id_exclusion_list, str)
+                else self._sast_id_exclusion_list
+            )
+        else:
+            self._sast_id_exclusion_list = []
 
         # check config .ochrona.yml
         try:
@@ -137,6 +152,13 @@ class OchronaConfig:
                     self._sbom_format = yaml_loaded.get(
                         "sbom_format", self._sbom_format
                     ).upper()
+                    self._enable_sast = yaml_loaded.get(
+                        "enable_sast", self._enable_sast
+                    )
+                    self._sast_id_exclusion_list = yaml_loaded.get(
+                        "sast_id_exclude", self._sast_id_exclusion_list
+                    )
+                    self._sast_dir = yaml_loaded.get("sast_dir", self._sast_dir)
 
         except IOError:
             pass
@@ -235,3 +257,15 @@ class OchronaConfig:
     @property
     def sbom_format(self):
         return self._sbom_format
+
+    @property
+    def enable_sast(self):
+        return self._enable_sast
+
+    @property
+    def sast_id_exclusion_list(self):
+        return self._sast_id_exclusion_list
+
+    @property
+    def sast_dir(self):
+        return self._sast_dir

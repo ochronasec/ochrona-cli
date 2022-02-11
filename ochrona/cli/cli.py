@@ -80,6 +80,12 @@ def get_direct(ctx, param, value):
     help=f"SBOM File format. Options ({OchronaConfig.SBOM_FORMAT_OPTIONS}",
     default="JSON",
 )
+@click.option(
+    "--enable_sast", help=f"Enable SAST Assessment", default=False, is_flag=True
+)
+@click.option(
+    "--sast_id_exclude", help="Deactivate specified SAST checks using their IDs."
+)
 def run(
     direct: Optional[str],
     dir: Optional[str],
@@ -95,6 +101,8 @@ def run(
     install: Optional[str],
     sbom: bool,
     sbom_format: Optional[str],
+    enable_sast: bool,
+    sast_id_exclude: Optional[str],
 ):
     config = OchronaConfig(
         dir=dir,
@@ -109,12 +117,14 @@ def run(
         include_dev=include_dev,
         sbom=sbom,
         sbom_format=sbom_format,
+        enable_sast=enable_sast,
+        sast_id_exclude=sast_id_exclude,
     )
     log = OchronaLogger(config=config)
     if install:
         # Install mode
         try:
-            importer = SafeImport(logger=log)
+            importer = SafeImport(logger=log, config=config)
             importer.install(package=install)
         except OchronaException as ex:
             OchronaLogger.static_error(ex)
