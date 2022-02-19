@@ -70,7 +70,7 @@ setup(
     install_requires=requirements,
     license=license_,
     zip_safe=False,
-    keywords="ochrona, security, dependencies, vulnerability, testing, sca",
+    keywords="ochrona, security, dependencies, vulnerability, testing, sca, sast",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",

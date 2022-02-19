@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## 2.0.0
 - Remove support for legacy policies
 - Refactored Policy evaluation
 - Added support for Vulnerability expression evaluation with new `vulnerable_version_expression` field in vulnerability definition. This should support more concise and flexible definitions for new vulnerability records.
@@ -8,6 +8,7 @@
 - Added a new HTML report option
 - Added an additional `description` field to SBOM formats
 - Greatly improved UI presentation with (Rich)[https://github.com/Textualize/rich]
+- Added Beta SAST checks and 9 new plugins
 
 ## 1.2.1
 - Fix policy typo
