@@ -280,19 +280,19 @@ $ pip freeze | docker run -i -e OCHRONA_IGNORED_VULNS=requests --rm ochrona/ochr
 Ochrona supports several built in output options include a `BASIC` and `FULL` plaintext reports, a Junit style `XML` report, a `JSON` style report for incorporating with other tools, and and `HTML` summarized report.
 
 ### Basic
-[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_BASIC.png"/></p>](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_basic.png"/></p>](https://ochrona.dev)
 
 ### Full
-[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_FULL.png"/></p>](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_full.png"/></p>](https://ochrona.dev)
 
 ### XML (Junit)
-[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_XML.png"/></p>](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_xml.png"/></p>](https://ochrona.dev)
 
 ### JSON
-[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_JSON.png"/></p>](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_json.png"/></p>](https://ochrona.dev)
 
 ### HTML
-[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_HTML.png"/></p>](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_HTML.png"/></p>](https://ochrona.dev)
 
 
 
