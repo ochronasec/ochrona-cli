@@ -1,7 +1,7 @@
 from typing import Optional, Tuple
 
-from ochrona.eval.policy.models import Definition, TokenInstance
-from ochrona.eval.policy.parser import parse
+from ochrona.eval.models import Definition, TokenInstance
+from ochrona.eval.parser import parse
 from ochrona.model.dependency import Dependency
 
 

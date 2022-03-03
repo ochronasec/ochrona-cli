@@ -1,8 +1,10 @@
 import collections
-from typing import Any, Dict, List
+from typing import List
 
 from ochrona.model.confirmed_vulnerability import Vulnerability
 from ochrona.model.dependency import Dependency
+from ochrona.model.policy_violation import PolicyViolation
+from ochrona.model.sast_violation import SASTViolation
 
 
 class DependencySet:
@@ -13,7 +15,8 @@ class DependencySet:
     _dependencies: List[Dependency] = []
     _flat_list: List[str] = []
     _confirmed_vulnerabilities: List[Vulnerability] = []
-    _policy_violations: List[Dict[str, Any]] = []
+    _policy_violations: List[PolicyViolation] = []
+    _sast_violations: List[SASTViolation] = []
 
     def __init__(self, dependencies=[]):
         self._dependencies = dependencies
@@ -46,9 +49,6 @@ class DependencySet:
 
     @confirmed_vulnerabilities.setter
     def confirmed_vulnerabilities(self, confirmed_vulnerabilities: List[Vulnerability]):
-        """
-        Updates the vuln finding results for `PythonDependencies`
-        """
         self._confirmed_vulnerabilities = confirmed_vulnerabilities
 
     @property
@@ -56,8 +56,16 @@ class DependencySet:
         return self._policy_violations
 
     @policy_violations.setter
-    def policy_violations(self, policy_violations=[]):
+    def policy_violations(self, policy_violations: List[PolicyViolation] = []):
         self._policy_violations = policy_violations
+
+    @property
+    def sast_violations(self):
+        return self._sast_violations
+
+    @sast_violations.setter
+    def sast_violations(self, sast_violations: List[SASTViolation] = []):
+        self._sast_violations = sast_violations
 
     def to_json(self):
         """

@@ -38,6 +38,8 @@ class Dependency:
     _reserved_release_count: str = ""
     _specified_hashes: Dict[str, List[str]] = {}
     _purl: str = ""
+    _url: str = ""
+    _summary: str = ""
 
     def __init__(self, dependency: Dict[str, Union[str, List[str]]]):
         version = dependency.get("version")
@@ -58,12 +60,14 @@ class Dependency:
             self._reserved_license_type,
             self._reserved_latest_update,
             self._reserved_release_count,
+            self._summary,
         ) = self._pypi_details()
         self._full = self._provided_or_most_recent() or self._raw
         self._purl = f"pkg:pypi/{self._reserved_name}@{self._version}"
         hashes = dependency.get("hashes", [])
         if isinstance(hashes, List):
             self._parse_hashes(hash_list=hashes)
+        self._url = f"https://pypi.org/pypi/{self._reserved_name}"
 
     def _parse_version(self, version: str):
         v = Version(version)
@@ -79,7 +83,7 @@ class Dependency:
             self._version_minor = str(version_parts[1])
             self._version_release = str(version_parts[2])
 
-    def _pypi_details(self) -> Tuple[str, str, str, str]:
+    def _pypi_details(self) -> Tuple[str, str, str, str, str]:
         """
         Calls to pypi to resolve transitive dependencies.
         """
@@ -89,8 +93,15 @@ class Dependency:
             license_value = self._get_license(json_value)
             latest_release_date = self._parse_latest_update(json_value, latest_version)
             release_count = self._parse_release_count(json_value)
-            return latest_version, license_value, latest_release_date, release_count
-        return "", "Unknown", "", ""
+            summary = self._parse_summary(json_value)
+            return (
+                latest_version,
+                license_value,
+                latest_release_date,
+                release_count,
+                summary,
+            )
+        return "", "Unknown", "", "", ""
 
     def to_json(self) -> Dict[str, Any]:
         """
@@ -133,12 +144,23 @@ class Dependency:
         return f"{len(resp.get('releases', []))}"
 
     def _get_license(self, resp: Dict[str, Any]) -> str:
+        # Check License field first
         raw_license = resp.get("info", {}).get("license", None)
-        if raw_license is not None:
+        if raw_license is not None and raw_license.strip() != "":
             for ltype in LICENSE_DATA.get("licenses"):
                 if raw_license in ltype.get("aliases"):
                     return ltype.get("licenseId")
             return raw_license
+        else:
+            # Fall back to Classifiers
+            classifiers = resp.get("info", {}).get("classifiers", [])
+            for c in classifiers:
+                if "License" in c:
+                    cleaned = c.replace("License :: OSI Approved ::", "").strip()
+                    for ltype in LICENSE_DATA.get("licenses"):
+                        if cleaned in ltype.get("aliases"):
+                            return ltype.get("licenseId")
+                    return cleaned
         return "Unknown"
 
     def _parse_hashes(self, hash_list: List[str]):
@@ -150,6 +172,9 @@ class Dependency:
             else:
                 hash_dict[parts[0]] = [parts[1]]
         self._specified_hashes = hash_dict
+
+    def _parse_summary(self, resp: Dict[str, Any]) -> str:
+        return resp.get("info", {}).get("summary", "None")
 
     def _provided_or_most_recent(self) -> str:
         """
@@ -199,3 +224,11 @@ class Dependency:
     @property
     def hashes(self) -> Dict[str, List[str]]:
         return self._specified_hashes
+
+    @property
+    def url(self) -> str:
+        return self._url
+
+    @property
+    def summary(self) -> str:
+        return self._summary

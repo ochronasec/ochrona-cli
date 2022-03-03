@@ -68,46 +68,56 @@ def rfind_all_dependencies_files(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[REQUIREMENTS_TXT]
             ):
                 if not any([excl in str(filename) for excl in directories_to_exclude]):
-                    logger.debug(f"Found matching requirements*.txt file at {filename}")
+                    logger.debug(
+                        f"Found matching requirements*.txt file at [bold]{filename}[/bold]"
+                    )
                     files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[PIPFILE_LOCK]
             ):
                 if not any([excl in str(filename) for excl in directories_to_exclude]):
-                    logger.debug(f"Found matching pipfile.lock file at {filename}")
+                    logger.debug(
+                        f"Found matching pipfile.lock file at [bold]{filename}[/bold]"
+                    )
                     files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[POETRY_LOCK]
             ):
                 if not any([excl in str(filename) for excl in directories_to_exclude]):
-                    logger.debug(f"Found matching poetry.lock file at {filename}")
+                    logger.debug(
+                        f"Found matching poetry.lock file at [bold]{filename}[/bold]"
+                    )
                     files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[SETUP_PY]
             ):
                 if not any([excl in str(filename) for excl in directories_to_exclude]):
-                    logger.debug(f"Found matching setup.py file at {filename}")
+                    logger.debug(
+                        f"Found matching setup.py file at [bold]{filename}[/bold]"
+                    )
                     files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[CONDA_ENVIRONMENT]
             ):
                 if not any([excl in str(filename) for excl in directories_to_exclude]):
                     logger.debug(
-                        f"Found matching conda environment.yml file at {filename}"
+                        f"Found matching conda environment.yml file at [bold]{filename}[/bold]"
                     )
                     files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[TOX_INI]
             ):
                 if not any([excl in str(filename) for excl in directories_to_exclude]):
-                    logger.debug(f"Found matching conda tox.ini file at {filename}")
+                    logger.debug(
+                        f"Found matching conda tox.ini file at [bold]{filename}[/bold]"
+                    )
                     files.append(filename)
             for filename in Path(directory).glob(
                 SUPPORTED_DEPENDENCY_FILE_PATTERNS[CONSTRAINTS_TXT]
             ):
                 if not any([excl in str(filename) for excl in directories_to_exclude]):
                     logger.debug(
-                        f"Found matching conda constraints.txt file at {filename}"
+                        f"Found matching conda constraints.txt file at [bold]{filename}[/bold]"
                     )
                     files.append(filename)
 
@@ -149,8 +159,11 @@ def parse_to_payload(
         dependencies = parsers.constraints.parse(file_path=file_path)
     else:
         dependencies = parsers.requirements.parse(file_path=file_path)
-    logger.debug(f"Discovered dependencies: {[d.get('version') for d in dependencies]}")
-    return {"dependencies": dependencies, "policies": config.policies, "logger": logger}
+
+    logger.debug(
+        f"Discovered dependencies: {os.linesep}{os.linesep.join([(' --- [bold]' + d.get('version') +'[/bold]') for d in dependencies])}"
+    )
+    return {"dependencies": dependencies, "logger": logger, "config": config}
 
 
 def parse_direct_to_payload(
@@ -166,5 +179,7 @@ def parse_direct_to_payload(
     dependencies = []
     parsers = Parsers()
     dependencies = parsers.requirements.direct_parse(direct=direct)
-    logger.debug(f"Discovered dependencies: {dependencies}")
-    return {"dependencies": dependencies, "policies": config.policies, "logger": logger}
+    logger.debug(
+        f"Discovered dependencies: {os.linesep}{os.linesep.join([(' --- [bold]' + d.get('version') +'[/bold]') for d in dependencies])}"
+    )
+    return {"dependencies": dependencies, "logger": logger, "config": config}

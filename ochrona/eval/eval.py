@@ -1,18 +1,22 @@
 import json
 import re
 
+from ochrona.config import OchronaConfig
 from ochrona.db import VulnDB
 from ochrona.eval.vuln import evaluate
 from ochrona.eval.policy import policy_evaluate
 from ochrona.log import OchronaLogger
 from ochrona.model.dependency_set import DependencySet
 from ochrona.model.dependency import Dependency
+from ochrona.sast.eval import evaluate as sast_evaluate
 
 PEP_SUPPORTED_OPERATORS: str = r"==|>=|<=|!=|~=|<|>"
 PEP_SUPPORTED_OPERATORS_CAPTURE: str = r"(==|>=|<=|!=|~=|<|>)"
 
 
-def resolve(logger: OchronaLogger, dependencies=[], policies=[]) -> DependencySet:
+def resolve(
+    logger: OchronaLogger, config: OchronaConfig, dependencies=[]
+) -> DependencySet:
     """
     Resolves a list of dependencies into a PythonDependencies object
     """
@@ -25,8 +29,13 @@ def resolve(logger: OchronaLogger, dependencies=[], policies=[]) -> DependencySe
     if vulns:
         resp.confirmed_vulnerabilities = evaluate(vulns, resp.flat_list)
 
-    if len(policies) > 0:
-        resp.policy_violations = policy_evaluate(dependencies=resp, policies=policies)
+    if len(config.policies) > 0:
+        resp.policy_violations = policy_evaluate(
+            dependencies=resp, policies=config.policies
+        )
+
+    if config.enable_sast:
+        resp.sast_violations = sast_evaluate(config=config)
     return resp
 
 

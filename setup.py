@@ -25,6 +25,8 @@ requirements = [
     "packaging>=20.4",
     "requests-cache>=0.5.2",
     "appdirs>=1.4.4",
+    "rich>=10.16.1",
+    "Jinja2>=3.0.3"
 ]
 
 test_requirements = ["pytest>=6.1.2"]
@@ -53,6 +55,9 @@ setup(
         "ochrona.model",
         "ochrona.parser",
         "ochrona.reporter",
+        "ochrona.reporter.reports",
+        "ochrona.sast",
+        "ochrona.sast.plugins",
         "ochrona.sbom",
         "ochrona.sbom.specs",
         "ochrona.utils",
@@ -61,11 +66,11 @@ setup(
     entry_points={"console_scripts": ["ochrona=ochrona.cli:run"]},
     python_requires=">=3.7",
     include_package_data=True,
-    package_data={'ochrona': ['ochrona/schema/spdx_modified.json']},
+    package_data={'ochrona': ['ochrona/schema/spdx_modified.json', 'ochrona/schema/report.html.jinja']},
     install_requires=requirements,
     license=license_,
     zip_safe=False,
-    keywords="ochrona, security, dependencies, vulnerability, testing, sca",
+    keywords="ochrona, security, dependencies, vulnerability, testing, sca, sast",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",

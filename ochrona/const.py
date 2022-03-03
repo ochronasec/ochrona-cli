@@ -42,6 +42,3 @@ INVALID_TOX_LINES = ["{"]
 
 INVALID_SPECIFIERS = {"<", ">", "!", "~"}
 EQUALS_SPECIFIER = "=="
-
-PYTHON_PACKAGE_NAME_POLICY = "package_name"
-PYTHON_LICENSE_TYPE_POLICY = "license_type"

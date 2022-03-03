@@ -11,3 +11,9 @@ tarsafe==0.0.3
 packaging==20.4
 requests-cache==0.5.2
 appdirs==1.4.4
+rich==10.16.1
+Pygments==2.11.1
+commonmark==0.9.1
+colorama==0.4.4
+Jinja2==3.0.3
+MarkupSafe==2.0.1

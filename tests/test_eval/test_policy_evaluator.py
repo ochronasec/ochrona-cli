@@ -18,162 +18,6 @@ class MockDependency:
 
 class TestPolicyEvaluator:
 
-    def test_policy_evaluate_allow_list_pass(self):
-        """
-        Test allow_list policy pass
-        """
-        package_list = MockDependencySet(
-            ["package_a==1.0.1.0", "package_b==1.0.0"]
-        )
-        policies = [
-            {
-                "policy_type": "package_name",
-                "allow_list": "package_a,package_b",
-                "deny_list": "",
-            }
-        ]
-        self.policy_evaluator_harness(package_list, policies, 0)
-
-    def test_policy_evaluate_allow_list_fail(self):
-        """
-        Test allow_list policy fail
-        """
-        package_list = MockDependencySet(
-            ["package_a==1.0.1.0", "package_b==1.0.0"]
-        )
-        policies = [
-            {
-                "policy_type": "package_name",
-                "allow_list": "package_a",
-                "deny_list": "",
-            }
-        ]
-        self.policy_evaluator_harness(package_list, policies, 1)
-
-    def test_policy_evaluate_deny_list_pass(self):
-        """
-        Test deny_list policy pass
-        """
-        package_list = MockDependencySet(
-            ["package_a==1.0.1.0", "package_b==1.0.0"]
-        )
-        policies = [
-            {
-                "policy_type": "package_name",
-                "allow_list": "",
-                "deny_list": "package_c",
-            }
-        ]
-        self.policy_evaluator_harness(package_list, policies, 0)
-
-    def test_policy_evaluate_deny_list_fail(self):
-        """
-        Test deny_list policy fail
-        """
-        package_list = MockDependencySet(
-            ["package_a==1.0.1.0", "package_b==1.0.0"]
-        )
-        policies = [
-            {
-                "policy_type": "package_name",
-                "allow_list": "",
-                "deny_list": "package_a",
-            }
-        ]
-        self.policy_evaluator_harness(package_list, policies, 1)
-
-    def test_policy_evaluate_allow_list_spaces(self):
-        """
-        Test allow_list policy pass
-        """
-        package_list = MockDependencySet(
-            ["package_a==1.0.1.0", "package_b==1.0.0"]
-        )
-        policies = [
-            {
-                "policy_type": "package_name",
-                "allow_list": "package_a    ,    package_b    ",
-                "deny_list": "",
-            }
-        ]
-        self.policy_evaluator_harness(package_list, policies, 0)
-
-    def test_policy_evaluate_invalid_policy(self):
-        """
-        Test allow_list policy pass
-        """
-        package_list = MockDependencySet(
-            ["package_a==1.0.1.0", "package_b==1.0.0"]
-        )
-        policies = [
-            {"policy_type": "something", "allow_list": "a,b,c", "deny_list": ""}
-        ]
-        self.policy_evaluator_harness(package_list, policies, 0)
-
-    def test_license_policy_evaluate_allow_list_pass(self):
-        """
-        Test license allow_list policy pass
-        """
-        package_list = MockDependencySet(
-            [], [{"full": "fake==1.2.3", "license_type": "MIT"}]
-        )
-        policies = [
-            {
-                "policy_type": "license_type",
-                "allow_list": "MIT,BSD-3-Clause",
-                "deny_list": "",
-            }
-        ]
-        self.policy_evaluator_harness(package_list, policies, 0)
-
-    def test_license_policy_evaluate_allow_list_fail(self):
-        """
-        Test license allow_list policy fail
-        """
-        package_list = MockDependencySet(
-            [], [{"full": "fake==1.2.3", "license_type": "HPND"}]
-        )
-        policies = [
-            {
-                "policy_type": "license_type",
-                "allow_list": "MIT,BSD-3-Clause",
-                "deny_list": "",
-            }
-        ]
-        self.policy_evaluator_harness(package_list, policies, 1)
-
-    def test_license_policy_evaluate_deny_list_pass(self):
-        """
-        Test license deny_list policy pass
-        """
-        package_list = MockDependencySet(
-            [], [{"full": "fake==1.2.3", "license_type": "MIT"}]
-        )
-        policies = [
-            {
-                "policy_type": "license_type",
-                "allow_list": "",
-                "deny_list": "HPND",
-            }
-        ]
-        self.policy_evaluator_harness(package_list, policies, 0)
-
-    def test_license_policy_evaluate_deny_list_fail(self):
-        """
-        Test license deny_list policy fail
-        """
-        package_list = MockDependencySet(
-            [], [{"full": "fake==1.2.3", "license_type": "HPND"}]
-        )
-        policies = [
-            {
-                "policy_type": "license_type",
-                "allow_list": "",
-                "deny_list": "HPND,UNKNOWN",
-            }
-        ]
-        self.policy_evaluator_harness(package_list, policies, 1)
-
     def test_generic_policy_evaluation_equals_pass(self):
         """
         Test generic policy evaluation == pass
@@ -305,7 +149,7 @@ class TestPolicyEvaluator:
             [], [{"full": "fake==1.2.3", "license_type": "MIT"}]
         )
         policies = ["license_type==MIT AND license_type!=MIT"]
-        self.policy_evaluator_harness(package_list, policies, 1)
+        self.policy_evaluator_harness(package_list, policies, 0)
 
     def test_generic_policy_evaluation_equals_OR_pass(self):
         """
@@ -314,7 +158,7 @@ class TestPolicyEvaluator:
         package_list = MockDependencySet(
             [], [{"full": "fake==1.2.3", "license_type": "MIT"}]
         )
-        policies = ["license_type==MIT OR license_type==ISC"]
+        policies = ["license_type==MIT OR license_type!=ISC"]
         self.policy_evaluator_harness(package_list, policies, 0)
 
     def test_generic_policy_evaluation_equals_OR_fail(self):
@@ -326,6 +170,26 @@ class TestPolicyEvaluator:
         )
         policies = ["license_type==Apache-2.0 OR license_type==ISC"]
         self.policy_evaluator_harness(package_list, policies, 1)
+
+    def test_generic_policy_evaluation_equals_brackets_pass(self):
+        """
+        Test generic policy evaluation with brackets
+        """
+        package_list = MockDependencySet(
+            [], [{"full": "fake==1.2.3", "license_type": "MIT", "latest_version": "3.0.1"}]
+        )
+        policies = ["(license_type==Apache-2.0 OR license_type==MIT) AND latest_version < 10.0.0"]
+        self.policy_evaluator_harness(package_list, policies, 0)
+
+    def test_generic_policy_evaluation_equals_brackets_fail(self):
+        """
+        Test generic policy evaluation with brackets
+        """
+        package_list = MockDependencySet(
+            [], [{"full": "fake==1.2.3", "license_type": "MIT", "latest_version": "3.0.1"}]
+        )
+        policies = ["(license_type==Apache-2.0 OR license_type==ISC) AND latest_version < 10.0.0"]
+        self.policy_evaluator_harness(package_list, policies, 0)
 
     @staticmethod
     def policy_evaluator_harness(package_list, policies, expected_violation_count):

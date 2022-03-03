@@ -11,6 +11,7 @@ import sys
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ochrona.client import pypi_fetch
+from ochrona.config import OchronaConfig
 from ochrona.const import INVALID_SPECIFIERS, EQUALS_SPECIFIER
 from ochrona.eval.eval import resolve
 from ochrona.exceptions import OchronaImportException
@@ -21,8 +22,9 @@ from ochrona.log import OchronaLogger
 
 
 class SafeImport:
-    def __init__(self, logger: OchronaLogger):
+    def __init__(self, logger: OchronaLogger, config: OchronaConfig):
         self._logger = logger
+        self._config = config
 
     def install(self, package: str):
         """
@@ -36,22 +38,22 @@ class SafeImport:
             packages = parsers.requirements.parse(package)
             if self._check_package(packages):
                 self._logger.info(
-                    f"No vulnerabilities found for {', '.join([p.get('version') for p in packages])}, install proceeding."
+                    f"No vulnerabilities found for [bold]{', '.join([p.get('version') for p in packages])}[/bold], install proceeding."
                 )
                 self._install_file(package)
             else:
                 self._logger.error(
-                    f"Import of {', '.join([p.get('version') for p in packages])} aborted due to detected vulnerabilities."
+                    f"Import of [bold]{', '.join([p.get('version') for p in packages])}[/bold] aborted due to detected vulnerabilities."
                 )
         else:
             if self._check_package({"version": package}):
                 self._logger.info(
-                    f"No vulnerabilities found for {package}, install proceeding."
+                    f"No vulnerabilities found for [bold]{package}[/bold], install proceeding."
                 )
                 self._install(package=package)
             else:
                 self._logger.error(
-                    f"Import of {package} aborted due to detected vulnerabilities."
+                    f"Import of [bold]{package}[/bold] aborted due to detected vulnerabilities."
                 )
 
     def _check_package(
@@ -67,26 +69,30 @@ class SafeImport:
         if isinstance(package, dict):
             if any(spec in package.get("version", "") for spec in INVALID_SPECIFIERS):
                 raise OchronaImportException(
-                    f"An invalid specifier was found in {package.get('version')}, either specify the package without a version or pin to a single version using `name==version`."
+                    f"An invalid specifier was found in [bold]{package.get('version')}[/bold], either specify the package without a version or pin to a single version using `name==version`."
                 )
             parts = package.get("version", "").split(EQUALS_SPECIFIER)
             if len(parts) == 1:
                 package["version"] = self._get_most_recent_version(
                     package=package.get("version", "")
                 )
-            vuln_results = resolve(dependencies=[package], logger=self._logger)
+            vuln_results = resolve(
+                dependencies=[package], logger=self._logger, config=self._config
+            )
         elif isinstance(package, list):
-            vuln_results = resolve(dependencies=package, logger=self._logger)
+            vuln_results = resolve(
+                dependencies=package, logger=self._logger, config=self._config
+            )
         if len(vuln_results.confirmed_vulnerabilities) > 0:
             self._logger.info(
-                f"A full list of packages that would be installed, included dependencies: {', '.join(vuln_results.flat_list)}"
+                f"A full list of packages that would be installed, included dependencies: [bold]{os.linesep}{os.linesep.join([' --- ' + v for v in vuln_results.flat_list])}[/bold]"
             )
             self._logger.error(
                 f"""Vulerabilities found related to import:\n{''.join([self._format_vulnerability(v) for v in vuln_results.confirmed_vulnerabilities])}"""
             )
             return False
         self._logger.info(
-            f"A full list of packages to be installed, included dependencies: {', '.join(vuln_results.flat_list)}"
+            f"A full list of packages to be installed, included dependencies: {os.linesep}{os.linesep.join(vuln_results.flat_list)}"
         )
         return True
 
@@ -143,9 +149,9 @@ class SafeImport:
         :param vulnerability: vulnerability results
         :return: str
         """
-        return f"""\nVulnerability Detected on package to be installed!
-    Package: {vulnerability.name}
-    ID: {vulnerability.cve_id}
-    Description: {vulnerability.description}
-    Ochrona Severity: {vulnerability.ochrona_severity_score}
+        return f"""\n[bold underline]Vulnerability Detected on package to be installed![/bold underline]
+    Package: [bold white]{vulnerability.name}[/bold white]
+    ID: [bold white]{vulnerability.cve_id}[/bold white]
+    Description: [bold white]{vulnerability.description}[/bold white]
+    Ochrona Severity: [bold white]{vulnerability.ochrona_severity_score}[/bold white]
                 """

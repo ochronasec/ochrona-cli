@@ -27,8 +27,9 @@
       - [Allowed Logical Operators](#allowed-logical-operators)
       - [Special Values](#special-values)
       - [Policy Examples](#policy-examples)
-    + [Legacy Policies](#legacy-policies)
-      - [Legacy Policy Types](#legacy-policy-types)
+- [SBOM](#sbom)
+- [Static Analysis Beta](#static-analysis-beta)
+    + [SAST Checks](#sast-checks)
 - [Usage Examples](#usage-examples)
     + [Default Mode](#default-mode)
     + [Standard error code with Junit XML reporting saved to file](#standard-error-code-with-junit-xml-reporting-saved-to-file)
@@ -96,6 +97,9 @@ poetry add -D ochrona
 | `--include_dev`  | Include develop dependencies from Pipfile.lock [False]                    | bool | True                                                                       |
 | `--sbom`         | Must be provided, along with `--output` to generate an SBOM [False]       | bool | True                                                                       |
 | `--sbom_format`  | Whether the generated SBOM should be a JSON or XML file. [JSON]           | str  | JSON                                                                       |
+| `--enable_sast`  | Whether SAST checks should be run [False]                                 | bool | True                                                                       |
+| `--sast_id_exclude`  | Whether a SAST check should be ignored                                | str  | O001                                                                       |
+| `--sast_dir`     | Which directory should SAST checks run against                            | path | /User/me/my_project/src                                                                        |
 
 ### via environment variables
 | Variable Name         | Corresponding Arg |
@@ -116,12 +120,15 @@ There is an empty `.ochrona.yml` file included in the repo.
 | `report_type` | The report type that's desired [BASIC] | str | XML |
 | `report_location` | Location for report output [.] | path | /User/me/my_project/logs |
 | `exit` | Exit with Code 0 regardless of vulnerability findings [false] | bool | true |
-| `ignore` | Ignore a CVE or package name | str | requests |
+| `ignore` | Ignore a CVE or package name. Supports multiple values. | str | requests |
 | `include_dev` | Include develop dependencies from files that support dev/required dependencies [false] | bool | true |
 | `color_output` | Whether or not std out text should use color. Note: this is enabled by default when running in a non-Windows environment [true] | bool | false |
 | `policies` | Policies are a way of defining additional checks against your dependencies. See [here](#policies) for more details | array | [details](#policies) |
 | `sbom` | SBOM will only be generated if this argument is supplied. `report_location` also must be specified to generate an SBOM. See [here](#sbom) for more details about SBOMs [false] | bool | false |
 | `sbom_format` | Whether the generated SBOM should be a JSON or XML file. [JSON] | str | JSON |
+| `enable_sast` | Whether SAST checks should be run [False] | bool | true |
+| `sast_id_exclude` | Whether a SAST check should be ignored. See list of SAST IDs [here](#sast-checks). Supports multiple values. | str | O001 |
+| `sast_dir` | Which directory should SAST checks run against. [.] | path | /User/me/my_project/src |
 
 **Example**:
 ```
@@ -130,13 +137,18 @@ There is an empty `.ochrona.yml` file included in the repo.
 # dir: .
 # report_type: JSON
 # report_location: .
-# ignore: requests
+# ignore: 
+# - requests
 # include_dev: false
 # color_output: false
 # policies:
 #  - license_type NIN APSL,GPL-PA,JSON
 # sbom: true
 # sbom_format: JSON
+# enable_sast: true
+# sast_id_exclude:
+#  - O001
+# sast_dir: ./src
 ```
 
 # Policies
@@ -165,19 +177,24 @@ At their most basic, policies are defined using conditional statements and logic
 | `<=` | Less than or equal to. |
 | `>` | Greater than, for comparing numerical or string values. |
 | `>=` | Greater than or equal to. |
-| `IN` | For checking whether a value exists within a set. |
-| `NIN` | For checking that a value does not exist within a set. |
+| `IN` | For checking whether a value exists within a set. Values used with `IN` should be comma separated. |
+| `NIN` | For checking that a value does not exist within a set. Values used with `NIN` should be comma separated. |
 
 ### Allowed Logical Operators
 | Operator | Description |
 |-|-|
-| `AND` | For checking that all conditions are true. |
-| `OR` | For checking that at least one condition is true. |
+| `AND` | For checking that both adjacent conditions are true. |
+| `OR` | For checking that at least one adjacent condition is true. |
 
 ### Special Values
 | Value | Description |
 |-|-|
 | `NOW-N` | Shorthand for an ISO 8601 formatted date in the past. `N` will be an integer number of days. |
+| `*` | Match ANY value, only works with `==` operator. |
+
+### Precedence
+Policies allow the usage of `(` and `)` to indicate evaluation precedence and grouping. 
+Example ```(license_type==Apache-2.0 OR license_type==MIT) AND latest_update < NOW-30```
 
 ### Policy Examples
 ```
@@ -188,21 +205,29 @@ license_type IN MIT,ISC,Apache-2.0
 latest_update >= NOW-365
 ```
 
-## Legacy Policies
-Legacy policies can also be defined using their name and one or more conditions which are evaluated at scan time. Legacy policies will be removed in a future release and you are encouraged to use generic policies for all new policies.
-
-For example, the `license_type` policy allows you to be alerted if one of your dependency's open-source license is not part of your "Allow List" or if it uses a license from your "Deny List".
-
-### Legacy Policy Types
-| Name | Description | Fields |
-|-|-|-|
-| `package_name` | Allows for checking whether the dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. | `allow_list`, `deny_list` |
-| `license_type` | Allows for checking whether the licenses of dependencies used are all from an `allow_list` or contain any values from a `deny_list`. You may define `allow_list` or `deny_list`, but not both. Field values should be defined as a comma-separated string. [SPDX](https://spdx.org/licenses/) license ids should be used. | `allow_list`, `deny_list` |
-
 # SBOM
 Software Bill-of-Materials (SBOM) are a list of the components used to build a piece of software. They aim to make the delivery and composition of software components more transparent. These documents can be useful for understanding software supply chains and ensuring license complaince. 
 
 Ochrona has opted to support (CycloneDX)[https://cyclonedx.org/] as our SBOM standard of choice. CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security contexts and supply chain component analysis. CycloneDX is developed and support by (OWASP)[https://owasp.org/www-project-cyclonedx/].
+
+To enable sbom generation, the `--sbom` arguement needs to be provided.
+
+# Static Analysis Beta
+Ochrona has introduced limited Static Application Security Testing (SAST) in version 2.0.0 as a beta feature. These check are run if the `--enable_sast` argument is provided. It will run recursively against all `.py` files found in the current working directory. 
+
+## SAST Checks
+| ID | Description |
+|-|-|
+| `O001` | `Checks for use of "exec" from the Standard Library.`|
+| `O002` | `Checks for use of "eval" from the Standard Library.`|
+| `O003` | `Checks for use of the "assert" keyword.`|
+| `O004` | `Checks for use of "tarfile.extractall" from the Standard Library.`|
+| `O005` | `Checks for use of "pickle.loads" from the Standard Library.`|
+| `O006` | `Checks for use of "xml.etree.ElementTree.parse" from the Standard Library.`|
+| `O101` | `Checks for use of "load" from PyYAML.`|
+| `O102` | `Checks for usage of Requests with verify=False.`|
+| `O103` | `Checks for usage of Flask with debug=True.`|
+
 
 # Usage Examples
 ### Default Mode
@@ -252,7 +277,7 @@ $ pip freeze | docker run -i -e OCHRONA_IGNORED_VULNS=requests --rm ochrona/ochr
 ```
 
 # Output Formats
-Ochrona supports several built in output options include a `BASIC` and `FULL` plaintext reports, as well as a Junit style `XML` report or a `JSON` style report for incorporating with other tools.
+Ochrona supports several built in output options include a `BASIC` and `FULL` plaintext reports, a Junit style `XML` report, a `JSON` style report for incorporating with other tools, and and `HTML` summarized report.
 
 ### Basic
 [<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_basic.png"/></p>](https://ochrona.dev)
@@ -265,6 +290,10 @@ Ochrona supports several built in output options include a `BASIC` and `FULL` pl
 
 ### JSON
 [<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_json.png"/></p>](https://ochrona.dev)
+
+### HTML
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_HTML.png"/></p>](https://ochrona.dev)
+
 
 
 # Represent!

@@ -44,7 +44,7 @@ class TestCli:
         result = runner.invoke(
             cli.run, ["--report_type", "FAKE"]
         )
-        assert "Unknown report type specified as FAKE, allowed: ['BASIC', 'FULL', 'JSON', 'XML']" in result.output
+        assert "Unknown report type specified as FAKE, allowed: ['BASIC', 'FULL', 'JSON', 'XML', 'HTML']" in result.output
 
     def test_cli_config_failure_sbom_format(self):
         runner = CliRunner()

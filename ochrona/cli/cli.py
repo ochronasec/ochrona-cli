@@ -9,6 +9,7 @@ import json
 import sys
 
 import click
+from rich.progress import track
 from typing import Optional
 
 from ochrona.config import OchronaConfig
@@ -79,6 +80,12 @@ def get_direct(ctx, param, value):
     help=f"SBOM File format. Options ({OchronaConfig.SBOM_FORMAT_OPTIONS}",
     default="JSON",
 )
+@click.option(
+    "--enable_sast", help=f"Enable SAST Assessment", default=False, is_flag=True
+)
+@click.option(
+    "--sast_id_exclude", help="Deactivate specified SAST checks using their IDs."
+)
 def run(
     direct: Optional[str],
     dir: Optional[str],
@@ -94,6 +101,8 @@ def run(
     install: Optional[str],
     sbom: bool,
     sbom_format: Optional[str],
+    enable_sast: bool,
+    sast_id_exclude: Optional[str],
 ):
     config = OchronaConfig(
         dir=dir,
@@ -108,12 +117,14 @@ def run(
         include_dev=include_dev,
         sbom=sbom,
         sbom_format=sbom_format,
+        enable_sast=enable_sast,
+        sast_id_exclude=sast_id_exclude,
     )
     log = OchronaLogger(config=config)
     if install:
         # Install mode
         try:
-            importer = SafeImport(logger=log)
+            importer = SafeImport(logger=log, config=config)
             importer.install(package=install)
         except OchronaException as ex:
             OchronaLogger.static_error(ex)
@@ -138,7 +149,14 @@ def run(
 
         try:
             results = []
-            for file_ in files:
+            for file_ in track(
+                files,
+                description=f"[blue]Processing {len(files)} Files...[/]",
+                total=len(files),
+                style="white",
+                complete_style="blue",
+                finished_style="blue",
+            ):
                 payload = parse_to_payload(log, file_, config)
                 if payload.get("dependencies") != []:
                     results.append(resolve(**payload))
@@ -168,7 +186,7 @@ def run(
                         format=config.sbom_format,
                     )
             if results == []:
-                log.warn(f"No dependencies found in {files}")
+                log.warn(f"No dependencies found in [bold]{files}[/bold]")
             reporter.report_collector(files, results)
         except OchronaException as ex:
             OchronaLogger.static_error(ex)

@@ -4,6 +4,9 @@ Ochrona-cli
 :author: ascott
 """
 import platform
+
+from rich import print
+
 from ochrona import __version__
 
 
@@ -17,14 +20,11 @@ class OchronaLogger:
                             https://ochrona.dev   
                             """
 
-    INFO = "\033[94m"
-    PASS = "\033[92m"
-    WARNING = "\033[93m"
-    ERROR = "\033[91m"
-    ENDC = "\033[0m"
-    BOLD = "\033[1m"
-    UNDERLINE = "\033[4m"
-    NO = ""
+    INFO = "[blue]"
+    WARNING = "[orange]"
+    ERROR = "[red]"
+    ENDC = "[/]"
+    NO = "default"
 
     def __init__(self, config):
         self._debug = config.debug
@@ -34,7 +34,7 @@ class OchronaLogger:
     def debug(self, val):
         if self._debug and not self._silent:
             print(
-                f"{OchronaLogger.INFO if self._color else OchronaLogger.NO}[DEBUG] {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}"
+                f"{OchronaLogger.INFO if self._color else OchronaLogger.NO}(DEBUG) {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}"
             )
 
     def info(self, val):
@@ -46,13 +46,13 @@ class OchronaLogger:
     def warn(self, val):
         if not self._silent:
             print(
-                f"{OchronaLogger.WARNING if self._color else OchronaLogger.NO}[!] {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}"
+                f"{OchronaLogger.WARNING if self._color else OchronaLogger.NO}:warning: {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}"
             )
 
     def error(self, val):
         if not self._silent:
             print(
-                f"{OchronaLogger.ERROR if self._color else OchronaLogger.NO}[!] {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}"
+                f"{OchronaLogger.ERROR if self._color else OchronaLogger.NO}:warning: {val}{OchronaLogger.ENDC if self._color else OchronaLogger.NO}"
             )
 
     @staticmethod

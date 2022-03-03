@@ -1,1 +1,1 @@
-from ochrona.eval.vuln.vuln_evaluator import evaluate
+from ochrona.eval.vuln.evaluate import evaluate
