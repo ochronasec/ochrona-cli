@@ -292,7 +292,7 @@ Ochrona supports several built in output options include a `BASIC` and `FULL` pl
 [<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_json.png"/></p>](https://ochrona.dev)
 
 ### HTML
-[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/ochrona_HTML.png"/></p>](https://ochrona.dev)
+[<p align="center"><img src="https://github.com/ochronasec/ochrona-cli/raw/master/resources/Ochrona_HTML.png"/></p>](https://ochrona.dev)
 
 
 
