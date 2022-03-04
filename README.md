@@ -45,6 +45,7 @@
     + [Full](#full)
     + [XML (Junit)](#xml--junit-)
     + [JSON](#json)
+    + [HTML](#html)
 - [Represent!](#represent-)
 
 # Overview
@@ -210,7 +211,7 @@ Software Bill-of-Materials (SBOM) are a list of the components used to build a p
 
 Ochrona has opted to support (CycloneDX)[https://cyclonedx.org/] as our SBOM standard of choice. CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security contexts and supply chain component analysis. CycloneDX is developed and support by (OWASP)[https://owasp.org/www-project-cyclonedx/].
 
-To enable sbom generation, the `--sbom` arguement needs to be provided.
+To enable sbom generation, the `--sbom` and `--output` arguements needs to be provided.
 
 # Static Analysis Beta
 Ochrona has introduced limited Static Application Security Testing (SAST) in version 2.0.0 as a beta feature. These check are run if the `--enable_sast` argument is provided. It will run recursively against all `.py` files found in the current working directory. 
