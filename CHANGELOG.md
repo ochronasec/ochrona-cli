@@ -1,5 +1,8 @@
 # Change Log
 
+## 2.0.1
+- Fixed issue where policies not being specified within the .ochrona.yml caused a TypeError
+
 ## 2.0.0
 - Remove support for legacy policies
 - Refactored Policy evaluation

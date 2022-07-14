@@ -147,7 +147,7 @@ class OchronaConfig:
                     self._color_output = yaml_loaded.get(
                         "color_output", self._color_output
                     )
-                    self._policies = yaml_loaded.get("policies")
+                    self._policies = yaml_loaded.get("policies", self._policies)
                     self._sbom = yaml_loaded.get("sbom", self._sbom)
                     self._sbom_format = yaml_loaded.get(
                         "sbom_format", self._sbom_format
