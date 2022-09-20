@@ -16,7 +16,9 @@ from ochrona.log import OchronaLogger
 
 # Cache settings
 expire_after = datetime.timedelta(hours=1)
-requests_cache.install_cache(tempfile.gettempdir() + "/db_cache", expire_after=expire_after)
+requests_cache.install_cache(
+    tempfile.gettempdir() + "/db_cache", expire_after=expire_after
+)
 
 RELEASES_URL = (
     "https://api.github.com/repos/ochronasec/ochrona_python_vulnerabilities/releases"

@@ -7,7 +7,9 @@ import requests_cache  # type: ignore
 
 # Cache settings
 expire_after = timedelta(hours=1)
-requests_cache.install_cache(tempfile.gettempdir() + "/pypi_cache", expire_after=expire_after)
+requests_cache.install_cache(
+    tempfile.gettempdir() + "/pypi_cache", expire_after=expire_after
+)
 
 
 def pypi_fetch(package: str) -> Optional[Dict[str, Any]]:
