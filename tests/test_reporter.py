@@ -211,7 +211,7 @@ class TestOchronaReporter:
             1,
         )
         with open(
-            f"{dir_path}/test_data/output/ochrona_results.html", "r"
+            f"{dir_path}/test_data/output/ochrona_results.html", "r", encoding="utf16"
         ) as out:
             output = out.read()
             assert f"{dir_path}/test_data/fail/requirements.txt" in output
