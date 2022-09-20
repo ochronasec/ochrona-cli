@@ -19,7 +19,7 @@ JINJA_TEMPLATE = pkgutil.get_data(__name__, "../../schema/report.html.jinja").de
 
 class HTMLReport(BaseReport):
     """
-    XML report
+    HTML report
         - Includes only discovered vulnerabilities
     This report can be logged to stdout
     """
@@ -47,7 +47,7 @@ class HTMLReport(BaseReport):
         result: DependencySet, location: str, source: str, index: int, total: int
     ):
         file_path = HTMLReport.generate_report_filename(location, source, index)
-        with open(file_path, "a") as f:
+        with open(file_path, "w", encoding="utf16") as f:
             f.write(HTMLReport.generate_report_body(result, source, index, total))
         print(f"Saved output to {file_path}")
 
