@@ -58,7 +58,7 @@ class TestImportWrapper:
         most_recent.assert_not_called()
         assert (
             logger._info[0]
-            == "A full list of packages to be installed, included dependencies: \nA==1.2.3"
+            == f"A full list of packages to be installed, included dependencies: {os.linesep}A==1.2.3"
         )
 
     @mock.patch("ochrona.importer.SafeImport._get_most_recent_version")
@@ -75,7 +75,7 @@ class TestImportWrapper:
         most_recent.assert_called_once()
         assert (
             logger._info[0]
-            == "A full list of packages to be installed, included dependencies: \nA==1.2.3"
+            == f"A full list of packages to be installed, included dependencies: {os.linesep}A==1.2.3"
         )
 
     @mock.patch("ochrona.importer.SafeImport._get_most_recent_version")
