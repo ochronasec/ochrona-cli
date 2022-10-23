@@ -26,8 +26,8 @@ class MockLogger:
     def error(self, msg):
         self._error.append(msg)
 
-class MockConfig:
 
+class MockConfig:
     def __init__(self, enable_sast=False, policies=[]):
         self._enable_sast = enable_sast
         self._policies = policies
@@ -39,6 +39,7 @@ class MockConfig:
     @property
     def policies(self):
         return self._policies
+
 
 class TestImportWrapper:
     """
@@ -92,7 +93,8 @@ class TestImportWrapper:
         most_recent.assert_called_once()
         assert len(logger._error) == 2
         assert (
-            logger._error[-1] == "Import of [bold]urllib3[/bold] aborted due to detected vulnerabilities."
+            logger._error[-1]
+            == "Import of [bold]urllib3[/bold] aborted due to detected vulnerabilities."
         )
 
     def test_install_invalid_specifier(self):
@@ -117,10 +119,20 @@ class TestImportWrapper:
 
         install_file.assert_called_once()
         install.assert_not_called()
-        included_dependencies = ["Click==7.0", "itsdangerous==1.1.0", "MarkupSafe==1.1.1", "Werkzeug==0.15.4", "requests==2.22.0", "Jinja2==2.11.3", "Flask==1.1.1"]
+        included_dependencies = [
+            "Click==7.0",
+            "itsdangerous==1.1.0",
+            "MarkupSafe==1.1.1",
+            "Werkzeug==0.15.4",
+            "requests==2.22.0",
+            "Jinja2==2.11.3",
+            "Flask==1.1.1",
+        ]
         for dep in included_dependencies:
             assert dep in logger._info[0]
-        assert logger._info[0].startswith("A full list of packages to be installed, included dependencies:")
+        assert logger._info[0].startswith(
+            "A full list of packages to be installed, included dependencies:"
+        )
 
     @mock.patch("ochrona.importer.SafeImport._install")
     @mock.patch("ochrona.importer.SafeImport._install_file")
@@ -133,7 +145,17 @@ class TestImportWrapper:
 
         install_file.assert_not_called()
         install.assert_not_called()
-        included_dependencies = ["Click==7.0", "itsdangerous==1.1.0", "MarkupSafe==1.1.1", "Werkzeug==0.15.4", "requests==2.19.0", "Jinja2==2.10.1", "Flask==1.1.1"]
+        included_dependencies = [
+            "Click==7.0",
+            "itsdangerous==1.1.0",
+            "MarkupSafe==1.1.1",
+            "Werkzeug==0.15.4",
+            "requests==2.19.0",
+            "Jinja2==2.10.1",
+            "Flask==1.1.1",
+        ]
         for dep in included_dependencies:
             assert dep in logger._info[0]
-        assert logger._info[0].startswith("A full list of packages that would be installed, included dependencies:")
+        assert logger._info[0].startswith(
+            "A full list of packages that would be installed, included dependencies:"
+        )
