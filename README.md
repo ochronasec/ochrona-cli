@@ -114,7 +114,7 @@ There is an empty `.ochrona.yml` file included in the repo.
 | Key | Description | Type | Example |
 |-|-|-|-|
 | `dir` | Directory to recursively search for dependencies files to scan [.] | path | /User/me/my_project |
-| `exclude_dir` | Directory names that should be excluded from recursive search. | list | build |
+| `exclude_dir` | Directory names that should be excluded from recursive search. | array | build |
 | `file` | Single dependency file to scan | file | /User/me/my_project/requirements.txt |
 | `debug` | Enable debug logging [false] | bool | true |
 | `silent` | Silent mode [false] | bool | true |

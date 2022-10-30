@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.0.2
+- Use temp-dir for cache files
+- Fix HTML report generation on Windows
+- Fix `exclude_dir` configu bug
+
 ## 2.0.1
 - Fixed issue where policies not being specified within the .ochrona.yml caused a TypeError
 
