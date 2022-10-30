@@ -34,7 +34,7 @@ except ImportError:
 def rfind_all_dependencies_files(
     logger: OchronaLogger,
     directory: Optional[str] = None,
-    excluded_directories: Optional[List[str]] = None,
+    excluded_directories: Optional[Union[List[str], str]] = None,
     file_obj: Optional[Union[IO, str]] = None,
 ) -> List[str]:
     """
@@ -52,11 +52,14 @@ def rfind_all_dependencies_files(
     files = []
 
     # if this is somehow still a string, let's fix that
-    directories_to_exclude = (
-        excluded_directories.split(",")
-        if isinstance(excluded_directories, str)
-        else excluded_directories
-    )
+    if excluded_directories:
+        directories_to_exclude = (
+            excluded_directories.split(",")
+            if isinstance(excluded_directories, str)
+            else excluded_directories
+        )
+    else:
+        directories_to_exclude = []
 
     if file_obj:
         if isinstance(file_obj, str):
