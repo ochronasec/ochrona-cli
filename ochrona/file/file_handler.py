@@ -34,7 +34,7 @@ except ImportError:
 def rfind_all_dependencies_files(
     logger: OchronaLogger,
     directory: Optional[str] = None,
-    excluded_directories: Optional[str] = None,
+    excluded_directories: Optional[Union[List[str], str]] = None,
     file_obj: Optional[Union[IO, str]] = None,
 ) -> List[str]:
     """
@@ -42,6 +42,7 @@ def rfind_all_dependencies_files(
 
     :param logger: A configured `OchronaFormatter` instance
     :param directory: str - starting directory (optional)
+    :param excluded_directories: list - directories to exclude
     :param file_obj: A specified file to use
     :return: list - list of paths for files to analyze
     """
@@ -49,9 +50,16 @@ def rfind_all_dependencies_files(
         directory = os.getcwd()
 
     files = []
-    directories_to_exclude = (
-        excluded_directories.split(",") if isinstance(excluded_directories, str) else []
-    )
+
+    # if this is somehow still a string, let's fix that
+    if excluded_directories:
+        directories_to_exclude = (
+            excluded_directories.split(",")
+            if isinstance(excluded_directories, str)
+            else excluded_directories
+        )
+    else:
+        directories_to_exclude = []
 
     if file_obj:
         if isinstance(file_obj, str):
