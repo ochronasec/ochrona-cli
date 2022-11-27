@@ -42,6 +42,7 @@ class Dependency:
     _summary: str = ""
 
     def __init__(self, dependency: Dict[str, Union[str, List[str]]]):
+
         try:
             version = dependency.get("version")
             if version is not None and isinstance(version, str):
