@@ -42,32 +42,35 @@ class Dependency:
     _summary: str = ""
 
     def __init__(self, dependency: Dict[str, Union[str, List[str]]]):
-        version = dependency.get("version")
-        if version is not None and isinstance(version, str):
-            self._raw = self._clean(version.split(",")[0])
-        parts = re.split(PEP_SUPPORTED_OPERATORS, self._raw)
-        if len(parts) == 1:
-            if "txt" in parts[0] and "-r" in parts[0]:
-                self.is_reference = True
-                return
-            self._reserved_name = parts[0]
-        elif len(parts) > 1:
-            self._reserved_name = parts[0]
-            self._parse_version(parts[1])
-            self._operator = re.sub("[a-zA-Z0-9.-]", "", self._raw)  # TODO fix
-        (
-            self._reserved_latest_version,
-            self._reserved_license_type,
-            self._reserved_latest_update,
-            self._reserved_release_count,
-            self._summary,
-        ) = self._pypi_details()
-        self._full = self._provided_or_most_recent() or self._raw
-        self._purl = f"pkg:pypi/{self._reserved_name}@{self._version}"
-        hashes = dependency.get("hashes", [])
-        if isinstance(hashes, List):
-            self._parse_hashes(hash_list=hashes)
-        self._url = f"https://pypi.org/pypi/{self._reserved_name}"
+        try:
+            version = dependency.get("version")
+            if version is not None and isinstance(version, str):
+                self._raw = self._clean(version.split(",")[0])
+            parts = re.split(PEP_SUPPORTED_OPERATORS, self._raw)
+            if len(parts) == 1:
+                if "txt" in parts[0] and "-r" in parts[0]:
+                    self.is_reference = True
+                    return
+                self._reserved_name = parts[0]
+            elif len(parts) > 1:
+                self._reserved_name = parts[0]
+                self._parse_version(parts[1])
+                self._operator = re.sub("[a-zA-Z0-9.-]", "", self._raw)  # TODO fix
+            (
+                self._reserved_latest_version,
+                self._reserved_license_type,
+                self._reserved_latest_update,
+                self._reserved_release_count,
+                self._summary,
+            ) = self._pypi_details()
+            self._full = self._provided_or_most_recent() or self._raw
+            self._purl = f"pkg:pypi/{self._reserved_name}@{self._version}"
+            hashes = dependency.get("hashes", [])
+            if isinstance(hashes, List):
+                self._parse_hashes(hash_list=hashes)
+            self._url = f"https://pypi.org/pypi/{self._reserved_name}"
+        except:
+            pass
 
     def _parse_version(self, version: str):
         v = Version(version)
