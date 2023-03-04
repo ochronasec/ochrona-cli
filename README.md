@@ -9,6 +9,12 @@
 [![codecov](https://img.shields.io/codecov/c/github/ochronasec/ochrona-cli?color=blue&style=flat-square)](https://codecov.io/gh/ochronasec/ochrona-cli)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 
+---
+**NOTICE**
+
+Ochrona is no longer under active development. The accompanying [Python Vulnerability Repository](https://github.com/ochronasec/ochrona_python_vulnerabilities) is also no longer receiving regular updates.
+---
+
 - [Overview](#overview)
     + [Vulnerability Data](#vulnerability-data)
     + [Supported file types](#supported-file-types)
